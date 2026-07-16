@@ -1,0 +1,58 @@
+[gd_resource type="Resource" script_class="PromotionResource" format=3 uid="uid://bc33we2gt8o0k"]
+
+[ext_resource type="Script" uid="uid://dwj45ptt6d1qp" path="res://Scripts/Data/WrestlerData.gd" id="1_b6sbu"]
+[ext_resource type="Script" uid="uid://dur40byryil5w" path="res://Scripts/Data/PromotionData.gd" id="2_xycw7"]
+[ext_resource type="Resource" uid="uid://22xmxskp5xm1" path="res://Wrestlers/tis/Africa/Face/Male/tunde_akin.tres" id="2_yr6lc"]
+[ext_resource type="Resource" uid="uid://cv5w7c1fqgg0m" path="res://Wrestlers/tis/Africa/Heel/Male/faris_adly.tres" id="3_31rux"]
+[ext_resource type="Script" uid="uid://bsoy7pfr7publ" path="res://Scripts/Data/TitleData.gd" id="3_wgyiw"]
+[ext_resource type="Resource" uid="uid://b8s2v8vvjld2o" path="res://Wrestlers/tis/Asia/Face/Male/jun_park.tres" id="4_guh2w"]
+[ext_resource type="Resource" uid="uid://doaodav05a1vi" path="res://Promotions/Indie/Titles/WORLD_INDEPENDENT_CHAMPIONSHIP.tres" id="4_yvfm8"]
+[ext_resource type="Resource" uid="uid://sn2ivmi62dve" path="res://Promotions/Indie/Titles/OPEN_CHALLENGE_TITLE.tres" id="5_358uj"]
+[ext_resource type="Resource" uid="uid://cirikafy10sve" path="res://Wrestlers/tis/Asia/Face/Male/sora_mikami.tres" id="5_yjba7"]
+[ext_resource type="Resource" uid="uid://ckammjebjv0eu" path="res://Wrestlers/tis/Asia/Heel/Male/goro_shindo.tres" id="6_cs5ap"]
+[ext_resource type="Resource" uid="uid://7egj2v4aseug" path="res://Promotions/Indie/Titles/INDEPENDENT_WOMENS_GRAND_PRIX.tres" id="6_oor1r"]
+[ext_resource type="Resource" uid="uid://dr1rv28tfvpo4" path="res://Wrestlers/tis/Europe/Face/Male/iker_duran.tres" id="7_05ek3"]
+[ext_resource type="Resource" uid="uid://crtajgcembefu" path="res://Wrestlers/tis/Europe/Face/Male/miro_vuk.tres" id="8_8cjk0"]
+[ext_resource type="Resource" uid="uid://ggjbhu66s45t" path="res://Wrestlers/tis/Europe/Heel/Male/cass_vane.tres" id="9_jdg45"]
+[ext_resource type="Resource" uid="uid://ppwlcji3sxbe" path="res://Wrestlers/tis/Europe/Heel/Male/matteo_bruni.tres" id="10_cb12k"]
+[ext_resource type="Resource" uid="uid://cwb84051fure6" path="res://Wrestlers/tis/Europe/Heel/Male/pavel_korda.tres" id="11_5ja87"]
+[ext_resource type="Resource" uid="uid://bl5f5qv2c4vcn" path="res://Wrestlers/tis/North_America/Face/Male/leo_mercer.tres" id="12_n3a5j"]
+[ext_resource type="Resource" uid="uid://dqt2sdlup1qa7" path="res://Wrestlers/tis/North_America/Face/Male/riot_navarro.tres" id="13_noku8"]
+[ext_resource type="Resource" uid="uid://bwyi0roimbs6r" path="res://Wrestlers/tis/North_America/Face/Male/seth_quarry.tres" id="14_gfk73"]
+[ext_resource type="Resource" uid="uid://do1v6dcqlo3ym" path="res://Wrestlers/tis/North_America/Heel/Male/bishop_blackridge.tres" id="15_n48by"]
+[ext_resource type="Resource" uid="uid://esn080fytohy" path="res://Wrestlers/tis/North_America/Heel/Male/cero_rojo.tres" id="16_r5lfm"]
+[ext_resource type="Resource" uid="uid://c78hbkcmo3r5b" path="res://Wrestlers/tis/North_America/Heel/Male/harlan_wren.tres" id="17_uhtjy"]
+[ext_resource type="Resource" uid="uid://06nx5as20ymb" path="res://Wrestlers/tis/North_America/Heel/Male/knox_vale.tres" id="18_6jdj3"]
+[ext_resource type="Resource" uid="uid://8c1da25nfnsn" path="res://Wrestlers/tis/North_America/Heel/Male/mason_hex.tres" id="19_g8rj2"]
+[ext_resource type="Resource" uid="uid://up52ucerwlia" path="res://Wrestlers/tis/Oceania/Heel/Male/aru_kelepi.tres" id="20_jq42i"]
+[ext_resource type="Resource" uid="uid://bkic6rk156eoe" path="res://Wrestlers/tis/Oceania/Heel/Male/rex_carrion.tres" id="21_6xovi"]
+[ext_resource type="Resource" uid="uid://bqmd8ubbtliio" path="res://Wrestlers/tis/South_America/Face/Male/thiago_moura.tres" id="22_aj1n2"]
+[ext_resource type="Resource" uid="uid://ja7s6l2xq620" path="res://Wrestlers/tis/South_America/Heel/Male/nico_barral.tres" id="23_k1kdu"]
+[ext_resource type="Resource" uid="uid://bxu3ovo1jmvh5" path="res://Wrestlers/tis/South_America/Heel/Male/yago_ferraz.tres" id="24_14wke"]
+[ext_resource type="Resource" uid="uid://s80wllirq8k8" path="res://Wrestlers/tis/Africa/Face/Female/ama_quaye.tres" id="30_3lw6s"]
+[ext_resource type="Resource" uid="uid://bbv5fcw0l2yyp" path="res://Wrestlers/tis/Africa/Face/Female/sable_osiris.tres" id="31_fq4fx"]
+[ext_resource type="Resource" uid="uid://b6j7tsohn5fc7" path="res://Wrestlers/tis/Africa/Heel/Female/zola_mbeki.tres" id="32_1lq73"]
+[ext_resource type="Resource" uid="uid://d3mojgt2asmj0" path="res://Wrestlers/tis/Asia/Face/Female/rika_nozomi.tres" id="33_uc6qv"]
+[ext_resource type="Resource" uid="uid://b337oupehwrj3" path="res://Wrestlers/tis/Asia/Face/Female/yuri_sato.tres" id="34_p3pb2"]
+[ext_resource type="Resource" uid="uid://dx52mcak0pxd1" path="res://Wrestlers/tis/Asia/Heel/Female/priya_khatri.tres" id="35_mhtgq"]
+[ext_resource type="Resource" uid="uid://g5rwtik0wd2l" path="res://Wrestlers/tis/Europe/Face/Female/hana_vex.tres" id="36_fskew"]
+[ext_resource type="Resource" uid="uid://brooyd5huwyy7" path="res://Wrestlers/tis/Europe/Face/Female/talia_rook.tres" id="37_2pd2j"]
+[ext_resource type="Resource" uid="uid://2dd7smsei2k7" path="res://Wrestlers/tis/Europe/Heel/Female/lucia_vanta.tres" id="38_qlvh6"]
+[ext_resource type="Resource" uid="uid://begfvv4dt5ovn" path="res://Wrestlers/tis/Europe/Heel/Female/val_reyes.tres" id="39_b14gm"]
+[ext_resource type="Resource" uid="uid://6ojamsb4g073" path="res://Wrestlers/tis/North_America/Face/Female/dani_velez.tres" id="40_7ujna"]
+[ext_resource type="Resource" uid="uid://mmene84v5kwx" path="res://Wrestlers/tis/North_America/Heel/Female/clove_mercer.tres" id="41_8a6i6"]
+[ext_resource type="Resource" uid="uid://2rmvghj1jnmp" path="res://Wrestlers/tis/North_America/Heel/Female/greer_knox.tres" id="42_pj02a"]
+[ext_resource type="Resource" uid="uid://6vg7r2bl5nid" path="res://Wrestlers/tis/North_America/Heel/Female/veda_riot.tres" id="43_7ha8h"]
+[ext_resource type="Resource" uid="uid://bqd66krwlse1g" path="res://Wrestlers/tis/Oceania/Heel/Female/nia_kahele.tres" id="44_pdu3t"]
+[ext_resource type="Resource" uid="uid://dyb5lk6iy0ha1" path="res://Wrestlers/tis/South_America/Face/Female/mina_cordeiro.tres" id="45_5xumu"]
+[ext_resource type="Resource" uid="uid://b5cikwrkg1vjo" path="res://Wrestlers/tis/South_America/Heel/Female/paloma_grief.tres" id="46_sb3r7"]
+
+[resource]
+script = ExtResource("2_xycw7")
+promotion_name = "The Indie Scene"
+promotion_initials = "TIS"
+promotion_id = 1
+mens_division = Array[ExtResource("1_b6sbu")]([ExtResource("2_yr6lc"), ExtResource("3_31rux"), ExtResource("4_guh2w"), ExtResource("5_yjba7"), ExtResource("6_cs5ap"), ExtResource("7_05ek3"), ExtResource("8_8cjk0"), ExtResource("9_jdg45"), ExtResource("10_cb12k"), ExtResource("11_5ja87"), ExtResource("12_n3a5j"), ExtResource("13_noku8"), ExtResource("14_gfk73"), ExtResource("15_n48by"), ExtResource("16_r5lfm"), ExtResource("17_uhtjy"), ExtResource("18_6jdj3"), ExtResource("19_g8rj2"), ExtResource("20_jq42i"), ExtResource("21_6xovi"), ExtResource("22_aj1n2"), ExtResource("23_k1kdu"), ExtResource("24_14wke")])
+womens_division = Array[ExtResource("1_b6sbu")]([ExtResource("30_3lw6s"), ExtResource("31_fq4fx"), ExtResource("32_1lq73"), ExtResource("33_uc6qv"), ExtResource("34_p3pb2"), ExtResource("35_mhtgq"), ExtResource("36_fskew"), ExtResource("37_2pd2j"), ExtResource("38_qlvh6"), ExtResource("39_b14gm"), ExtResource("40_7ujna"), ExtResource("41_8a6i6"), ExtResource("42_pj02a"), ExtResource("43_7ha8h"), ExtResource("44_pdu3t"), ExtResource("45_5xumu"), ExtResource("46_sb3r7")])
+titles = Array[ExtResource("3_wgyiw")]([ExtResource("4_yvfm8"), ExtResource("5_358uj"), ExtResource("6_oor1r")])
+metadata/_custom_type_script = "uid://dur40byryil5w"

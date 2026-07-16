@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="MoveResource" format=3 uid="uid://fqb6cf4ew41"]
+
+[ext_resource type="Script" uid="uid://dsl2sqtwrkuos" path="res://Scripts/Data/MoveData.gd" id="1_pa4wy"]
+
+[resource]
+script = ExtResource("1_pa4wy")
+move_name = "Tiger Suplex"
+move_type = 1
+class_preferrence = Array[int]([2, 3])
+move_target_parts = Array[int]([1, 3, 4])
+targeting_mode = 3
+required_attacker_position = 1
+required_target_position = 1
+resulting_attacker_position = 2
+resulting_target_position = 2
+is_finisher = true
+move_impact = 8

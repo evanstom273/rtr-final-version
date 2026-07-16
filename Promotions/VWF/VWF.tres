@@ -1,0 +1,62 @@
+[gd_resource type="Resource" script_class="PromotionResource" format=3 uid="uid://cey6e8eyqqld"]
+
+[ext_resource type="Script" uid="uid://dur40byryil5w" path="res://Scripts/Data/PromotionData.gd" id="1"]
+[ext_resource type="Script" uid="uid://dwj45ptt6d1qp" path="res://Scripts/Data/WrestlerData.gd" id="1_b16yc"]
+[ext_resource type="Resource" uid="uid://niqsbnhki1lr" path="res://Wrestlers/vwf/Africa/Heel/Male/kofi_asante.tres" id="2_qvwaq"]
+[ext_resource type="Resource" uid="uid://dq2ro1l1kbv5a" path="res://Wrestlers/vwf/Asia/Face/Male/kenji_mori.tres" id="3_27u8j"]
+[ext_resource type="Script" uid="uid://bsoy7pfr7publ" path="res://Scripts/Data/TitleData.gd" id="3_rhm2u"]
+[ext_resource type="Resource" uid="uid://dcehqkkpithh" path="res://Wrestlers/vwf/Asia/Heel/Male/jae_won_shin.tres" id="4_2qkbr"]
+[ext_resource type="Resource" uid="uid://dp4igct2eba0j" path="res://Promotions/VWF/Titles/VWF_CHAMPIONSHIP.tres" id="4_main"]
+[ext_resource type="Resource" uid="uid://d115bv4vosiax" path="res://Wrestlers/vwf/Europe/Face/Male/declan_ward.tres" id="5_rspo7"]
+[ext_resource type="Resource" uid="uid://ce482gxu1a4ss" path="res://Promotions/VWF/Titles/VWF_NATIONAL_CHAMPIONSHIP.tres" id="5_singles"]
+[ext_resource type="Resource" uid="uid://cmov2tvjyuady" path="res://Wrestlers/vwf/Europe/Face/Male/luc_girard.tres" id="6_046xw"]
+[ext_resource type="Resource" uid="uid://byc7avdsa6emk" path="res://Promotions/VWF/Titles/VWF_WOMENS_CHAMPIONSHIP.tres" id="6_womens"]
+[ext_resource type="Resource" uid="uid://73i5nuq36bx" path="res://Wrestlers/vwf/Europe/Heel/Male/caius_marlowe.tres" id="7_geh6p"]
+[ext_resource type="Resource" uid="uid://dcas2bru10moa" path="res://Wrestlers/vwf/Europe/Heel/Male/karl_reinhardt.tres" id="8_cwr1c"]
+[ext_resource type="Resource" uid="uid://dopiaq26504kv" path="res://Wrestlers/vwf/Europe/Heel/Male/viktor_haas.tres" id="9_042da"]
+[ext_resource type="Resource" uid="uid://ctwir524h2l7p" path="res://Wrestlers/vwf/North_America/Face/Male/brett_mclean.tres" id="10_ucnup"]
+[ext_resource type="Resource" uid="uid://bwx78ewmkgbk1" path="res://Wrestlers/vwf/North_America/Face/Male/colt_briggs.tres" id="11_kiw4h"]
+[ext_resource type="Resource" uid="uid://dvbhnkkl6dqlu" path="res://Wrestlers/vwf/North_America/Face/Male/cruz_ibarra.tres" id="12_hd1l7"]
+[ext_resource type="Resource" uid="uid://bvmfqc4ojwf7j" path="res://Wrestlers/vwf/North_America/Face/Male/dean_whitmore.tres" id="13_yoinu"]
+[ext_resource type="Resource" uid="uid://b4xdte5wxu3x7" path="res://Wrestlers/vwf/North_America/Face/Male/jamie_mercer.tres" id="14_hvead"]
+[ext_resource type="Resource" uid="uid://csisbg3xqjw10" path="res://Wrestlers/vwf/North_America/Face/Male/jesse_rowe.tres" id="15_rv8ao"]
+[ext_resource type="Resource" uid="uid://bnh1ehwl3lcl1" path="res://Wrestlers/vwf/North_America/Face/Male/mace_corrigan.tres" id="16_cnyjy"]
+[ext_resource type="Resource" uid="uid://dxpgs52vvxnpt" path="res://Wrestlers/vwf/North_America/Face/Male/marcus_webb.tres" id="17_k7218"]
+[ext_resource type="Resource" uid="uid://bkumojc5ihncf" path="res://Wrestlers/vwf/North_America/Face/Male/mike_callahan.tres" id="18_8y0sv"]
+[ext_resource type="Resource" uid="uid://wnwe1sffb6nr" path="res://Wrestlers/vwf/North_America/Face/Male/ray_hollis.tres" id="19_re7u0"]
+[ext_resource type="Resource" uid="uid://dsbf2tlkyh2mk" path="res://Wrestlers/vwf/North_America/Heel/Male/buck_stratton.tres" id="20_7l3yi"]
+[ext_resource type="Resource" uid="uid://cw1pa34whjef2" path="res://Wrestlers/vwf/North_America/Heel/Male/dez_raines.tres" id="21_igsgt"]
+[ext_resource type="Resource" uid="uid://ddylgcfyw4jfu" path="res://Wrestlers/vwf/North_America/Heel/Male/gauge.tres" id="22_tx7y4"]
+[ext_resource type="Resource" uid="uid://divsvk2kq22ww" path="res://Wrestlers/vwf/North_America/Heel/Male/hoss_pruitt.tres" id="23_i8jrh"]
+[ext_resource type="Resource" uid="uid://bs5vdexq5a46w" path="res://Wrestlers/vwf/North_America/Heel/Male/lance_beaumont.tres" id="24_1et07"]
+[ext_resource type="Resource" uid="uid://dam4pscbyfdef" path="res://Wrestlers/vwf/North_America/Heel/Male/remy_sloane.tres" id="25_iua1j"]
+[ext_resource type="Resource" uid="uid://bl2g0ytu7qftb" path="res://Wrestlers/vwf/North_America/Heel/Male/rico_delgado.tres" id="26_euqrj"]
+[ext_resource type="Resource" uid="uid://bgcojvs6ovg2v" path="res://Wrestlers/vwf/North_America/Heel/Male/weston_holt.tres" id="27_e7dvm"]
+[ext_resource type="Resource" uid="uid://cv30wr14fni8o" path="res://Wrestlers/vwf/Oceania/Heel/Male/brent_hawker.tres" id="28_pquoj"]
+[ext_resource type="Resource" uid="uid://58hfn0b4p7dk" path="res://Wrestlers/vwf/South_America/Face/Male/marco_ferreira.tres" id="29_36h2s"]
+[ext_resource type="Resource" uid="uid://dltw7550l2td1" path="res://Wrestlers/vwf/Africa/Heel/Female/adaeze_okafor.tres" id="35_cm7yj"]
+[ext_resource type="Resource" uid="uid://u4rtvt7pxxpx" path="res://Wrestlers/vwf/Asia/Face/Female/sora_mishima.tres" id="36_mbfi6"]
+[ext_resource type="Resource" uid="uid://qthd52vl26yc" path="res://Wrestlers/vwf/Europe/Heel/Female/victoria_ashford.tres" id="37_i5occ"]
+[ext_resource type="Resource" uid="uid://dpjgwsubv2j43" path="res://Wrestlers/vwf/North_America/Face/Female/dana_mercer.tres" id="38_4q2nf"]
+[ext_resource type="Resource" uid="uid://cxmc85pk8xu5i" path="res://Wrestlers/vwf/North_America/Face/Female/lauren_chase.tres" id="39_5ubdf"]
+[ext_resource type="Resource" uid="uid://8v0faqhi007x" path="res://Wrestlers/vwf/North_America/Heel/Female/cali_prescott.tres" id="40_3aib2"]
+[ext_resource type="Resource" uid="uid://b2mi5y31mmc5a" path="res://Wrestlers/vwf/North_America/Heel/Female/diane_calder.tres" id="41_jxm0q"]
+[ext_resource type="Resource" uid="uid://dy8u86nkcyh6" path="res://Wrestlers/vwf/Oceania/Face/Female/lani_tuilagi.tres" id="42_ifleu"]
+
+[resource]
+script = ExtResource("1")
+promotion_name = "Vanguard Wrestling Federation"
+promotion_initials = "VWF"
+promotion_id = 2
+preferred_styles = Array[int]([2, 4])
+home_region = 1
+north_american_country = 0
+mens_division = Array[ExtResource("1_b16yc")]([ExtResource("2_qvwaq"), ExtResource("3_27u8j"), ExtResource("4_2qkbr"), ExtResource("5_rspo7"), ExtResource("6_046xw"), ExtResource("7_geh6p"), ExtResource("8_cwr1c"), ExtResource("9_042da"), ExtResource("10_ucnup"), ExtResource("11_kiw4h"), ExtResource("12_hd1l7"), ExtResource("13_yoinu"), ExtResource("14_hvead"), ExtResource("15_rv8ao"), ExtResource("16_cnyjy"), ExtResource("17_k7218"), ExtResource("18_8y0sv"), ExtResource("19_re7u0"), ExtResource("20_7l3yi"), ExtResource("21_igsgt"), ExtResource("22_tx7y4"), ExtResource("23_i8jrh"), ExtResource("24_1et07"), ExtResource("25_iua1j"), ExtResource("26_euqrj"), ExtResource("27_e7dvm"), ExtResource("28_pquoj"), ExtResource("29_36h2s")])
+womens_division = Array[ExtResource("1_b16yc")]([ExtResource("35_cm7yj"), ExtResource("36_mbfi6"), ExtResource("37_i5occ"), ExtResource("38_4q2nf"), ExtResource("39_5ubdf"), ExtResource("40_3aib2"), ExtResource("41_jxm0q"), ExtResource("42_ifleu")])
+titles = Array[ExtResource("3_rhm2u")]([ExtResource("4_main"), ExtResource("5_singles"), ExtResource("6_womens")])
+global_popularity = 53.0
+pop_north_america = 95.0
+pop_europe = 75.0
+pop_asia = 65.0
+pop_africa = 25.0
+pop_oceania = 55.0

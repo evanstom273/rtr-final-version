@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="TitleResource" format=3 uid="uid://6rxeft02kqlh"]
+
+[ext_resource type="Script" uid="uid://bsoy7pfr7publ" path="res://Scripts/Data/TitleData.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+title_name = "AAWA Matriarch Championship"
+promotion_id = 11
+gender = 2

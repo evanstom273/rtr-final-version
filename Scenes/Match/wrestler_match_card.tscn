@@ -1,0 +1,337 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://Scripts/UI/wrestler_match_card.gd" id="1_card"]
+[ext_resource type="PackedScene" path="res://Scenes/Match/body_damage_mannequin.tscn" id="2_mannequin"]
+
+[sub_resource type="StyleBoxFlat" id="StyleCard"]
+bg_color = Color(0.055, 0.07, 0.105, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.25, 0.64, 1, 0.85)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleProgressBackground"]
+bg_color = Color(0.025, 0.035, 0.055, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleProgressFill"]
+bg_color = Color(0.25, 0.64, 1, 0.8)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="WrestlerMatchCard" type="PanelContainer"]
+custom_minimum_size = Vector2(300, 0)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleCard")
+script = ExtResource("1_card")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 18
+
+[node name="Content" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="RoleTitle" type="Label" parent="Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.25, 0.64, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "WRESTLER"
+horizontal_alignment = 1
+
+[node name="NameValue" type="Label" parent="Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.25, 0.64, 1, 1)
+theme_override_font_sizes/font_size = 28
+text = "No wrestler assigned"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="TopSeparator" type="HSeparator" parent="Margin/Content"]
+layout_mode = 2
+
+[node name="ProfileHeading" type="Label" parent="Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.88, 0.94, 1)
+theme_override_font_sizes/font_size = 16
+text = "PROFILE"
+
+[node name="ProfileGrid" type="GridContainer" parent="Margin/Content"]
+layout_mode = 2
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 6
+columns = 2
+
+[node name="OriginLabel" type="Label" parent="Margin/Content/ProfileGrid"]
+custom_minimum_size = Vector2(105, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+text = "From"
+
+[node name="OriginValue" type="Label" parent="Margin/Content/ProfileGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "—"
+autowrap_mode = 2
+
+[node name="HeightLabel" type="Label" parent="Margin/Content/ProfileGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+text = "Height"
+
+[node name="HeightValue" type="Label" parent="Margin/Content/ProfileGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "—"
+
+[node name="WeightLabel" type="Label" parent="Margin/Content/ProfileGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+text = "Weight"
+
+[node name="WeightValue" type="Label" parent="Margin/Content/ProfileGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "—"
+
+[node name="AgeLabel" type="Label" parent="Margin/Content/ProfileGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+text = "Age"
+
+[node name="AgeValue" type="Label" parent="Margin/Content/ProfileGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "—"
+
+[node name="GenderLabel" type="Label" parent="Margin/Content/ProfileGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+text = "Gender"
+
+[node name="GenderValue" type="Label" parent="Margin/Content/ProfileGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "—"
+
+[node name="DispositionLabel" type="Label" parent="Margin/Content/ProfileGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+text = "Face / Heel"
+
+[node name="DispositionValue" type="Label" parent="Margin/Content/ProfileGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "—"
+
+[node name="ClassesLabel" type="Label" parent="Margin/Content/ProfileGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+text = "Classes"
+
+[node name="ClassesValue" type="Label" parent="Margin/Content/ProfileGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "—"
+autowrap_mode = 2
+
+[node name="GimmickLabel" type="Label" parent="Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+text = "Gimmick"
+
+[node name="GimmickValue" type="Label" parent="Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "—"
+autowrap_mode = 2
+
+[node name="ProfileSeparator" type="HSeparator" parent="Margin/Content"]
+layout_mode = 2
+
+[node name="AttributesHeading" type="Label" parent="Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.88, 0.94, 1)
+theme_override_font_sizes/font_size = 16
+text = "ATTRIBUTES"
+
+[node name="AttributesGrid" type="GridContainer" parent="Margin/Content"]
+layout_mode = 2
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 7
+columns = 2
+
+[node name="StrengthLabel" type="Label" parent="Margin/Content/AttributesGrid"]
+custom_minimum_size = Vector2(105, 0)
+layout_mode = 2
+text = "Strength"
+
+[node name="StrengthBar" type="ProgressBar" parent="Margin/Content/AttributesGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/background = SubResource("StyleProgressBackground")
+theme_override_styles/fill = SubResource("StyleProgressFill")
+
+[node name="SpeedLabel" type="Label" parent="Margin/Content/AttributesGrid"]
+layout_mode = 2
+text = "Speed"
+
+[node name="SpeedBar" type="ProgressBar" parent="Margin/Content/AttributesGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/background = SubResource("StyleProgressBackground")
+theme_override_styles/fill = SubResource("StyleProgressFill")
+
+[node name="StaminaLabel" type="Label" parent="Margin/Content/AttributesGrid"]
+layout_mode = 2
+text = "Stamina"
+
+[node name="StaminaBar" type="ProgressBar" parent="Margin/Content/AttributesGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/background = SubResource("StyleProgressBackground")
+theme_override_styles/fill = SubResource("StyleProgressFill")
+
+[node name="SkillLabel" type="Label" parent="Margin/Content/AttributesGrid"]
+layout_mode = 2
+text = "Skill"
+
+[node name="SkillBar" type="ProgressBar" parent="Margin/Content/AttributesGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/background = SubResource("StyleProgressBackground")
+theme_override_styles/fill = SubResource("StyleProgressFill")
+
+[node name="StrikingLabel" type="Label" parent="Margin/Content/AttributesGrid"]
+layout_mode = 2
+text = "Striking"
+
+[node name="StrikingBar" type="ProgressBar" parent="Margin/Content/AttributesGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/background = SubResource("StyleProgressBackground")
+theme_override_styles/fill = SubResource("StyleProgressFill")
+
+[node name="CharismaLabel" type="Label" parent="Margin/Content/AttributesGrid"]
+layout_mode = 2
+text = "Charisma"
+
+[node name="CharismaBar" type="ProgressBar" parent="Margin/Content/AttributesGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/background = SubResource("StyleProgressBackground")
+theme_override_styles/fill = SubResource("StyleProgressFill")
+
+[node name="PopularityLabel" type="Label" parent="Margin/Content/AttributesGrid"]
+layout_mode = 2
+text = "Global Pop."
+
+[node name="PopularityBar" type="ProgressBar" parent="Margin/Content/AttributesGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/background = SubResource("StyleProgressBackground")
+theme_override_styles/fill = SubResource("StyleProgressFill")
+
+[node name="AttributesSeparator" type="HSeparator" parent="Margin/Content"]
+layout_mode = 2
+
+[node name="ConditionHeading" type="Label" parent="Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.88, 0.94, 1)
+theme_override_font_sizes/font_size = 16
+text = "MATCH CONDITION"
+
+[node name="ConditionPanel" type="VBoxContainer" parent="Margin/Content"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="BodyDamageMannequin" parent="Margin/Content/ConditionPanel" instance=ExtResource("2_mannequin")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="StatusGrid" type="GridContainer" parent="Margin/Content/ConditionPanel"]
+layout_mode = 2
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 7
+columns = 4
+
+[node name="FatigueLabel" type="Label" parent="Margin/Content/ConditionPanel/StatusGrid"]
+custom_minimum_size = Vector2(105, 0)
+layout_mode = 2
+text = "Fatigue"
+
+[node name="FatigueBar" type="ProgressBar" parent="Margin/Content/ConditionPanel/StatusGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/background = SubResource("StyleProgressBackground")
+theme_override_styles/fill = SubResource("StyleProgressFill")
+
+[node name="MatchStaminaLabel" type="Label" parent="Margin/Content/ConditionPanel/StatusGrid"]
+layout_mode = 2
+text = "Current Stamina"
+
+[node name="MatchStaminaBar" type="ProgressBar" parent="Margin/Content/ConditionPanel/StatusGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+size_flags_horizontal = 3
+value = 100.0
+theme_override_styles/background = SubResource("StyleProgressBackground")
+theme_override_styles/fill = SubResource("StyleProgressFill")
+
+[node name="MomentumLabel" type="Label" parent="Margin/Content/ConditionPanel/StatusGrid"]
+layout_mode = 2
+text = "Momentum"
+
+[node name="MomentumBar" type="ProgressBar" parent="Margin/Content/ConditionPanel/StatusGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/background = SubResource("StyleProgressBackground")
+theme_override_styles/fill = SubResource("StyleProgressFill")
+
+[node name="PositionLabel" type="Label" parent="Margin/Content/ConditionPanel/StatusGrid"]
+layout_mode = 2
+text = "Position"
+
+[node name="PositionValue" type="Label" parent="Margin/Content/ConditionPanel/StatusGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Not Set"

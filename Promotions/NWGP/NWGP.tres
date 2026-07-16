@@ -1,0 +1,61 @@
+[gd_resource type="Resource" script_class="PromotionResource" format=3 uid="uid://6w5vl5f3p4kh"]
+
+[ext_resource type="Script" uid="uid://dur40byryil5w" path="res://Scripts/Data/PromotionData.gd" id="1"]
+[ext_resource type="Script" uid="uid://dwj45ptt6d1qp" path="res://Scripts/Data/WrestlerData.gd" id="1_kvvgi"]
+[ext_resource type="Resource" uid="uid://hobydhhq77ep" path="res://Wrestlers/nwgp/Africa/Heel/Male/adebayo_the_great_okoro.tres" id="2_idfbj"]
+[ext_resource type="Script" uid="uid://bsoy7pfr7publ" path="res://Scripts/Data/TitleData.gd" id="2_title_script"]
+[ext_resource type="Resource" uid="uid://c6lnuh4v1vwod" path="res://Wrestlers/nwgp/Asia/Face/Male/genki_honda.tres" id="3_xcr52"]
+[ext_resource type="Resource" uid="uid://b4u3nxli6yuds" path="res://Promotions/NWGP/Titles/NWGP_GLOBAL_CHAMPIONSHIP.tres" id="4_7fcrk"]
+[ext_resource type="Resource" uid="uid://cri51dqom2gf5" path="res://Wrestlers/nwgp/Asia/Face/Male/haru_kojima.tres" id="4_cqetx"]
+[ext_resource type="Resource" uid="uid://bysb00htxkryn" path="res://Promotions/NWGP/Titles/ARISE_OPENWEIGHT_CHAMPIONSHIP.tres" id="5_singles"]
+[ext_resource type="Resource" uid="uid://lm5dram21idv" path="res://Wrestlers/nwgp/Asia/Face/Male/hiroshi_kazama.tres" id="5_xkmhd"]
+[ext_resource type="Resource" uid="uid://bjtdfi1av8sa2" path="res://Promotions/NWGP/Titles/NWGP_JOSHI_CHAMPIONSHIP.tres" id="6_5gc8x"]
+[ext_resource type="Resource" uid="uid://ciwnc8jgkt86d" path="res://Wrestlers/nwgp/Asia/Face/Male/junji_ishii.tres" id="6_v5te3"]
+[ext_resource type="Resource" uid="uid://cdjomlh7qbexp" path="res://Wrestlers/nwgp/Asia/Face/Male/kenjiro_sano.tres" id="7_o3sd3"]
+[ext_resource type="Resource" uid="uid://cu283om6vd353" path="res://Wrestlers/nwgp/Asia/Face/Male/masato_kurata.tres" id="8_cfooo"]
+[ext_resource type="Resource" uid="uid://btai55i3ugrsg" path="res://Wrestlers/nwgp/Asia/Face/Male/ryusei_tanaka.tres" id="9_fx7ja"]
+[ext_resource type="Resource" uid="uid://dpxnnmhofmx1m" path="res://Wrestlers/nwgp/Asia/Face/Male/shinjiro_sato.tres" id="10_fywan"]
+[ext_resource type="Resource" uid="uid://bp7ct2c1damht" path="res://Wrestlers/nwgp/Asia/Face/Male/takeshi_kaito.tres" id="11_byoyr"]
+[ext_resource type="Resource" uid="uid://ccmg2wu8mas4w" path="res://Wrestlers/nwgp/Asia/Face/Male/tatsuya_fujii.tres" id="12_88epv"]
+[ext_resource type="Resource" uid="uid://bxsn7sjkty61u" path="res://Wrestlers/nwgp/Asia/Face/Male/zhang_lin.tres" id="13_lctkr"]
+[ext_resource type="Resource" uid="uid://d112x4ojyba4j" path="res://Wrestlers/nwgp/Asia/Heel/Male/akira_nishimura.tres" id="14_1440g"]
+[ext_resource type="Resource" uid="uid://pvif0u7hw8fj" path="res://Wrestlers/nwgp/Asia/Heel/Male/daisuke_murata.tres" id="15_n013a"]
+[ext_resource type="Resource" uid="uid://b746kfkgoy7bp" path="res://Wrestlers/nwgp/Asia/Heel/Male/katsuhiko_inoki.tres" id="16_feeek"]
+[ext_resource type="Resource" uid="uid://ybqtmdrboolw" path="res://Wrestlers/nwgp/Asia/Heel/Male/kazuo_kurosawa.tres" id="17_rfhkc"]
+[ext_resource type="Resource" uid="uid://towos04omcas" path="res://Wrestlers/nwgp/Asia/Heel/Male/makoto_enomoto.tres" id="18_m1mxs"]
+[ext_resource type="Resource" uid="uid://dljob17om7pfm" path="res://Wrestlers/nwgp/Asia/Heel/Male/nobuhiro_gushiken.tres" id="19_8cvrp"]
+[ext_resource type="Resource" uid="uid://cgkqhedh1fisw" path="res://Wrestlers/nwgp/Asia/Heel/Male/osamu_maruyama.tres" id="20_3ngca"]
+[ext_resource type="Resource" uid="uid://d1ti7035rqr8o" path="res://Wrestlers/nwgp/Asia/Heel/Male/shingo_imai.tres" id="21_b70t6"]
+[ext_resource type="Resource" uid="uid://4q7xa0jmgoe3" path="res://Wrestlers/nwgp/Asia/Heel/Male/tetsuya_arima.tres" id="22_qi7gp"]
+[ext_resource type="Resource" uid="uid://usktms1hlnbf" path="res://Wrestlers/nwgp/Asia/Heel/Male/yoshiro_kanda.tres" id="23_dg85h"]
+[ext_resource type="Resource" uid="uid://c66e1fl82cqtc" path="res://Wrestlers/nwgp/Europe/Face/Male/edward_blackwell.tres" id="24_5ugws"]
+[ext_resource type="Resource" uid="uid://buwyikgow2waw" path="res://Wrestlers/nwgp/Europe/Heel/Male/bruno_the_bull_argento.tres" id="25_otwno"]
+[ext_resource type="Resource" uid="uid://dpcad13xwkbg3" path="res://Wrestlers/nwgp/North_America/Face/Male/carlos_the_eagle_mendoza.tres" id="26_gnf3r"]
+[ext_resource type="Resource" uid="uid://ck7me563x03cj" path="res://Wrestlers/nwgp/North_America/Face/Male/jackson_iron_reed.tres" id="27_456ld"]
+[ext_resource type="Resource" uid="uid://dxq33v3mt4ybd" path="res://Wrestlers/nwgp/Oceania/Heel/Male/talia_rourke.tres" id="28_k1hd4"]
+[ext_resource type="Resource" uid="uid://dnpi8b22cv380" path="res://Wrestlers/nwgp/Oceania/Heel/Male/malosi_sikoa.tres" id="28_xcr52"]
+[ext_resource type="Resource" uid="uid://cnktedcmja201" path="res://Wrestlers/nwgp/Asia/Face/Female/sakura_himura.tres" id="34_nir0l"]
+[ext_resource type="Resource" uid="uid://cwcvagtspcjgm" path="res://Wrestlers/nwgp/Asia/Face/Female/shoko_onishi.tres" id="35_gn62y"]
+[ext_resource type="Resource" uid="uid://o5xmd224shqy" path="res://Wrestlers/nwgp/Asia/Heel/Female/kaori_sakata.tres" id="36_o4jlu"]
+[ext_resource type="Resource" uid="uid://ce51snkl51ntk" path="res://Wrestlers/nwgp/Asia/Heel/Female/kyosuke_hanada.tres" id="37_ysuca"]
+[ext_resource type="Resource" uid="uid://805rb0yjnmx7" path="res://Wrestlers/nwgp/Asia/Heel/Female/yuki_nagatomo.tres" id="38_aaoqq"]
+[ext_resource type="Resource" uid="uid://dmm172u6xv4kd" path="res://Wrestlers/nwgp/Europe/Face/Female/elena_rodriguez.tres" id="39_kib2x"]
+[ext_resource type="Resource" uid="uid://g8xvosw08krs" path="res://Wrestlers/nwgp/Oceania/Heel/Female/sheila_angus.tres" id="40_wmnyx"]
+[ext_resource type="Resource" uid="uid://cebg3nyc7nkvf" path="res://Wrestlers/nwgp/South_America/Face/Female/chispa_silva.tres" id="41_juh5u"]
+
+[resource]
+script = ExtResource("1")
+promotion_name = "Nihon Wrestling Grand Prix"
+promotion_initials = "NWGP"
+promotion_id = 7
+preferred_styles = Array[int]([4, 3])
+home_region = 3
+asia_country = 0
+mens_division = Array[ExtResource("1_kvvgi")]([ExtResource("2_idfbj"), ExtResource("3_xcr52"), ExtResource("4_cqetx"), ExtResource("5_xkmhd"), ExtResource("6_v5te3"), ExtResource("7_o3sd3"), ExtResource("8_cfooo"), ExtResource("9_fx7ja"), ExtResource("10_fywan"), ExtResource("11_byoyr"), ExtResource("12_88epv"), ExtResource("13_lctkr"), ExtResource("14_1440g"), ExtResource("15_n013a"), ExtResource("16_feeek"), ExtResource("17_rfhkc"), ExtResource("18_m1mxs"), ExtResource("19_8cvrp"), ExtResource("20_3ngca"), ExtResource("21_b70t6"), ExtResource("22_qi7gp"), ExtResource("23_dg85h"), ExtResource("24_5ugws"), ExtResource("25_otwno"), ExtResource("26_gnf3r"), ExtResource("27_456ld"), ExtResource("28_xcr52"), ExtResource("28_k1hd4")])
+womens_division = Array[ExtResource("1_kvvgi")]([ExtResource("34_nir0l"), ExtResource("35_gn62y"), ExtResource("36_o4jlu"), ExtResource("37_ysuca"), ExtResource("38_aaoqq"), ExtResource("39_kib2x"), ExtResource("40_wmnyx"), ExtResource("41_juh5u")])
+titles = Array[ExtResource("2_title_script")]([ExtResource("4_7fcrk"), ExtResource("5_singles"), ExtResource("6_5gc8x")])
+global_popularity = 28.0
+pop_north_america = 25.0
+pop_europe = 30.0
+pop_asia = 95.0
+pop_oceania = 15.0

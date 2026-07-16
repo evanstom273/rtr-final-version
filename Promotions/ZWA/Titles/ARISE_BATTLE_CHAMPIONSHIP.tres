@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="TitleResource" format=3 uid="uid://c6sn0u67nu55k"]
+
+[ext_resource type="Script" uid="uid://bsoy7pfr7publ" path="res://Scripts/Data/TitleData.gd" id="1_780kj"]
+
+[resource]
+script = ExtResource("1_780kj")
+title_name = "A.R.I.S.E. Battle Championship"
+promotion_id = 8
+gender = 1

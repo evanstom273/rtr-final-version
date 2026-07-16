@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="MoveResource" format=3 uid="uid://346hsdikhi6v"]
+
+[ext_resource type="Script" uid="uid://dsl2sqtwrkuos" path="res://Scripts/Data/MoveData.gd" id="1_c125w"]
+
+[resource]
+script = ExtResource("1_c125w")
+move_name = "Package Piledriver"
+move_type = 1
+class_preferrence = Array[int]([4, 2])
+move_target_parts = Array[int]([1, 2, 5, 6])
+targeting_mode = 4
+required_attacker_position = 1
+required_target_position = 1
+resulting_attacker_position = 2
+resulting_target_position = 2
+is_finisher = true
+move_impact = 10

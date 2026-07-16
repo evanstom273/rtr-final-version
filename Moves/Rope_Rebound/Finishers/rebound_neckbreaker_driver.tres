@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="MoveResource" format=3 uid="uid://bftlt5dx0p1ax"]
+
+[ext_resource type="Script" uid="uid://dsl2sqtwrkuos" path="res://Scripts/Data/MoveData.gd" id="1_jaah1"]
+
+[resource]
+script = ExtResource("1_jaah1")
+move_name = "Rebound Neckbreaker Driver"
+move_type = 4
+class_preferrence = Array[int]([2, 0])
+move_target_parts = Array[int]([1])
+required_attacker_position = 1
+required_target_position = 5
+resulting_attacker_position = 2
+resulting_target_position = 2
+is_finisher = true
+move_impact = 8

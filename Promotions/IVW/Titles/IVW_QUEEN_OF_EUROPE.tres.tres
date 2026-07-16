@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="TitleResource" format=3 uid="uid://px6nbvb5quyu"]
+
+[ext_resource type="Script" uid="uid://bsoy7pfr7publ" path="res://Scripts/Data/TitleData.gd" id="1_6ayfk"]
+
+[resource]
+script = ExtResource("1_6ayfk")
+title_name = "IVW Queen of Europe"
+promotion_id = 6
+gender = 2

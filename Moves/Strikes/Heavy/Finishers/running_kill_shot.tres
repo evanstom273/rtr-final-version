@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="MoveResource" format=3 uid="uid://dx2ug1axxdemb"]
+
+[ext_resource type="Script" uid="uid://dsl2sqtwrkuos" path="res://Scripts/Data/MoveData.gd" id="1_q83ss"]
+
+[resource]
+script = ExtResource("1_q83ss")
+move_name = "Running Kill Shot"
+move_type = 3
+class_preferrence = Array[int]([3, 1])
+move_target_parts = Array[int]([1])
+required_attacker_position = 4
+required_target_position = 1
+resulting_attacker_position = 1
+resulting_target_position = 2
+is_finisher = true
+is_strike = true
+strike_weight = 2
+move_impact = 9

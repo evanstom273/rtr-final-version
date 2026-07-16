@@ -1,0 +1,102 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://Scripts/UI/match_interaction_overlay.gd" id="1_overlay"]
+[ext_resource type="PackedScene" path="res://Scenes/Match/timing_circle_interaction.tscn" id="2_circle"]
+[ext_resource type="PackedScene" path="res://Scenes/Match/control_meter_interaction.tscn" id="3_control"]
+[ext_resource type="PackedScene" path="res://Scenes/Match/submission_tug_interaction.tscn" id="4_tug"]
+
+[sub_resource type="StyleBoxFlat" id="StyleOverlay"]
+bg_color = Color(0.035, 0.05, 0.08, 0.99)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.42, 0.51, 0.65, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.55)
+shadow_size = 12
+
+[node name="MatchInteractionOverlay" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+script = ExtResource("1_overlay")
+
+[node name="Dimmer" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0.005, 0.008, 0.015, 0.84)
+
+[node name="InteractionSafeArea" type="MarginContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Center" type="CenterContainer" parent="InteractionSafeArea"]
+layout_mode = 2
+
+[node name="InteractionPanel" type="PanelContainer" parent="InteractionSafeArea/Center"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(760, 500)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleOverlay")
+
+[node name="Margin" type="MarginContainer" parent="InteractionSafeArea/Center/InteractionPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 24
+
+[node name="InteractionStack" type="Control" parent="InteractionSafeArea/Center/InteractionPanel/Margin"]
+custom_minimum_size = Vector2(0, 420)
+layout_mode = 2
+
+[node name="TimingCircleInteraction" parent="InteractionSafeArea/Center/InteractionPanel/Margin/InteractionStack" instance=ExtResource("2_circle")]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ControlMeterInteraction" parent="InteractionSafeArea/Center/InteractionPanel/Margin/InteractionStack" instance=ExtResource("3_control")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SubmissionTugInteraction" parent="InteractionSafeArea/Center/InteractionPanel/Margin/InteractionStack" instance=ExtResource("4_tug")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[editable path="InteractionSafeArea/Center/InteractionPanel/Margin/InteractionStack/TimingCircleInteraction"]
+[editable path="InteractionSafeArea/Center/InteractionPanel/Margin/InteractionStack/ControlMeterInteraction"]
+[editable path="InteractionSafeArea/Center/InteractionPanel/Margin/InteractionStack/SubmissionTugInteraction"]

@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="TitleResource" format=3 uid="uid://byc7avdsa6emk"]
+
+[ext_resource type="Script" uid="uid://bsoy7pfr7publ" path="res://Scripts/Data/TitleData.gd" id="1_te4ad"]
+
+[resource]
+script = ExtResource("1_te4ad")
+title_name = "VWF Women's Championship"
+promotion_id = 2
+gender = 2

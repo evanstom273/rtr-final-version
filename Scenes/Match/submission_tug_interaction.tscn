@@ -1,0 +1,220 @@
+[gd_scene format=3 uid="uid://cs2n6cmade7l3"]
+
+[ext_resource type="Script" uid="uid://cwh5enew2hgin" path="res://Scripts/UI/submission_tug_interaction.gd" id="1_tug"]
+
+[sub_resource type="StyleBoxFlat" id="StyleTrack"]
+bg_color = Color(0.018, 0.028, 0.045, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.36, 0.44, 0.58, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.55)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleEscapeZone"]
+bg_color = Color(0.12, 0.34, 0.56, 0.95)
+border_width_right = 2
+border_color = Color(0.46, 0.72, 0.96, 0.9)
+corner_radius_top_left = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleTapZone"]
+bg_color = Color(0.62, 0.105, 0.14, 0.95)
+border_width_left = 2
+border_color = Color(0.96, 0.44, 0.4, 0.9)
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleMarker"]
+bg_color = Color(0.98, 0.82, 0.27, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.94, 0.62, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+shadow_color = Color(0.98, 0.72, 0.18, 0.65)
+shadow_size = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleButton"]
+bg_color = Color(0.1, 0.15, 0.23, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.78, 0.64, 0.2, 0.9)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleButtonPressed"]
+bg_color = Color(0.55, 0.12, 0.16, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.95, 0.79, 0.25, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleButtonHover"]
+bg_color = Color(0.15, 0.22, 0.32, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.95, 0.79, 0.25, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="SubmissionTugInteraction" type="Control" unique_id=1906876684]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_tug")
+submission_resolution_speed_multiplier = 3.0
+
+[node name="Content" type="VBoxContainer" parent="." unique_id=32555089]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 11
+
+[node name="InteractionTitle" type="Label" parent="Content" unique_id=2058771750]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.79, 0.25, 1)
+theme_override_font_sizes/font_size = 25
+text = "SUBMISSION STRUGGLE"
+horizontal_alignment = 1
+
+[node name="SubmissionMoveName" type="Label" parent="Content" unique_id=1817246762]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94, 0.95, 0.98, 1)
+theme_override_font_sizes/font_size = 20
+text = "Submission Hold"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="PlayerRole" type="Label" parent="Content" unique_id=394754581]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.58, 0.76, 0.94, 1)
+theme_override_font_sizes/font_size = 16
+text = "YOU ARE ATTACKING — PUSH RIGHT"
+horizontal_alignment = 1
+
+[node name="InteractionPrompt" type="Label" parent="Content" unique_id=1939537127]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.84, 0.87, 0.92, 1)
+theme_override_font_sizes/font_size = 17
+text = "Tap repeatedly to drive the marker toward TAP OUT."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="DirectionLabels" type="HBoxContainer" parent="Content" unique_id=1864423575]
+layout_mode = 2
+
+[node name="EscapeLabel" type="Label" parent="Content/DirectionLabels" unique_id=108572454]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.64, 0.82, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "←  ESCAPE"
+
+[node name="TapOutLabel" type="Label" parent="Content/DirectionLabels" unique_id=1403035223]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.7, 0.35, 1)
+theme_override_font_sizes/font_size = 18
+text = "TAP OUT  →"
+horizontal_alignment = 2
+
+[node name="TugTrack" type="Panel" parent="Content" unique_id=1272188185]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 126)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleTrack")
+
+[node name="EscapeZone" type="Panel" parent="Content/TugTrack" unique_id=1348317491]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 1.0
+anchor_right = 0.1
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleEscapeZone")
+
+[node name="TapZone" type="Panel" parent="Content/TugTrack" unique_id=1484909375]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.9
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleTapZone")
+
+[node name="CentreGuide" type="ColorRect" parent="Content/TugTrack" unique_id=624229119]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -1.0
+offset_top = -44.0
+offset_right = 1.0
+offset_bottom = 44.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.38, 0.44, 0.54, 0.75)
+
+[node name="TugMarker" type="Panel" parent="Content/TugTrack" unique_id=2143206050]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(18, 0)
+layout_mode = 0
+offset_right = 18.0
+offset_bottom = 126.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleMarker")
+
+[node name="TapButton" type="Button" parent="Content" unique_id=673170901]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 68)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleButton")
+theme_override_styles/pressed = SubResource("StyleButtonPressed")
+theme_override_styles/hover = SubResource("StyleButtonHover")
+theme_override_styles/focus = SubResource("StyleButtonHover")
+text = "TAP TO APPLY PRESSURE"

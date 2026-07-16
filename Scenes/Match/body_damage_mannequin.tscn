@@ -1,0 +1,306 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://Scripts/UI/body_damage_mannequin.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://Assets/UI/body_damage/mannequin_outline.svg" id="2_outline"]
+[ext_resource type="Texture2D" path="res://Assets/UI/body_damage/right_leg.svg" id="3_right_leg"]
+[ext_resource type="Texture2D" path="res://Assets/UI/body_damage/left_leg.svg" id="4_left_leg"]
+[ext_resource type="Texture2D" path="res://Assets/UI/body_damage/right_arm.svg" id="5_right_arm"]
+[ext_resource type="Texture2D" path="res://Assets/UI/body_damage/left_arm.svg" id="6_left_arm"]
+[ext_resource type="Texture2D" path="res://Assets/UI/body_damage/body.svg" id="7_body"]
+[ext_resource type="Texture2D" path="res://Assets/UI/body_damage/head.svg" id="8_head"]
+
+[sub_resource type="StyleBoxFlat" id="StyleMannequinPanel"]
+bg_color = Color(0.035, 0.047, 0.071, 0.82)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.23, 0.28, 0.37, 0.85)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="BodyDamageMannequin" type="PanelContainer"]
+custom_minimum_size = Vector2(0, 220)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleMannequinPanel")
+script = ExtResource("1_script")
+
+[node name="FigureStage" type="Control" parent="."]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Outline" type="TextureRect" parent="FigureStage"]
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.2
+anchor_top = 0.02
+anchor_right = 0.8
+anchor_bottom = 0.98
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_outline")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="RightLegPiece" type="TextureRect" parent="FigureStage"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.2
+anchor_top = 0.02
+anchor_right = 0.8
+anchor_bottom = 0.98
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_right_leg")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LeftLegPiece" type="TextureRect" parent="FigureStage"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.2
+anchor_top = 0.02
+anchor_right = 0.8
+anchor_bottom = 0.98
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("4_left_leg")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="RightArmPiece" type="TextureRect" parent="FigureStage"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.2
+anchor_top = 0.02
+anchor_right = 0.8
+anchor_bottom = 0.98
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("5_right_arm")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LeftArmPiece" type="TextureRect" parent="FigureStage"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.2
+anchor_top = 0.02
+anchor_right = 0.8
+anchor_bottom = 0.98
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("6_left_arm")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BodyPiece" type="TextureRect" parent="FigureStage"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.2
+anchor_top = 0.02
+anchor_right = 0.8
+anchor_bottom = 0.98
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("7_body")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HeadPiece" type="TextureRect" parent="FigureStage"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.2
+anchor_top = 0.02
+anchor_right = 0.8
+anchor_bottom = 0.98
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("8_head")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HeadHit" type="Button" parent="FigureStage"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.42
+anchor_top = 0.08
+anchor_right = 0.58
+anchor_bottom = 0.22
+mouse_default_cursor_shape = 2
+tooltip_text = "Target Head"
+flat = true
+
+[node name="BodyHit" type="Button" parent="FigureStage"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.39
+anchor_top = 0.2
+anchor_right = 0.61
+anchor_bottom = 0.56
+mouse_default_cursor_shape = 2
+tooltip_text = "Target Body"
+flat = true
+
+[node name="RightArmHit" type="Button" parent="FigureStage"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.18
+anchor_top = 0.2
+anchor_right = 0.43
+anchor_bottom = 0.51
+mouse_default_cursor_shape = 2
+tooltip_text = "Target Right Arm"
+flat = true
+
+[node name="LeftArmHit" type="Button" parent="FigureStage"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.57
+anchor_top = 0.2
+anchor_right = 0.82
+anchor_bottom = 0.51
+mouse_default_cursor_shape = 2
+tooltip_text = "Target Left Arm"
+flat = true
+
+[node name="RightLegHit" type="Button" parent="FigureStage"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.28
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.98
+mouse_default_cursor_shape = 2
+tooltip_text = "Target Right Leg"
+flat = true
+
+[node name="LeftLegHit" type="Button" parent="FigureStage"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.72
+anchor_bottom = 0.98
+mouse_default_cursor_shape = 2
+tooltip_text = "Target Left Leg"
+flat = true
+
+[node name="TargetFocusChip" type="Label" parent="FigureStage"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.34
+anchor_top = 0.01
+anchor_right = 0.66
+anchor_bottom = 0.09
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.95, 0.78, 0.22, 1)
+theme_override_colors/font_outline_color = Color(0.015, 0.02, 0.035, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 13
+text = "TARGET: AUTO"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HeadValue" type="Label" parent="FigureStage"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.03
+anchor_top = 0.08
+anchor_right = 0.38
+anchor_bottom = 0.2
+mouse_filter = 2
+theme_override_colors/font_outline_color = Color(0.015, 0.02, 0.035, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 14
+text = "HEAD --"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="BodyValue" type="Label" parent="FigureStage"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.62
+anchor_top = 0.27
+anchor_right = 0.97
+anchor_bottom = 0.39
+mouse_filter = 2
+theme_override_colors/font_outline_color = Color(0.015, 0.02, 0.035, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 14
+text = "BODY --"
+vertical_alignment = 1
+
+[node name="RightArmValue" type="Label" parent="FigureStage"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.02
+anchor_top = 0.36
+anchor_right = 0.36
+anchor_bottom = 0.48
+mouse_filter = 2
+theme_override_colors/font_outline_color = Color(0.015, 0.02, 0.035, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 14
+text = "R ARM --"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="LeftArmValue" type="Label" parent="FigureStage"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.64
+anchor_top = 0.36
+anchor_right = 0.98
+anchor_bottom = 0.48
+mouse_filter = 2
+theme_override_colors/font_outline_color = Color(0.015, 0.02, 0.035, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 14
+text = "L ARM --"
+vertical_alignment = 1
+
+[node name="RightLegValue" type="Label" parent="FigureStage"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.02
+anchor_top = 0.74
+anchor_right = 0.36
+anchor_bottom = 0.86
+mouse_filter = 2
+theme_override_colors/font_outline_color = Color(0.015, 0.02, 0.035, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 14
+text = "R LEG --"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="LeftLegValue" type="Label" parent="FigureStage"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.64
+anchor_top = 0.74
+anchor_right = 0.98
+anchor_bottom = 0.86
+mouse_filter = 2
+theme_override_colors/font_outline_color = Color(0.015, 0.02, 0.035, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 14
+text = "L LEG --"
+vertical_alignment = 1

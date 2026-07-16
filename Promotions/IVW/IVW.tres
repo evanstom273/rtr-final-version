@@ -1,0 +1,61 @@
+[gd_resource type="Resource" script_class="PromotionResource" format=3 uid="uid://crcq0gityvi1e"]
+
+[ext_resource type="Script" uid="uid://dur40byryil5w" path="res://Scripts/Data/PromotionData.gd" id="1"]
+[ext_resource type="Script" uid="uid://dwj45ptt6d1qp" path="res://Scripts/Data/WrestlerData.gd" id="1_xgi8u"]
+[ext_resource type="Resource" uid="uid://bn2o2jnfrlyep" path="res://Wrestlers/ivw/Africa/Heel/Male/chidi_adara.tres" id="2_rsks4"]
+[ext_resource type="Script" uid="uid://bsoy7pfr7publ" path="res://Scripts/Data/TitleData.gd" id="2_title_script"]
+[ext_resource type="Resource" uid="uid://b22peutlu520d" path="res://Wrestlers/ivw/Africa/Heel/Male/hendrikje_van_der_merwe.tres" id="3_rtrrq"]
+[ext_resource type="Resource" uid="uid://uncvpyrcx2d0" path="res://Wrestlers/ivw/Asia/Face/Male/da_bin_lee.tres" id="4_b8uo0"]
+[ext_resource type="Resource" uid="uid://cmfevhjcei6jj" path="res://Promotions/IVW/Titles/IVW_KING_OF_EUROPE.tres" id="4_xgi8u"]
+[ext_resource type="Resource" uid="uid://yhrfkulck25n" path="res://Wrestlers/ivw/Asia/Face/Male/min_jun_park.tres" id="5_lajlo"]
+[ext_resource type="Resource" uid="uid://bxqspbdcrxur8" path="res://Promotions/IVW/Titles/IVW_UNDERGROUND_CHAMPIONSHIP.tres" id="5_qxuq1"]
+[ext_resource type="Resource" uid="uid://beiacnj4br1kk" path="res://Wrestlers/ivw/Europe/Face/Male/etienne_chevalier.tres" id="6_01do3"]
+[ext_resource type="Resource" uid="uid://px6nbvb5quyu" path="res://Promotions/IVW/Titles/IVW_QUEEN_OF_EUROPE.tres.tres" id="6_wj6a5"]
+[ext_resource type="Resource" uid="uid://bwi3kdsoog8u2" path="res://Wrestlers/ivw/Europe/Face/Male/gareth_pembroke.tres" id="7_2h31s"]
+[ext_resource type="Resource" uid="uid://becidmxmds5iw" path="res://Wrestlers/ivw/Europe/Face/Male/hans_schulze.tres" id="8_33aoq"]
+[ext_resource type="Resource" uid="uid://vk1cxiye21ep" path="res://Wrestlers/ivw/Europe/Face/Male/javier_de_la_vega.tres" id="9_2mcmi"]
+[ext_resource type="Resource" uid="uid://dg3id3shs2hmv" path="res://Wrestlers/ivw/Europe/Face/Male/konrad_kessler.tres" id="10_fpsv2"]
+[ext_resource type="Resource" uid="uid://bkggp0yhsg1yc" path="res://Wrestlers/ivw/Europe/Face/Male/luca_ferraro.tres" id="11_o2qyi"]
+[ext_resource type="Resource" uid="uid://c6bev2o3jif8v" path="res://Wrestlers/ivw/Europe/Face/Male/lucian_valois.tres" id="12_6lp7u"]
+[ext_resource type="Resource" uid="uid://8y3qsa8olrct" path="res://Wrestlers/ivw/Europe/Face/Male/lukas_vogel.tres" id="13_jiixa"]
+[ext_resource type="Resource" uid="uid://ci1vnlto7wdkj" path="res://Wrestlers/ivw/Europe/Face/Male/matthias_brandt.tres" id="14_gjd5n"]
+[ext_resource type="Resource" uid="uid://bbfv2s7rxdl1d" path="res://Wrestlers/ivw/Europe/Face/Male/olivier_dupont.tres" id="15_i6yvv"]
+[ext_resource type="Resource" uid="uid://djvxmit1l4kyo" path="res://Wrestlers/ivw/Europe/Heel/Male/dieter_richter.tres" id="16_4lk8m"]
+[ext_resource type="Resource" uid="uid://bkg2iodpced7s" path="res://Wrestlers/ivw/Europe/Heel/Male/donatello_moretti.tres" id="17_5h6ai"]
+[ext_resource type="Resource" uid="uid://b1v0ojj6a4svv" path="res://Wrestlers/ivw/Europe/Heel/Male/gideon_vale.tres" id="18_daa01"]
+[ext_resource type="Resource" uid="uid://d1ppl72acpcjx" path="res://Wrestlers/ivw/Europe/Heel/Male/julian_vain.tres" id="19_aje1o"]
+[ext_resource type="Resource" uid="uid://ddhqym3pg84i3" path="res://Wrestlers/ivw/Europe/Heel/Male/otto_adler.tres" id="20_peamh"]
+[ext_resource type="Resource" uid="uid://do0wf1sp1fedh" path="res://Wrestlers/ivw/Europe/Heel/Male/santiago_morales.tres" id="21_5dudr"]
+[ext_resource type="Resource" uid="uid://draond6jmnfra" path="res://Wrestlers/ivw/Europe/Heel/Male/sebastien_noir.tres" id="22_kv3eo"]
+[ext_resource type="Resource" uid="uid://bli6paro55ash" path="res://Wrestlers/ivw/Europe/Heel/Male/viktor_van_den_berg.tres" id="23_yled4"]
+[ext_resource type="Resource" uid="uid://8bvi8l5dpf0n" path="res://Wrestlers/ivw/Europe/Heel/Male/wolfgang_hertz.tres" id="24_yvoos"]
+[ext_resource type="Resource" uid="uid://c6w6c8wceq6sa" path="res://Wrestlers/ivw/North_America/Face/Male/brock_bennett.tres" id="25_x6c6h"]
+[ext_resource type="Resource" uid="uid://cxicx36egd18f" path="res://Wrestlers/ivw/North_America/Face/Male/mason_mercer.tres" id="26_poxkm"]
+[ext_resource type="Resource" uid="uid://wenobetgh1hb" path="res://Wrestlers/ivw/North_America/Heel/Male/el_verdugo.tres" id="27_3xcbc"]
+[ext_resource type="Resource" uid="uid://de7jtu61xrcqg" path="res://Wrestlers/ivw/Oceania/Heel/Male/zane_samoa.tres" id="28_ladsd"]
+[ext_resource type="Resource" uid="uid://dfag58k6cc2d4" path="res://Wrestlers/ivw/South_America/Heel/Male/rafael_carvalho.tres" id="29_akfpx"]
+[ext_resource type="Resource" uid="uid://b0uabgesgg222" path="res://Wrestlers/ivw/Asia/Face/Female/maki_ishii.tres" id="35_7duif"]
+[ext_resource type="Resource" uid="uid://cod5wyj6pprq6" path="res://Wrestlers/ivw/Europe/Face/Female/amelie_blanc.tres" id="36_6u2jf"]
+[ext_resource type="Resource" uid="uid://dquebgi8lt812" path="res://Wrestlers/ivw/Europe/Face/Female/greta_scholz.tres" id="37_0egdc"]
+[ext_resource type="Resource" uid="uid://badegccervs8y" path="res://Wrestlers/ivw/Europe/Face/Female/sarah_banks.tres" id="38_3d5rv"]
+[ext_resource type="Resource" uid="uid://ceqwmpf1dlke" path="res://Wrestlers/ivw/Europe/Heel/Female/colette_vernier.tres" id="39_a440q"]
+[ext_resource type="Resource" uid="uid://clpocgsqtveym" path="res://Wrestlers/ivw/Europe/Heel/Female/helga_schmidt.tres" id="40_kxkrd"]
+[ext_resource type="Resource" uid="uid://dbak7bwphcnvm" path="res://Wrestlers/ivw/Europe/Heel/Female/madame_malice.tres" id="41_r4e57"]
+[ext_resource type="Resource" uid="uid://c3v7ygtwew663" path="res://Wrestlers/ivw/Europe/Heel/Female/sigrid_kruger.tres" id="42_sfs3i"]
+
+[resource]
+script = ExtResource("1")
+promotion_name = "Iron & Velvet Wrestling"
+promotion_initials = "IVW"
+promotion_id = 6
+preferred_styles = Array[int]([3, 5])
+home_region = 6
+europe_country = 1
+mens_division = Array[ExtResource("1_xgi8u")]([ExtResource("2_rsks4"), ExtResource("3_rtrrq"), ExtResource("4_b8uo0"), ExtResource("5_lajlo"), ExtResource("6_01do3"), ExtResource("7_2h31s"), ExtResource("8_33aoq"), ExtResource("9_2mcmi"), ExtResource("10_fpsv2"), ExtResource("11_o2qyi"), ExtResource("12_6lp7u"), ExtResource("13_jiixa"), ExtResource("14_gjd5n"), ExtResource("15_i6yvv"), ExtResource("16_4lk8m"), ExtResource("17_5h6ai"), ExtResource("18_daa01"), ExtResource("19_aje1o"), ExtResource("20_peamh"), ExtResource("21_5dudr"), ExtResource("22_kv3eo"), ExtResource("23_yled4"), ExtResource("24_yvoos"), ExtResource("25_x6c6h"), ExtResource("26_poxkm"), ExtResource("27_3xcbc"), ExtResource("28_ladsd"), ExtResource("29_akfpx")])
+womens_division = Array[ExtResource("1_xgi8u")]([ExtResource("35_7duif"), ExtResource("36_6u2jf"), ExtResource("37_0egdc"), ExtResource("38_3d5rv"), ExtResource("39_a440q"), ExtResource("40_kxkrd"), ExtResource("41_r4e57"), ExtResource("42_sfs3i")])
+titles = Array[ExtResource("2_title_script")]([ExtResource("4_xgi8u"), ExtResource("5_qxuq1"), ExtResource("6_wj6a5")])
+global_popularity = 18.0
+pop_north_america = 25.0
+pop_europe = 45.0
+pop_asia = 20.0
+pop_oceania = 15.0

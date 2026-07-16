@@ -1,0 +1,186 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://Scripts/UI/move_category_radial_menu.gd" id="1_menu"]
+
+[sub_resource type="StyleBoxFlat" id="StyleWheelPanel"]
+bg_color = Color(0.045, 0.06, 0.09, 0.99)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.78, 0.64, 0.2, 0.88)
+corner_radius_top_left = 26
+corner_radius_top_right = 26
+corner_radius_bottom_right = 26
+corner_radius_bottom_left = 26
+shadow_color = Color(0, 0, 0, 0.55)
+shadow_size = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleCenterBadge"]
+bg_color = Color(0.1, 0.08, 0.025, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.88, 0.7, 0.2, 0.95)
+corner_radius_top_left = 28
+corner_radius_top_right = 28
+corner_radius_bottom_right = 28
+corner_radius_bottom_left = 28
+shadow_color = Color(0.88, 0.7, 0.2, 0.14)
+shadow_size = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleCloseNormal"]
+bg_color = Color(0.09, 0.13, 0.2, 0.96)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.28, 0.38, 0.55, 0.9)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleCloseHover"]
+bg_color = Color(0.1, 0.08, 0.025, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.91, 0.74, 0.24, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="MoveCategoryRadialMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("1_menu")
+
+[node name="DismissArea" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+flat = true
+
+[node name="CategorySafeArea" type="MarginContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="WheelCenter" type="CenterContainer" parent="CategorySafeArea"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="WheelPanel" type="PanelContainer" parent="CategorySafeArea/WheelCenter"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(980, 780)
+layout_mode = 2
+mouse_filter = 0
+theme_override_styles/panel = SubResource("StyleWheelPanel")
+
+[node name="WheelArea" type="Control" parent="CategorySafeArea/WheelCenter/WheelPanel"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(980, 780)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="WheelGuide" type="Control" parent="CategorySafeArea/WheelCenter/WheelPanel/WheelArea"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="CategoryLayer" type="Control" parent="CategorySafeArea/WheelCenter/WheelPanel/WheelArea"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="CenterBadge" type="PanelContainer" parent="CategorySafeArea/WheelCenter/WheelPanel/WheelArea"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(230, 120)
+layout_mode = 0
+offset_left = 375.0
+offset_top = 330.0
+offset_right = 605.0
+offset_bottom = 450.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleCenterBadge")
+
+[node name="BadgeMargin" type="MarginContainer" parent="CategorySafeArea/WheelCenter/WheelPanel/WheelArea/CenterBadge"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
+
+[node name="BadgeText" type="VBoxContainer" parent="CategorySafeArea/WheelCenter/WheelPanel/WheelArea/CenterBadge/BadgeMargin"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="BadgeTitle" type="Label" parent="CategorySafeArea/WheelCenter/WheelPanel/WheelArea/CenterBadge/BadgeMargin/BadgeText"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.91, 0.72, 0.24, 1)
+theme_override_font_sizes/font_size = 16
+text = "MOVE TYPE"
+horizontal_alignment = 1
+
+[node name="BadgeSeparator" type="HSeparator" parent="CategorySafeArea/WheelCenter/WheelPanel/WheelArea/CenterBadge/BadgeMargin/BadgeText"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="ContextLabel" type="Label" parent="CategorySafeArea/WheelCenter/WheelPanel/WheelArea/CenterBadge/BadgeMargin/BadgeText"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.91, 0.92, 0.89, 1)
+theme_override_font_sizes/font_size = 14
+text = "Standing vs Standing"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="WheelCloseButton" type="Button" parent="CategorySafeArea/WheelCenter/WheelPanel/WheelArea"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 0
+offset_left = 918.0
+offset_top = 14.0
+offset_right = 966.0
+offset_bottom = 62.0
+theme_override_colors/font_color = Color(0.91, 0.92, 0.89, 1)
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleCloseNormal")
+theme_override_styles/hover = SubResource("StyleCloseHover")
+theme_override_styles/pressed = SubResource("StyleCloseHover")
+text = "×"
+tooltip_text = "Close move wheel"

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="MoveResource" format=3 uid="uid://d28em57d8mf2b"]
+
+[ext_resource type="Script" uid="uid://dsl2sqtwrkuos" path="res://Scripts/Data/MoveData.gd" id="1_6swiv"]
+
+[resource]
+script = ExtResource("1_6swiv")
+move_name = "Backbreaker Rack Drop"
+move_type = 2
+class_preferrence = Array[int]([1])
+move_target_parts = Array[int]([2])
+required_attacker_position = 1
+required_target_position = 1
+resulting_attacker_position = 1
+resulting_target_position = 2
+move_impact = 5

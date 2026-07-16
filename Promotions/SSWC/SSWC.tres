@@ -1,0 +1,61 @@
+[gd_resource type="Resource" script_class="PromotionResource" format=3 uid="uid://ui5v5wxed3s8"]
+
+[ext_resource type="Script" uid="uid://dur40byryil5w" path="res://Scripts/Data/PromotionData.gd" id="1"]
+[ext_resource type="Script" uid="uid://dwj45ptt6d1qp" path="res://Scripts/Data/WrestlerData.gd" id="1_odei4"]
+[ext_resource type="Resource" uid="uid://b34jadbmurbuy" path="res://Wrestlers/sswc/Asia/Heel/Male/daichi_kurose.tres" id="2_q2dg1"]
+[ext_resource type="Script" uid="uid://bsoy7pfr7publ" path="res://Scripts/Data/TitleData.gd" id="2_title_script"]
+[ext_resource type="Resource" uid="uid://cdqxl1is848v" path="res://Wrestlers/sswc/Asia/Heel/Male/seo_jun_ho.tres" id="3_s23x4"]
+[ext_resource type="Resource" uid="uid://bn65r0l6x76kf" path="res://Wrestlers/sswc/Europe/Face/Male/alejandro_montalban.tres" id="4_ecx40"]
+[ext_resource type="Resource" uid="uid://c7ufdhwypfp2a" path="res://Promotions/SSWC/Titles/SSWC_SOL_DORADO_CHAMPIONSHIP.tres" id="4_main"]
+[ext_resource type="Resource" uid="uid://dssk7c5qyfkp6" path="res://Wrestlers/sswc/Europe/Face/Male/luca_moretti.tres" id="5_elk7q"]
+[ext_resource type="Resource" uid="uid://cpt5hxcc5yvbf" path="res://Promotions/SSWC/Titles/SSWC_SOUTHERN_CROSS_TITLE.tres" id="5_singles"]
+[ext_resource type="Resource" uid="uid://bmhoy7y32fxs2" path="res://Wrestlers/sswc/North_America/Face/Male/adrian_vega.tres" id="6_8ttwk"]
+[ext_resource type="Resource" uid="uid://cdvmtfcviiahb" path="res://Promotions/SSWC/Titles/SSWC_CAMPEONATO_DE_LUNA_Y_ESTRELLAS.tres" id="6_womens"]
+[ext_resource type="Resource" uid="uid://n223ghdxv21v" path="res://Wrestlers/sswc/North_America/Heel/Male/orion_cross.tres" id="7_1ge0g"]
+[ext_resource type="Resource" uid="uid://d2nriq2iceisn" path="res://Wrestlers/sswc/South_America/Face/Male/caio_marins.tres" id="8_weuvd"]
+[ext_resource type="Resource" uid="uid://dt0u6k67532tm" path="res://Wrestlers/sswc/South_America/Face/Male/elias_pereyra.tres" id="9_vc4s6"]
+[ext_resource type="Resource" uid="uid://c6dgbk41fifsy" path="res://Wrestlers/sswc/South_America/Face/Male/felipe_nogueira.tres" id="10_ao5ue"]
+[ext_resource type="Resource" uid="uid://bpae1b7qjfsfp" path="res://Wrestlers/sswc/South_America/Face/Male/gael_barrenechea.tres" id="11_802rn"]
+[ext_resource type="Resource" uid="uid://cqc81seibos5s" path="res://Wrestlers/sswc/South_America/Face/Male/joaquin_serrano.tres" id="12_865ly"]
+[ext_resource type="Resource" uid="uid://b387vrgjk1b13" path="res://Wrestlers/sswc/South_America/Face/Male/luciano_funes.tres" id="13_h1yht"]
+[ext_resource type="Resource" uid="uid://c5kfq6kfs6k6i" path="res://Wrestlers/sswc/South_America/Face/Male/mateo_del_sol.tres" id="14_kpqmb"]
+[ext_resource type="Resource" uid="uid://b86rgq6q8q5ak" path="res://Wrestlers/sswc/South_America/Face/Male/rafael_quiroga.tres" id="15_1hbd5"]
+[ext_resource type="Resource" uid="uid://cftps0fmcs4h1" path="res://Wrestlers/sswc/South_America/Face/Male/ramiro_cardenas.tres" id="16_vd3o8"]
+[ext_resource type="Resource" uid="uid://b5omyxjdsdq0w" path="res://Wrestlers/sswc/South_America/Face/Male/santiago_rojas.tres" id="17_v33o0"]
+[ext_resource type="Resource" uid="uid://by30sr5m72n6s" path="res://Wrestlers/sswc/South_America/Face/Male/thiago_valente.tres" id="18_ula8c"]
+[ext_resource type="Resource" uid="uid://bhqj3vrefdsv7" path="res://Wrestlers/sswc/South_America/Face/Male/tomi_sepulveda.tres" id="19_wsfoa"]
+[ext_resource type="Resource" uid="uid://fg75uusw0myo" path="res://Wrestlers/sswc/South_America/Heel/Male/bruno_azevedo.tres" id="20_qttdp"]
+[ext_resource type="Resource" uid="uid://orauvqwl7px3" path="res://Wrestlers/sswc/South_America/Heel/Male/davi_rocha.tres" id="21_to688"]
+[ext_resource type="Resource" uid="uid://depcjlpn7i4px" path="res://Wrestlers/sswc/South_America/Heel/Male/esteban_luna.tres" id="22_3uu10"]
+[ext_resource type="Resource" uid="uid://ceu21kl2t2gvu" path="res://Wrestlers/sswc/South_America/Heel/Male/hernan_acosta.tres" id="23_xy3ux"]
+[ext_resource type="Resource" uid="uid://bmyi5yld1s6qw" path="res://Wrestlers/sswc/South_America/Heel/Male/leandro_paz.tres" id="24_aexm7"]
+[ext_resource type="Resource" uid="uid://cnfotf2bk2ves" path="res://Wrestlers/sswc/South_America/Heel/Male/matias_olivares.tres" id="25_ovdt5"]
+[ext_resource type="Resource" uid="uid://bylycja8tbeo1" path="res://Wrestlers/sswc/South_America/Heel/Male/mauro_villalba.tres" id="26_vjw3c"]
+[ext_resource type="Resource" uid="uid://dbl4wkk3j0spu" path="res://Wrestlers/sswc/South_America/Heel/Male/nicolas_aguirre.tres" id="27_o2d31"]
+[ext_resource type="Resource" uid="uid://c83ux4b7uo180" path="res://Wrestlers/sswc/South_America/Heel/Male/tomas_varela.tres" id="28_6y0u4"]
+[ext_resource type="Resource" uid="uid://dqrjswtjw1nke" path="res://Wrestlers/sswc/South_America/Heel/Male/vicente_ledesma.tres" id="29_e54vk"]
+[ext_resource type="Resource" uid="uid://c53c73kwgfrc5" path="res://Wrestlers/sswc/Europe/Heel/Female/solene_marchand.tres" id="35_huped"]
+[ext_resource type="Resource" uid="uid://c2ig4777sek3e" path="res://Wrestlers/sswc/South_America/Face/Female/camila_pizarro.tres" id="36_rpyql"]
+[ext_resource type="Resource" uid="uid://ctb5ph37qt4r3" path="res://Wrestlers/sswc/South_America/Face/Female/isadora_campos.tres" id="37_8eyba"]
+[ext_resource type="Resource" uid="uid://bvf67xisbkfh3" path="res://Wrestlers/sswc/South_America/Face/Female/luna_ferreyra.tres" id="38_lfuf7"]
+[ext_resource type="Resource" uid="uid://0mjxv5tq74qr" path="res://Wrestlers/sswc/South_America/Face/Female/valentina_fuego.tres" id="39_tdw0x"]
+[ext_resource type="Resource" uid="uid://b6ia6dqjg2h7g" path="res://Wrestlers/sswc/South_America/Heel/Female/abril_sosa.tres" id="40_k1dtk"]
+[ext_resource type="Resource" uid="uid://0x2nh8slg6jo" path="res://Wrestlers/sswc/South_America/Heel/Female/paloma_vera.tres" id="41_hh0le"]
+[ext_resource type="Resource" uid="uid://xy0t1k5loq6g" path="res://Wrestlers/sswc/South_America/Heel/Female/renata_moura.tres" id="42_q1yq6"]
+
+[resource]
+script = ExtResource("1")
+promotion_name = "Silver-Sun Wrestling Confederation"
+promotion_initials = "SSWC"
+promotion_id = 10
+preferred_styles = Array[int]([3, 1])
+home_region = 2
+south_american_country = 1
+mens_division = Array[ExtResource("1_odei4")]([ExtResource("2_q2dg1"), ExtResource("3_s23x4"), ExtResource("4_ecx40"), ExtResource("5_elk7q"), ExtResource("6_8ttwk"), ExtResource("7_1ge0g"), ExtResource("8_weuvd"), ExtResource("9_vc4s6"), ExtResource("10_ao5ue"), ExtResource("11_802rn"), ExtResource("12_865ly"), ExtResource("13_h1yht"), ExtResource("14_kpqmb"), ExtResource("15_1hbd5"), ExtResource("16_vd3o8"), ExtResource("17_v33o0"), ExtResource("18_ula8c"), ExtResource("19_wsfoa"), ExtResource("20_qttdp"), ExtResource("21_to688"), ExtResource("22_3uu10"), ExtResource("23_xy3ux"), ExtResource("24_aexm7"), ExtResource("25_ovdt5"), ExtResource("26_vjw3c"), ExtResource("27_o2d31"), ExtResource("28_6y0u4"), ExtResource("29_e54vk")])
+womens_division = Array[ExtResource("1_odei4")]([ExtResource("35_huped"), ExtResource("36_rpyql"), ExtResource("37_8eyba"), ExtResource("38_lfuf7"), ExtResource("39_tdw0x"), ExtResource("40_k1dtk"), ExtResource("41_hh0le"), ExtResource("42_q1yq6")])
+titles = Array[ExtResource("2_title_script")]([ExtResource("4_main"), ExtResource("5_singles"), ExtResource("6_womens")])
+global_popularity = 7.0
+pop_north_america = 15.0
+pop_europe = 10.0
+pop_asia = 5.0
+pop_oceania = 10.0

@@ -1,0 +1,62 @@
+[gd_resource type="Resource" script_class="PromotionResource" format=3 uid="uid://bcm7x4xm6hofy"]
+
+[ext_resource type="Script" uid="uid://dur40byryil5w" path="res://Scripts/Data/PromotionData.gd" id="1"]
+[ext_resource type="Script" uid="uid://dwj45ptt6d1qp" path="res://Scripts/Data/WrestlerData.gd" id="1_2dr4f"]
+[ext_resource type="Resource" uid="uid://cgsa62jtjueqa" path="res://Wrestlers/aawa/Africa/Face/Male/adel_sabry.tres" id="2_xlrus"]
+[ext_resource type="Script" uid="uid://bsoy7pfr7publ" path="res://Scripts/Data/TitleData.gd" id="3_mwy1h"]
+[ext_resource type="Resource" uid="uid://dcfk1con4sx3p" path="res://Wrestlers/aawa/Africa/Face/Male/amr_bekhit.tres" id="3_yccad"]
+[ext_resource type="Resource" uid="uid://c1w80og7wl1f4" path="res://Wrestlers/aawa/Africa/Face/Male/faris_helmy.tres" id="4_jjha1"]
+[ext_resource type="Resource" uid="uid://b8eufyjl8mwxe" path="res://Promotions/AAWA/Titles/AAWA_GIFT_OF_OSIRIS_CHAMPIONSHIP.tres" id="4_main"]
+[ext_resource type="Resource" uid="uid://beao40cmjp3nm" path="res://Wrestlers/aawa/Africa/Face/Male/ilias_marwan.tres" id="5_026b6"]
+[ext_resource type="Resource" uid="uid://cghs30lj1j1ye" path="res://Promotions/AAWA/Titles/AAWA_ETERNAL_CHAMPIONSHIP.tres" id="5_singles"]
+[ext_resource type="Resource" uid="uid://rjsilan25gmt" path="res://Wrestlers/aawa/Africa/Face/Male/karim_zayed.tres" id="6_l8xtv"]
+[ext_resource type="Resource" uid="uid://6rxeft02kqlh" path="res://Promotions/AAWA/Titles/AAWA_MATRIARCH_CHAMPIONSHIP.tres" id="6_womens"]
+[ext_resource type="Resource" uid="uid://2o0y8m1kp3fh" path="res://Wrestlers/aawa/Africa/Face/Male/khalid_anwar.tres" id="7_p024x"]
+[ext_resource type="Resource" uid="uid://c3ywp7umvxwxv" path="res://Wrestlers/aawa/Africa/Face/Male/kwesi_obeng.tres" id="8_6xbj8"]
+[ext_resource type="Resource" uid="uid://c6rfd17ecmhx3" path="res://Wrestlers/aawa/Africa/Face/Male/malik_farouq.tres" id="9_fypkh"]
+[ext_resource type="Resource" uid="uid://dknmh4l7eyiji" path="res://Wrestlers/aawa/Africa/Face/Male/nadir_hassan.tres" id="10_bhjqf"]
+[ext_resource type="Resource" uid="uid://ce13rb1snwpw3" path="res://Wrestlers/aawa/Africa/Face/Male/naeem_shalabi.tres" id="11_akey4"]
+[ext_resource type="Resource" uid="uid://dirg6vtls7egk" path="res://Wrestlers/aawa/Africa/Face/Male/omar_ghali.tres" id="12_q25kc"]
+[ext_resource type="Resource" uid="uid://dhwq780nfbbm8" path="res://Wrestlers/aawa/Africa/Face/Male/tariq_selim.tres" id="13_cjgqx"]
+[ext_resource type="Resource" uid="uid://bqlv8umqokcfx" path="res://Wrestlers/aawa/Africa/Face/Male/tendai_moyo.tres" id="14_bl6ia"]
+[ext_resource type="Resource" uid="uid://c5dh6xuco84fp" path="res://Wrestlers/aawa/Africa/Heel/Male/ayodele_kareem.tres" id="15_jqdvs"]
+[ext_resource type="Resource" uid="uid://bwgtutldrln15" path="res://Wrestlers/aawa/Africa/Heel/Male/hatem_younis.tres" id="16_jtunv"]
+[ext_resource type="Resource" uid="uid://b8yliqoynw4d4" path="res://Wrestlers/aawa/Africa/Heel/Male/jabari_ndlovu.tres" id="17_wioso"]
+[ext_resource type="Resource" uid="uid://bwld5a11mejxu" path="res://Wrestlers/aawa/Africa/Heel/Male/mahmoud_rafiq.tres" id="18_tda2k"]
+[ext_resource type="Resource" uid="uid://c3xemejod67n2" path="res://Wrestlers/aawa/Africa/Heel/Male/mazen_iskander.tres" id="19_2gvyk"]
+[ext_resource type="Resource" uid="uid://bkfjxodvv1w6u" path="res://Wrestlers/aawa/Africa/Heel/Male/rami_qadir.tres" id="20_u32g6"]
+[ext_resource type="Resource" uid="uid://bp0taixukhcdg" path="res://Wrestlers/aawa/Africa/Heel/Male/saleh_barakat.tres" id="21_dq3rg"]
+[ext_resource type="Resource" uid="uid://cqh6fygc7cwon" path="res://Wrestlers/aawa/Africa/Heel/Male/samir_dakhil.tres" id="22_7clik"]
+[ext_resource type="Resource" uid="uid://ctr810to1m8bf" path="res://Wrestlers/aawa/Africa/Heel/Male/seti_rahem.tres" id="23_f7eau"]
+[ext_resource type="Resource" uid="uid://bsio3njn37uar" path="res://Wrestlers/aawa/Africa/Heel/Male/youssef_nadim.tres" id="24_6ubr7"]
+[ext_resource type="Resource" uid="uid://bka1oqkh7jjbf" path="res://Wrestlers/aawa/Africa/Heel/Male/zein_harb.tres" id="25_nm5ob"]
+[ext_resource type="Resource" uid="uid://c2ud5u01uxl6o" path="res://Wrestlers/aawa/Asia/Heel/Male/hiroto_kanemaru.tres" id="26_7c5tu"]
+[ext_resource type="Resource" uid="uid://2i4iamo4ssb2" path="res://Wrestlers/aawa/Europe/Heel/Male/bastien_delacroix.tres" id="27_m24sc"]
+[ext_resource type="Resource" uid="uid://bjikw6s725jpf" path="res://Wrestlers/aawa/Europe/Heel/Male/nicolai_soren.tres" id="28_ejboa"]
+[ext_resource type="Resource" uid="uid://dh18eauyiwqdn" path="res://Wrestlers/aawa/South_America/Face/Male/pablo_almada.tres" id="29_6nj8u"]
+[ext_resource type="Resource" uid="uid://1nh1jabctaa4" path="res://Wrestlers/aawa/Africa/Face/Female/amina_el_sherif.tres" id="35_hd3lg"]
+[ext_resource type="Resource" uid="uid://bmav3b2corhsi" path="res://Wrestlers/aawa/Africa/Face/Female/layla_mansour.tres" id="36_5usd5"]
+[ext_resource type="Resource" uid="uid://bia2556rw4dkx" path="res://Wrestlers/aawa/Africa/Face/Female/samira_kassem.tres" id="37_81hss"]
+[ext_resource type="Resource" uid="uid://bpjep1flwj8xu" path="res://Wrestlers/aawa/Africa/Face/Female/nefisa_zahra.tres" id="37_yccad"]
+[ext_resource type="Resource" uid="uid://bngvnno7g0k7m" path="res://Wrestlers/aawa/Africa/Heel/Female/nahla_sabek.tres" id="38_482ka"]
+[ext_resource type="Resource" uid="uid://b3f70sxaf10su" path="res://Wrestlers/aawa/Africa/Heel/Female/rania_fekri.tres" id="39_kl2rj"]
+[ext_resource type="Resource" uid="uid://b82d0ybh6r1dl" path="res://Wrestlers/aawa/Africa/Heel/Female/zola_adeyemi.tres" id="40_kiix6"]
+[ext_resource type="Resource" uid="uid://cokqmmj5tbb3l" path="res://Wrestlers/aawa/Europe/Heel/Female/chiara_bellandi.tres" id="41_ricyl"]
+
+[resource]
+script = ExtResource("1")
+promotion_name = "Ankh-Art Wrestling Association"
+promotion_initials = "AAWA"
+promotion_id = 11
+preferred_styles = Array[int]([3])
+home_region = 4
+africa_country = 2
+mens_division = Array[ExtResource("1_2dr4f")]([ExtResource("2_xlrus"), ExtResource("3_yccad"), ExtResource("4_jjha1"), ExtResource("5_026b6"), ExtResource("6_l8xtv"), ExtResource("7_p024x"), ExtResource("8_6xbj8"), ExtResource("9_fypkh"), ExtResource("10_bhjqf"), ExtResource("11_akey4"), ExtResource("12_q25kc"), ExtResource("13_cjgqx"), ExtResource("14_bl6ia"), ExtResource("15_jqdvs"), ExtResource("16_jtunv"), ExtResource("17_wioso"), ExtResource("18_tda2k"), ExtResource("19_2gvyk"), ExtResource("20_u32g6"), ExtResource("21_dq3rg"), ExtResource("22_7clik"), ExtResource("23_f7eau"), ExtResource("24_6ubr7"), ExtResource("25_nm5ob"), ExtResource("26_7c5tu"), ExtResource("27_m24sc"), ExtResource("28_ejboa"), ExtResource("29_6nj8u")])
+womens_division = Array[ExtResource("1_2dr4f")]([ExtResource("35_hd3lg"), ExtResource("36_5usd5"), ExtResource("37_yccad"), ExtResource("37_81hss"), ExtResource("38_482ka"), ExtResource("39_kl2rj"), ExtResource("40_kiix6"), ExtResource("41_ricyl")])
+titles = Array[ExtResource("3_mwy1h")]([ExtResource("4_main"), ExtResource("5_singles"), ExtResource("6_womens")])
+global_popularity = 10.0
+pop_north_america = 5.0
+pop_europe = 20.0
+pop_asia = 5.0
+pop_africa = 25.0
+pop_oceania = 5.0

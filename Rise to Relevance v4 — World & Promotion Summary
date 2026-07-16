@@ -1,0 +1,427 @@
+# 🌍 Rise to Relevance v4 — World & Promotion Summary
+
+---
+
+## 🧠 Core Design Philosophy
+
+This world is a **compressed global wrestling ecosystem**:
+
+* 10 promotions across 6 regions
+* Each promotion represents both:
+
+  * A **distinct company identity**
+  * A **broader regional style/culture**
+
+This is an intentional design trade-off:
+
+* ❌ Not hyper-realistic fragmentation (dozens of promotions)
+* ✅ Strong, clear, memorable identities per region
+
+---
+
+## 🎮 TEXT-BASED DESIGN PRINCIPLE
+
+This is a **text-based game**.
+
+There are no graphics—only:
+
+* text
+* emojis
+* UI symbols
+
+👉 Therefore:
+
+* **Names, styles, and flavour ARE the experience**
+* Match logs and commentary must feel distinct
+* Overlapping styles = identical *reading experience* = bad
+
+**Core Rule:**
+
+> Distinct phrasing and identity > realistic overlap
+
+---
+
+## 🎮 WrestlerClass Enum Mapping
+
+| Value | Class      |
+| ----- | ---------- |
+| 0     | NONE       |
+| 1     | HIGH_FLYER |
+| 2     | POWERHOUSE |
+| 3     | TECHNICIAN |
+| 4     | STRIKER    |
+| 5     | HARDCORE   |
+
+---
+
+## 🌐 Global Structure
+
+### Regions & Promotions
+
+* **North America (3)**
+
+  * USA — Vanguard Wrestling Federation (VWF)
+  * Canada — Trans-Canada Grappling (TCG)
+  * Mexico — Sociedad de Lucha Nacional (SLN)
+
+* **Europe (2)**
+
+  * UK — ENDEAVOUR (END)
+  * Mainland Europe — Iron & Velvet Wrestling (IVW)
+
+* **Asia (2)**
+
+  * Japan — Fuji Wrestling Grand Prix (FWGP)
+  * China — Zhongguo Wrestling Alliance (ZWA)
+
+* **Oceania (1)**
+
+  * Samoa — Ula Fala Combat (UFC)
+
+* **South America (1)**
+
+  * Argentina — Silver-Sun Wrestling Confederation (SSWC)
+
+* **Africa (1)**
+
+  * Egypt — Ankh-Art Wrestling Association (AAWA)
+
+* **Global Hub**
+
+  * The Indie Scene (TIS)
+
+---
+
+## 🌏 A.R.I.S.E Alliance
+
+**A.R.I.S.E — Asian Regional Integrated Sports Entertainment**
+
+### Core Concept
+
+* A strategic alliance between:
+
+  * Fuji Wrestling Grand Prix (Japan)
+  * Zhongguo Wrestling Alliance (China)
+
+* Created to form a unified **Asian wrestling identity**
+
+* Acts as a counterbalance to North American dominance (VWF)
+
+---
+
+### Design Philosophy
+
+* Currently **flavour-first (not a full system yet)**
+* Inspired by NJPW’s N.E.V.E.R concept
+* Exists to:
+
+  * break naming monotony
+  * imply depth
+  * allow future expansion
+
+👉 It is intentionally **not over-explained**
+
+---
+
+### Title Implementation
+
+* **FWGP** → A.R.I.S.E Openweight Championship
+
+  * Elite, workrate-focused
+  * “best vs best” identity
+
+* **ZWA** → A.R.I.S.E Battle Championship
+
+  * Fast-paced, high-energy
+  * TV-style visibility
+
+---
+
+### Regional Identity (Asia)
+
+Shared Style DNA:
+
+* Striker + Technician/Powerhouse
+
+Creates:
+
+> Hard-hitting, physically credible “Strong Style” region
+
+Internal contrast:
+
+* FWGP → discipline, precision
+* ZWA → spectacle, impact
+
+---
+
+# 🏢 Promotion Breakdown
+
+---
+
+## 🌐 The Indie Scene (TIS)
+
+**Role:** Global talent hub
+
+**Titles:**
+
+* World Independent Championship
+* Open Challenge Title
+* Independent Women’s Grand Prix
+
+**Identity & Context:**
+
+* Entry point for all careers
+* System-driven rather than style-driven
+* “Open Challenge” is both flavour and potential mechanic
+
+---
+
+## 🦅 Vanguard Wrestling Federation (VWF) — USA
+
+**Titles:**
+
+* VWF Championship
+* VWF National Championship
+* VWF Women’s Championship
+
+**Styles:**
+
+* Primary: Powerhouse (2)
+* Secondary: Striker (4)
+
+**Identity & Context:**
+
+* Global industry leader (endgame promotion)
+* Corporate, polished, mainstream
+
+Design Rule:
+
+* Simplicity in naming = prestige
+* Avoids stylised naming (e.g. “Knockouts”) to maintain legitimacy
+
+---
+
+## 🍁 Trans-Canada Grappling (TCG) — Canada
+
+**Titles:**
+
+* TCG Heavyweight Title
+* TCG Cross-Province Title
+* TCG Women’s Title
+
+**Styles:**
+
+* Primary: Technician (3)
+* Secondary: Powerhouse (2)
+
+**Identity & Context:**
+
+* Grappling-first, sport-oriented
+* Grounded and realistic
+
+---
+
+## 🇲🇽 Sociedad de Lucha Nacional (SLN) — Mexico
+
+**Titles:**
+
+* SLN Anillo Mundial
+* SLN Campeonato Inter-Mexicano
+* SLN Reina del Circulo Championship
+
+**Styles:**
+
+* Primary: High-Flyer (1)
+* Secondary: Technician (3)
+
+**Identity & Context:**
+
+* Lucha libre foundation
+* Fast, fluid, expressive
+
+---
+
+## 🇬🇧 ENDEAVOUR (END) — United Kingdom
+
+**Titles:**
+
+* END British Heavyweight Championship
+* END Atlas Championship
+* END Knockouts Championship
+
+**Styles:**
+
+* Primary: Technician (3)
+* Secondary: Striker (4)
+
+**Identity & Context:**
+
+* Represents the **entire UK indie wrestling ecosystem**
+* UK treated as one unified region (England, Scotland, Wales, Ireland)
+
+Inspired by:
+
+* RevPro (legitimacy)
+* PROGRESS (identity/divisions)
+* ICW (attitude)
+* OTT (modern indie energy)
+
+### Title Philosophy
+
+* British Heavyweight → traditional prestige
+* Atlas → PROGRESS-inspired division identity
+* Knockouts → modern branded attitude (moved from VWF intentionally)
+
+### Design Intent
+
+* Not a pure style
+* Not fully consistent by design
+
+👉 It is a **fusion promotion** representing multiple UK styles in one slot
+
+---
+
+## 🖤 Iron & Velvet Wrestling (IVW) — Mainland Europe
+
+**Titles:**
+
+* IVW King of Europe
+* IVW Underground Championship
+* IVW Queen of Europe
+
+**Styles:**
+
+* Primary: Technician (3)
+* Secondary: Hardcore (5)
+
+**Identity & Context:**
+
+* Underground, alternative European scene
+* Technical base + brutality
+
+---
+
+## 🇯🇵 Fuji Wrestling Grand Prix (FWGP) — Japan
+
+**Titles:**
+
+* FWGP Global Championship
+* A.R.I.S.E Openweight Championship
+* FWGP Joshi Championship
+
+**Styles:**
+
+* Primary: Striker (4)
+* Secondary: Technician (3)
+
+**Identity & Context:**
+
+* Strong Style
+* Elite, disciplined wrestling
+
+---
+
+## 🇨🇳 Zhongguo Wrestling Alliance (ZWA) — China
+
+**Titles:**
+
+* ZWA Supreme Championship
+* A.R.I.S.E Battle Championship
+* ZWA Empress Championship
+
+**Styles:**
+
+* Primary: Striker (4)
+* Secondary: Powerhouse (2)
+
+**Identity & Context:**
+
+* Modern, high-energy
+* Spectacle-driven
+* Complement to FWGP within A.R.I.S.E
+
+---
+
+## 🌊 Ula Fala Combat (UFC) — Samoa
+
+**Titles:**
+
+* UFC Ula Fala
+* UFC Pacific Title
+* UFC Siamupini A Tamaitai
+
+**Styles:**
+
+* Primary: Powerhouse (2)
+* Secondary: Striker (4)
+
+**Identity & Context:**
+
+* Cultural, warrior-driven
+* Combat-focused tone
+
+---
+
+## ☀️ Silver-Sun Wrestling Confederation (SSWC) — Argentina
+
+**Titles:**
+
+* SSWC Sol Dorado Championship
+* SSWC Southern Cross Title
+* SSWC Campeonato de Luna y Estrellas
+
+**Styles:**
+
+* Primary: Technician (3)
+* Secondary: High-Flyer (1)
+
+**Identity & Context:**
+
+* Mythic, poetic tone
+* Fluid and expressive wrestling
+
+---
+
+## 🐫 Ankh-Art Wrestling Association (AAWA) — Egypt
+
+**Titles:**
+
+* AAWA Gift of Osiris Championship
+* AAWA Eternal Championship
+* AAWA Matriarch Championship
+
+**Styles:**
+
+* Primary: Technician (3)
+* Secondary: Striker (4)
+
+**Identity & Context:**
+
+* Symbolic, ceremonial wrestling
+* Precise, deliberate, hard-hitting
+
+### Design Decision
+
+* Changed from single-style to avoid bland text output
+* Chosen specifically for **text readability and distinction**
+
+---
+
+# 🧠 Final Design Conclusions
+
+* Every promotion must:
+
+  * feel distinct in text
+  * represent a region
+  * support gameplay identity
+
+* Overlap is allowed, but **presentation and tone must differ**
+
+* Systems like A.R.I.S.E:
+
+  * start as flavour
+  * expand later if needed
+
+👉 The result is a **dense, replayable wrestling world** with clear paths and identities
+
+—

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="MoveResource" format=3 uid="uid://c6o8ko6t4f43n"]
+
+[ext_resource type="Script" uid="uid://dsl2sqtwrkuos" path="res://Scripts/Data/MoveData.gd" id="1_o3snk"]
+
+[resource]
+script = ExtResource("1_o3snk")
+move_name = "Springboard Tornado DDT Driver"
+move_type = 6
+class_preferrence = Array[int]([0, 4])
+move_target_parts = Array[int]([1])
+required_attacker_position = 7
+required_target_position = 1
+resulting_attacker_position = 2
+resulting_target_position = 2
+is_finisher = true
+move_impact = 8

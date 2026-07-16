@@ -1,0 +1,377 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://Scripts/UI/match_setup_popup.gd" id="1_setup"]
+
+[sub_resource type="StyleBoxFlat" id="StyleSetupPanel"]
+bg_color = Color(0.025, 0.035, 0.055, 0.995)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.78, 0.64, 0.2, 0.95)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.7)
+shadow_size = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleSidePanel"]
+bg_color = Color(0.05, 0.065, 0.095, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.22, 0.28, 0.38, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleInput"]
+bg_color = Color(0.025, 0.035, 0.055, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.28, 0.35, 0.48, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+content_margin_left = 10.0
+content_margin_right = 10.0
+
+[sub_resource type="StyleBoxFlat" id="StyleList"]
+bg_color = Color(0.02, 0.03, 0.048, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.17, 0.22, 0.31, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleStart"]
+bg_color = Color(0.48, 0.1, 0.12, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.9, 0.3, 0.3, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleStartHover"]
+bg_color = Color(0.62, 0.13, 0.15, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.46, 0.46, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleCancel"]
+bg_color = Color(0.1, 0.14, 0.21, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.32, 0.42, 0.57, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="MatchSetupPopup" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+script = ExtResource("1_setup")
+
+[node name="Dimmer" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0.005, 0.008, 0.015, 0.9)
+
+[node name="SetupSafeArea" type="MarginContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SetupOuterMargin" type="MarginContainer" parent="SetupSafeArea"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/margin_left = 34
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 34
+theme_override_constants/margin_bottom = 24
+
+[node name="SetupPanel" type="PanelContainer" parent="SetupSafeArea/SetupOuterMargin"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleSetupPanel")
+
+[node name="PanelMargin" type="MarginContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 16
+
+[node name="Content" type="VBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.8, 0.28, 1)
+theme_override_font_sizes/font_size = 28
+text = "SET UP EXHIBITION MATCH"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.68, 0.72, 0.8, 1)
+text = "Search or filter the roster, then choose one wrestler for each side."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="TitleRule" type="ColorRect" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content"]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.78, 0.64, 0.2, 0.8)
+
+[node name="SelectionRow" type="BoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 18
+
+[node name="PlayerPanel" type="PanelContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleSidePanel")
+
+[node name="PlayerMargin" type="MarginContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="PlayerContent" type="VBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin"]
+layout_mode = 2
+theme_override_constants/separation = 7
+
+[node name="PlayerHeading" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin/PlayerContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.25, 0.64, 1, 1)
+theme_override_font_sizes/font_size = 19
+text = "PLAYER WRESTLER"
+
+[node name="PlayerFilters" type="BoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin/PlayerContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 7
+
+[node name="PlayerSearch" type="LineEdit" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin/PlayerContent/PlayerFilters"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/normal = SubResource("StyleInput")
+placeholder_text = "Search name, country, region, face/heel..."
+clear_button_enabled = true
+
+[node name="PlayerClassFilter" type="OptionButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin/PlayerContent/PlayerFilters"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 42)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleInput")
+fit_to_longest_item = false
+
+[node name="PlayerPromotionFilter" type="OptionButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin/PlayerContent/PlayerFilters"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(125, 42)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleInput")
+fit_to_longest_item = false
+
+[node name="PlayerRosterList" type="ItemList" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin/PlayerContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_selected_color = Color(1, 0.9, 0.55, 1)
+theme_override_colors/guide_color = Color(0.15, 0.2, 0.28, 1)
+theme_override_font_sizes/font_size = 17
+theme_override_constants/line_separation = 12
+theme_override_styles/panel = SubResource("StyleList")
+allow_reselect = true
+allow_rmb_select = true
+max_text_lines = 1
+
+[node name="PlayerSummary" type="VBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin/PlayerContent"]
+custom_minimum_size = Vector2(0, 146)
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="PlayerSummaryName" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin/PlayerContent/PlayerSummary"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.78, 0.84, 0.94, 1)
+text = "No wrestler selected"
+autowrap_mode = 2
+
+[node name="PlayerSummaryDetails" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin/PlayerContent/PlayerSummary"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.76, 0.8, 0.88, 1)
+text = "Finishers: None\nClass: None\nGimmick: None\nNationality: Not Set\nPromotion: Not Assigned"
+autowrap_mode = 2
+
+[node name="OpponentPanel" type="PanelContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleSidePanel")
+
+[node name="OpponentMargin" type="MarginContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="OpponentContent" type="VBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin"]
+layout_mode = 2
+theme_override_constants/separation = 7
+
+[node name="OpponentHeading" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin/OpponentContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.93, 0.3, 0.3, 1)
+theme_override_font_sizes/font_size = 19
+text = "AI OPPONENT"
+horizontal_alignment = 2
+
+[node name="OpponentFilters" type="BoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin/OpponentContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 7
+
+[node name="OpponentSearch" type="LineEdit" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin/OpponentContent/OpponentFilters"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/normal = SubResource("StyleInput")
+placeholder_text = "Search name, country, region, face/heel..."
+clear_button_enabled = true
+
+[node name="OpponentClassFilter" type="OptionButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin/OpponentContent/OpponentFilters"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 42)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleInput")
+fit_to_longest_item = false
+
+[node name="OpponentPromotionFilter" type="OptionButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin/OpponentContent/OpponentFilters"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(125, 42)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleInput")
+fit_to_longest_item = false
+
+[node name="OpponentRosterList" type="ItemList" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin/OpponentContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_selected_color = Color(1, 0.9, 0.55, 1)
+theme_override_colors/guide_color = Color(0.15, 0.2, 0.28, 1)
+theme_override_font_sizes/font_size = 17
+theme_override_constants/line_separation = 12
+theme_override_styles/panel = SubResource("StyleList")
+allow_reselect = true
+allow_rmb_select = true
+max_text_lines = 1
+
+[node name="OpponentSummary" type="VBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin/OpponentContent"]
+custom_minimum_size = Vector2(0, 146)
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="OpponentSummaryName" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin/OpponentContent/OpponentSummary"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.78, 0.84, 0.94, 1)
+text = "No wrestler selected"
+horizontal_alignment = 2
+autowrap_mode = 2
+
+[node name="OpponentSummaryDetails" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin/OpponentContent/OpponentSummary"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.76, 0.8, 0.88, 1)
+text = "Finishers: None\nClass: None\nGimmick: None\nNationality: Not Set\nPromotion: Not Assigned"
+horizontal_alignment = 2
+autowrap_mode = 2
+
+[node name="SetupStatus" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.74, 0.46, 1)
+text = "Choose two different wrestlers."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="SetupButtons" type="BoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="StartMatchButton" type="Button" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SetupButtons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 54)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/normal = SubResource("StyleStart")
+theme_override_styles/hover = SubResource("StyleStartHover")
+theme_override_styles/pressed = SubResource("StyleStartHover")
+theme_override_styles/focus = SubResource("StyleStartHover")
+text = "START MATCH"
+
+[node name="CancelSetupButton" type="Button" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SetupButtons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(170, 54)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/normal = SubResource("StyleCancel")
+theme_override_styles/hover = SubResource("StyleStartHover")
+theme_override_styles/focus = SubResource("StyleStartHover")
+text = "CANCEL"

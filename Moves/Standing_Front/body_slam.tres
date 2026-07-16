@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="MoveResource" format=3 uid="uid://c0rceihsvt2o2"]
+
+[ext_resource type="Script" uid="uid://dsl2sqtwrkuos" path="res://Scripts/Data/MoveData.gd" id="1_7vpk8"]
+
+[resource]
+script = ExtResource("1_7vpk8")
+move_name = "Body Slam"
+move_type = 1
+class_preferrence = Array[int]([1])
+move_target_parts = Array[int]([2])
+required_attacker_position = 1
+required_target_position = 1
+resulting_attacker_position = 1
+resulting_target_position = 2
+move_impact = 4

@@ -1,0 +1,61 @@
+[gd_resource type="Resource" script_class="PromotionResource" format=3 uid="uid://bahjejlk02orf"]
+
+[ext_resource type="Script" uid="uid://dur40byryil5w" path="res://Scripts/Data/PromotionData.gd" id="1"]
+[ext_resource type="Script" uid="uid://dwj45ptt6d1qp" path="res://Scripts/Data/WrestlerData.gd" id="1_vt7si"]
+[ext_resource type="Resource" uid="uid://dqivdw2mc35gp" path="res://Wrestlers/zwa/Africa/Face/Male/adebayo_okoro.tres" id="2_df5w2"]
+[ext_resource type="Script" uid="uid://bsoy7pfr7publ" path="res://Scripts/Data/TitleData.gd" id="2_title_script"]
+[ext_resource type="Resource" uid="uid://bwk4uvk1k6nyg" path="res://Wrestlers/zwa/Asia/Face/Male/chen_long.tres" id="3_f5jkm"]
+[ext_resource type="Resource" uid="uid://cnwbq6gmddpjn" path="res://Wrestlers/zwa/Asia/Face/Male/fan_tao.tres" id="4_2s7gx"]
+[ext_resource type="Resource" uid="uid://2jxyfn3xe4pl" path="res://Promotions/ZWA/Titles/ZWA_SUPREME_CHAMPIONSHIP.tres" id="4_vt7si"]
+[ext_resource type="Resource" uid="uid://c6sn0u67nu55k" path="res://Promotions/ZWA/Titles/ARISE_BATTLE_CHAMPIONSHIP.tres" id="5_4tls7"]
+[ext_resource type="Resource" uid="uid://dgq3xjob3vjjj" path="res://Wrestlers/zwa/Asia/Face/Male/kim_jae_hoon.tres" id="5_mwn7m"]
+[ext_resource type="Resource" uid="uid://bspqlcgjvjqrm" path="res://Wrestlers/zwa/Asia/Face/Male/li_feng.tres" id="6_ik54n"]
+[ext_resource type="Resource" uid="uid://ctttnnpyodby5" path="res://Promotions/ZWA/Titles/ZWA_EMPRESS_CHAMPIONSHIP.tres" id="6_mvk7h"]
+[ext_resource type="Resource" uid="uid://ci8l2b4lcnllj" path="res://Wrestlers/zwa/Asia/Face/Male/lu_bu.tres" id="7_r4gp8"]
+[ext_resource type="Resource" uid="uid://wbexvsr3ob2e" path="res://Wrestlers/zwa/Asia/Face/Male/ren_ishikawa.tres" id="8_8rucx"]
+[ext_resource type="Resource" uid="uid://cm1325ciqabw2" path="res://Wrestlers/zwa/Asia/Face/Male/sanjay_gupta.tres" id="9_6bgi3"]
+[ext_resource type="Resource" uid="uid://cog3u8pcq5ite" path="res://Wrestlers/zwa/Asia/Face/Male/wang_shuo.tres" id="10_lo8vb"]
+[ext_resource type="Resource" uid="uid://dn4cvetsas28n" path="res://Wrestlers/zwa/Asia/Face/Male/xu_kai.tres" id="11_bq8mm"]
+[ext_resource type="Resource" uid="uid://bl8o8koi8lj27" path="res://Wrestlers/zwa/Asia/Face/Male/yang_bo.tres" id="12_8an0a"]
+[ext_resource type="Resource" uid="uid://btatnoi74enqg" path="res://Wrestlers/zwa/Asia/Face/Male/zhang_wei.tres" id="13_r6k5r"]
+[ext_resource type="Resource" uid="uid://bl64doctccjoc" path="res://Wrestlers/zwa/Asia/Face/Male/zhou_min.tres" id="14_me8na"]
+[ext_resource type="Resource" uid="uid://bynwa8cef3hla" path="res://Wrestlers/zwa/Asia/Heel/Male/cao_cao.tres" id="15_u36bs"]
+[ext_resource type="Resource" uid="uid://dnx61st3mfvcr" path="res://Wrestlers/zwa/Asia/Heel/Male/feng_xui.tres" id="16_r67il"]
+[ext_resource type="Resource" uid="uid://bwa1wp51qox3d" path="res://Wrestlers/zwa/Asia/Heel/Male/kenshiro_raizen.tres" id="17_jgkww"]
+[ext_resource type="Resource" uid="uid://dtnp3g27ipg4p" path="res://Wrestlers/zwa/Asia/Heel/Male/kong_ming.tres" id="18_y363n"]
+[ext_resource type="Resource" uid="uid://dyl4s2m7uk0q6" path="res://Wrestlers/zwa/Asia/Heel/Male/liu_kang.tres" id="19_i8fux"]
+[ext_resource type="Resource" uid="uid://cxlgr1abfwqp1" path="res://Wrestlers/zwa/Asia/Heel/Male/qin_shi.tres" id="20_2ytw3"]
+[ext_resource type="Resource" uid="uid://bge0rdeq2q2bj" path="res://Wrestlers/zwa/Asia/Heel/Male/sun_quan.tres" id="21_n6p0d"]
+[ext_resource type="Resource" uid="uid://belpcynxuf05c" path="res://Wrestlers/zwa/Asia/Heel/Male/wei_yan.tres" id="22_qxtjq"]
+[ext_resource type="Resource" uid="uid://cdng518fuvos3" path="res://Wrestlers/zwa/Asia/Heel/Male/wu_gang.tres" id="23_q4c0i"]
+[ext_resource type="Resource" uid="uid://bjygwqdcjs3b3" path="res://Wrestlers/zwa/Asia/Heel/Male/zhang_he.tres" id="24_wb61a"]
+[ext_resource type="Resource" uid="uid://d0wbxotrr6p1e" path="res://Wrestlers/zwa/Asia/Heel/Male/zhao_han.tres" id="25_t5xi5"]
+[ext_resource type="Resource" uid="uid://bw0b8h1bjnkkx" path="res://Wrestlers/zwa/Asia/Heel/Male/zhao_ren.tres" id="26_l5ygy"]
+[ext_resource type="Resource" uid="uid://eob2mch1llbu" path="res://Wrestlers/zwa/Europe/Heel/Male/viktor_stahl.tres" id="27_diq2t"]
+[ext_resource type="Resource" uid="uid://dc38dneon34w4" path="res://Wrestlers/zwa/North_America/Face/Male/jett_calder.tres" id="28_7ygm0"]
+[ext_resource type="Resource" uid="uid://bcfsaoyttww4g" path="res://Wrestlers/zwa/South_America/Heel/Male/mateus_silva.tres" id="29_gark0"]
+[ext_resource type="Resource" uid="uid://ced1sb77m5w0b" path="res://Wrestlers/zwa/Asia/Face/Female/empress_wu.tres" id="35_0fh4o"]
+[ext_resource type="Resource" uid="uid://c1uv77dyxmg6v" path="res://Wrestlers/zwa/Asia/Face/Female/lin_mei.tres" id="36_4t67w"]
+[ext_resource type="Resource" uid="uid://dxb72k8yxrrjn" path="res://Wrestlers/zwa/Asia/Face/Female/mei_lian.tres" id="37_t1qni"]
+[ext_resource type="Resource" uid="uid://gc46uw570hf1" path="res://Wrestlers/zwa/Asia/Face/Female/park_shin_hye.tres" id="38_ht5n0"]
+[ext_resource type="Resource" uid="uid://bs1gxc348ktac" path="res://Wrestlers/zwa/Asia/Heel/Female/lady_sun.tres" id="39_c8dtn"]
+[ext_resource type="Resource" uid="uid://c4bg2wy2jmcp7" path="res://Wrestlers/zwa/Asia/Heel/Female/madame_qin.tres" id="40_kibau"]
+[ext_resource type="Resource" uid="uid://borge1omf4shh" path="res://Wrestlers/zwa/Asia/Heel/Female/mulan_x.tres" id="41_ya1ys"]
+[ext_resource type="Resource" uid="uid://b3d6j1888pdqv" path="res://Wrestlers/zwa/Asia/Heel/Female/xiahou_ning.tres" id="42_hs558"]
+
+[resource]
+script = ExtResource("1")
+promotion_name = "Zhongguo Wrestling Alliance"
+promotion_initials = "ZWA"
+promotion_id = 8
+preferred_styles = Array[int]([4, 2])
+home_region = 3
+asia_country = 1
+mens_division = Array[ExtResource("1_vt7si")]([ExtResource("2_df5w2"), ExtResource("3_f5jkm"), ExtResource("4_2s7gx"), ExtResource("5_mwn7m"), ExtResource("6_ik54n"), ExtResource("7_r4gp8"), ExtResource("8_8rucx"), ExtResource("9_6bgi3"), ExtResource("10_lo8vb"), ExtResource("11_bq8mm"), ExtResource("12_8an0a"), ExtResource("13_r6k5r"), ExtResource("14_me8na"), ExtResource("15_u36bs"), ExtResource("16_r67il"), ExtResource("17_jgkww"), ExtResource("18_y363n"), ExtResource("19_i8fux"), ExtResource("20_2ytw3"), ExtResource("21_n6p0d"), ExtResource("22_qxtjq"), ExtResource("23_q4c0i"), ExtResource("24_wb61a"), ExtResource("25_t5xi5"), ExtResource("26_l5ygy"), ExtResource("27_diq2t"), ExtResource("28_7ygm0"), ExtResource("29_gark0")])
+womens_division = Array[ExtResource("1_vt7si")]([ExtResource("35_0fh4o"), ExtResource("36_4t67w"), ExtResource("37_t1qni"), ExtResource("38_ht5n0"), ExtResource("39_c8dtn"), ExtResource("40_kibau"), ExtResource("41_ya1ys"), ExtResource("42_hs558")])
+titles = Array[ExtResource("2_title_script")]([ExtResource("4_vt7si"), ExtResource("5_4tls7"), ExtResource("6_mvk7h")])
+global_popularity = 20.0
+pop_north_america = 30.0
+pop_europe = 20.0
+pop_asia = 60.0
+pop_oceania = 10.0

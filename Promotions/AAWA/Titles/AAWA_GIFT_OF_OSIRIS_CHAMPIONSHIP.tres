@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="TitleResource" format=3 uid="uid://b8eufyjl8mwxe"]
+
+[ext_resource type="Script" uid="uid://bsoy7pfr7publ" path="res://Scripts/Data/TitleData.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+title_name = "AAWA Gift of Osiris Championship"
+promotion_id = 11

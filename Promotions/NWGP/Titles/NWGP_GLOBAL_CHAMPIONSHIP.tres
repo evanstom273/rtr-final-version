@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="TitleResource" format=3 uid="uid://b4u3nxli6yuds"]
+
+[ext_resource type="Script" uid="uid://bsoy7pfr7publ" path="res://Scripts/Data/TitleData.gd" id="1_uara1"]
+
+[resource]
+script = ExtResource("1_uara1")
+title_name = "NWGP Global Championship"
+promotion_id = 7

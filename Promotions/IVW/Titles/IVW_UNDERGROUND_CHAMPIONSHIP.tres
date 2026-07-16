@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="TitleResource" format=3 uid="uid://bxqspbdcrxur8"]
+
+[ext_resource type="Script" uid="uid://bsoy7pfr7publ" path="res://Scripts/Data/TitleData.gd" id="1_clcwv"]
+
+[resource]
+script = ExtResource("1_clcwv")
+title_name = "IVW Underground Championship"
+promotion_id = 6
+gender = 1

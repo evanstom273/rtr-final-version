@@ -1,0 +1,62 @@
+[gd_resource type="Resource" script_class="PromotionResource" format=3 uid="uid://dad6j2vjpqfb6"]
+
+[ext_resource type="Script" uid="uid://dur40byryil5w" path="res://Scripts/Data/PromotionData.gd" id="1"]
+[ext_resource type="Script" uid="uid://dwj45ptt6d1qp" path="res://Scripts/Data/WrestlerData.gd" id="1_10703"]
+[ext_resource type="Resource" uid="uid://d0i133h64rmxd" path="res://Wrestlers/sln/Asia/Face/Male/satori.tres" id="2_wp6fs"]
+[ext_resource type="Script" uid="uid://bsoy7pfr7publ" path="res://Scripts/Data/TitleData.gd" id="3_l7m80"]
+[ext_resource type="Resource" uid="uid://bx1a0066fgntd" path="res://Wrestlers/sln/Asia/Heel/Male/zhen_de_las_sombras.tres" id="3_omnvs"]
+[ext_resource type="Resource" uid="uid://8whixycvq68n" path="res://Wrestlers/sln/Europe/Heel/Male/aristocrata_del_ring.tres" id="4_4y6hx"]
+[ext_resource type="Resource" uid="uid://bw5e6wnipyo3f" path="res://Promotions/SLN/Titles/SLN_ANILLO_MUNDIAL.tres" id="4_ctmjm"]
+[ext_resource type="Resource" uid="uid://cp6iod3asfmq1" path="res://Wrestlers/sln/North_America/Face/Male/aguila_de_bronce.tres" id="5_s4t3d"]
+[ext_resource type="Resource" uid="uid://cjohdq1us2rt6" path="res://Promotions/SLN/Titles/SLN_CAMPEONATO_INTER_MEXICANO.tres" id="5_singles"]
+[ext_resource type="Resource" uid="uid://s65ilqs0obnv" path="res://Wrestlers/sln/North_America/Face/Male/cenit.tres" id="6_usr7y"]
+[ext_resource type="Resource" uid="uid://dah5b7epo11rx" path="res://Promotions/SLN/Titles/SLN_REINA_DEL_CIRCULO_CHAMPIONSHIP.tres" id="6_womens"]
+[ext_resource type="Resource" uid="uid://c3lcw6rvfnlq" path="res://Wrestlers/sln/North_America/Face/Male/cometa_nocturno.tres" id="7_nnsd2"]
+[ext_resource type="Resource" uid="uid://dm2k78b7wxocl" path="res://Wrestlers/sln/North_America/Face/Male/destello.tres" id="8_bar3b"]
+[ext_resource type="Resource" uid="uid://du7ih3capgoua" path="res://Wrestlers/sln/North_America/Face/Male/el_academico.tres" id="9_s6d3y"]
+[ext_resource type="Resource" uid="uid://cu1kn0ygncwvn" path="res://Wrestlers/sln/North_America/Face/Male/el_bastion.tres" id="10_1p4q0"]
+[ext_resource type="Resource" uid="uid://csopi2623s76a" path="res://Wrestlers/sln/North_America/Face/Male/guardia_solar.tres" id="11_exyxr"]
+[ext_resource type="Resource" uid="uid://1q3bc208weju" path="res://Wrestlers/sln/North_America/Face/Male/halcon_de_guerra.tres" id="12_ruoos"]
+[ext_resource type="Resource" uid="uid://cwe3vxyupjaf3" path="res://Wrestlers/sln/North_America/Face/Male/heredero_de_obsidiana.tres" id="13_dw424"]
+[ext_resource type="Resource" uid="uid://d3i60qe701q43" path="res://Wrestlers/sln/North_America/Face/Male/macho_martinez.tres" id="14_uu1sy"]
+[ext_resource type="Resource" uid="uid://3v58c164kis3" path="res://Wrestlers/sln/North_America/Face/Male/resistente.tres" id="15_1eji0"]
+[ext_resource type="Resource" uid="uid://nmt6q5bggn0b" path="res://Wrestlers/sln/North_America/Face/Male/rey_del_barrio.tres" id="16_d2688"]
+[ext_resource type="Resource" uid="uid://yf8jj8r1qec" path="res://Wrestlers/sln/North_America/Heel/Male/caos_magnetico.tres" id="17_g7oti"]
+[ext_resource type="Resource" uid="uid://u6enw4tm8rm5" path="res://Wrestlers/sln/North_America/Heel/Male/el_curtidor.tres" id="18_0tu1i"]
+[ext_resource type="Resource" uid="uid://ckdg8vlnb2p08" path="res://Wrestlers/sln/North_America/Heel/Male/el_juez.tres" id="19_cvpve"]
+[ext_resource type="Resource" uid="uid://7ds4bvwptnph" path="res://Wrestlers/sln/North_America/Heel/Male/el_patriarca.tres" id="20_jr7a3"]
+[ext_resource type="Resource" uid="uid://chtuypcsbgu03" path="res://Wrestlers/sln/North_America/Heel/Male/espiritu_tragico.tres" id="21_joxac"]
+[ext_resource type="Resource" uid="uid://l1kk8qmikklk" path="res://Wrestlers/sln/North_America/Heel/Male/fernando_el_exito_rivera.tres" id="22_vyomg"]
+[ext_resource type="Resource" uid="uid://dvg2dmxa7t84v" path="res://Wrestlers/sln/North_America/Heel/Male/hierro_forjado.tres" id="23_v1i28"]
+[ext_resource type="Resource" uid="uid://dr1plu0dlytgf" path="res://Wrestlers/sln/North_America/Heel/Male/julian_el_rayo_valenti.tres" id="24_eq344"]
+[ext_resource type="Resource" uid="uid://c8y1maybvgv2k" path="res://Wrestlers/sln/North_America/Heel/Male/muralla_negra.tres" id="25_3ku03"]
+[ext_resource type="Resource" uid="uid://bltjcq7s62q45" path="res://Wrestlers/sln/North_America/Heel/Male/narciso_el_guapo.tres" id="26_8nvk8"]
+[ext_resource type="Resource" uid="uid://pe1gslwcgjtm" path="res://Wrestlers/sln/North_America/Heel/Male/roughneck_rick_miller.tres" id="27_hwwwc"]
+[ext_resource type="Resource" uid="uid://dw35agv87lwys" path="res://Wrestlers/sln/North_America/Heel/Male/vandalo_del_norte.tres" id="28_2qxmx"]
+[ext_resource type="Resource" uid="uid://c3fqkx3hkt3ee" path="res://Wrestlers/sln/South_America/Face/Male/ocelote.tres" id="29_rc2q5"]
+[ext_resource type="Resource" uid="uid://b8wmrdm3npq2v" path="res://Wrestlers/sln/Europe/Face/Female/the_lock_jenny_west.tres" id="35_vfngj"]
+[ext_resource type="Resource" uid="uid://c80eripd5v8cw" path="res://Wrestlers/sln/North_America/Face/Female/chispa_divina.tres" id="36_3h5hl"]
+[ext_resource type="Resource" uid="uid://b5lym6xhwd3pc" path="res://Wrestlers/sln/North_America/Face/Female/la_intocable.tres" id="37_xvov1"]
+[ext_resource type="Resource" uid="uid://cxhot2ouvpebn" path="res://Wrestlers/sln/North_America/Face/Female/pequena_maravilla.tres" id="38_w6lbg"]
+[ext_resource type="Resource" uid="uid://c2p6mublnjios" path="res://Wrestlers/sln/North_America/Heel/Female/diosa_de_sombras.tres" id="39_5audr"]
+[ext_resource type="Resource" uid="uid://bwf3o3npbvh0g" path="res://Wrestlers/sln/North_America/Heel/Female/la_rencorosa.tres" id="40_kgyxe"]
+[ext_resource type="Resource" uid="uid://bctatr2qckfsh" path="res://Wrestlers/sln/North_America/Heel/Female/victoria_diamante_de_la_vega.tres" id="41_8vg6c"]
+[ext_resource type="Resource" uid="uid://dyj4e5hiixwx2" path="res://Wrestlers/sln/Oceania/Heel/Female/the_hammer_brenda_banks.tres" id="42_pcvo6"]
+
+[resource]
+script = ExtResource("1")
+promotion_name = "Sociedad de Lucha Nacional"
+promotion_initials = "SLN"
+promotion_id = 4
+preferred_styles = Array[int]([1, 3])
+home_region = 1
+north_american_country = 2
+mens_division = Array[ExtResource("1_10703")]([ExtResource("2_wp6fs"), ExtResource("3_omnvs"), ExtResource("4_4y6hx"), ExtResource("5_s4t3d"), ExtResource("6_usr7y"), ExtResource("7_nnsd2"), ExtResource("8_bar3b"), ExtResource("9_s6d3y"), ExtResource("10_1p4q0"), ExtResource("11_exyxr"), ExtResource("12_ruoos"), ExtResource("13_dw424"), ExtResource("14_uu1sy"), ExtResource("15_1eji0"), ExtResource("16_d2688"), ExtResource("17_g7oti"), ExtResource("18_0tu1i"), ExtResource("19_cvpve"), ExtResource("20_jr7a3"), ExtResource("21_joxac"), ExtResource("22_vyomg"), ExtResource("23_v1i28"), ExtResource("24_eq344"), ExtResource("25_3ku03"), ExtResource("26_8nvk8"), ExtResource("27_hwwwc"), ExtResource("28_2qxmx"), ExtResource("29_rc2q5")])
+womens_division = Array[ExtResource("1_10703")]([ExtResource("35_vfngj"), ExtResource("36_3h5hl"), ExtResource("37_xvov1"), ExtResource("38_w6lbg"), ExtResource("39_5audr"), ExtResource("40_kgyxe"), ExtResource("41_8vg6c"), ExtResource("42_pcvo6")])
+titles = Array[ExtResource("3_l7m80")]([ExtResource("4_ctmjm"), ExtResource("5_singles"), ExtResource("6_womens")])
+global_popularity = 20.0
+pop_north_america = 45.0
+pop_europe = 30.0
+pop_asia = 25.0
+pop_africa = 5.0
+pop_oceania = 15.0

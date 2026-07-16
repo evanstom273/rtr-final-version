@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="TitleResource" format=3 uid="uid://drowssykkx5no"]
+
+[ext_resource type="Script" uid="uid://bsoy7pfr7publ" path="res://Scripts/Data/TitleData.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+title_name = "TCG Women's Title"
+promotion_id = 3
+division = 3

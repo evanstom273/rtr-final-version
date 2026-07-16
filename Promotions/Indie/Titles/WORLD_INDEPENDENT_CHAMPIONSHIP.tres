@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="TitleResource" format=3 uid="uid://doaodav05a1vi"]
+
+[ext_resource type="Script" uid="uid://bsoy7pfr7publ" path="res://Scripts/Data/TitleData.gd" id="1_addym"]
+
+[resource]
+script = ExtResource("1_addym")
+title_name = "World Independent Championship"
+promotion_id = 1
+gender = 1

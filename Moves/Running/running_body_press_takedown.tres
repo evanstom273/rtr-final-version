@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="MoveResource" format=3 uid="uid://dw2ktcix0galu"]
+
+[ext_resource type="Script" uid="uid://dsl2sqtwrkuos" path="res://Scripts/Data/MoveData.gd" id="1_ojmum"]
+
+[resource]
+script = ExtResource("1_ojmum")
+move_name = "Running Body Press Takedown"
+move_type = 3
+class_preferrence = Array[int]([1])
+move_target_parts = Array[int]([2])
+required_attacker_position = 4
+required_target_position = 1
+resulting_attacker_position = 1
+resulting_target_position = 2
+move_impact = 4

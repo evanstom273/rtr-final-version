@@ -1,0 +1,85 @@
+[gd_resource type="Resource" script_class="WrestlerResource" format=3 uid="uid://2dd7smsei2k7"]
+
+[ext_resource type="Script" uid="uid://7hab2jqqst0c" path="res://Scripts/Data/ContractData.gd" id="1_n2k51"]
+[ext_resource type="Script" uid="uid://dsl2sqtwrkuos" path="res://Scripts/Data/MoveData.gd" id="2_w8bnb"]
+[ext_resource type="Resource" uid="uid://8usgbit1ore0" path="res://Moves/Grounded/Finishers/arm_breaker_stomp.tres" id="3_givu5"]
+[ext_resource type="Script" uid="uid://dwj45ptt6d1qp" path="res://Scripts/Data/WrestlerData.gd" id="3_w3cgw"]
+[ext_resource type="Script" uid="uid://c0ind1qu7jee8" path="res://Scripts/Data/TraitData.gd" id="4_gsv1v"]
+[ext_resource type="Resource" uid="uid://d1vwui3yv8sy2" path="res://Moves/Submissions/Finishers/dragon_sleeper.tres" id="4_yvmgv"]
+[ext_resource type="Resource" uid="uid://ihcwu32k6x0r" path="res://Moves/Springboard/Finishers/springboard_tilt_a_whirl_driver.tres" id="5_8nvr8"]
+[ext_resource type="Resource" uid="uid://bciqwfcllkqp1" path="res://Moves/Strikes/Weak/grounded_stomp.tres" id="6_3kq5f"]
+[ext_resource type="Resource" uid="uid://bu2pyhdgfprmq" path="res://Moves/Strikes/Medium/roundhouse_kick.tres" id="7_xnlci"]
+[ext_resource type="Resource" uid="uid://beslr6lovdw5n" path="res://Moves/Submissions/rear_naked_choke_takedown.tres" id="8_48arl"]
+[ext_resource type="Resource" uid="uid://beq0noqmiuanb" path="res://Moves/Submissions/kimura_lock.tres" id="9_1acdi"]
+[ext_resource type="Resource" uid="uid://b03vskhm6bq76" path="res://Moves/Corner/corner_tornado_ddt.tres" id="9_cn0pu"]
+[ext_resource type="Resource" uid="uid://dqh81jir5ta7b" path="res://Moves/Strikes/Weak/kidney_punch.tres" id="10_2irgw"]
+[ext_resource type="Resource" uid="uid://btmbccwv2ynok" path="res://Moves/Rope_Rebound/rebound_wheelbarrow_facebuster.tres" id="12_466rg"]
+[ext_resource type="Resource" uid="uid://cf47x3jke78s7" path="res://Moves/Standing_Behind/inverted_atomic_drop.tres" id="13_fqx6a"]
+[ext_resource type="Resource" uid="uid://1yqbrl5ox8n0" path="res://Moves/Springboard/springboard_flying_mare.tres" id="14_b738q"]
+[ext_resource type="Resource" uid="uid://bj0cg16cdnj4c" path="res://Moves/Standing_Behind/rear_waistlock_takedown.tres" id="15_48arl"]
+[ext_resource type="Resource" uid="uid://bspd4g4ll02hw" path="res://Moves/Diving_Standing/diving_neckbreaker.tres" id="16_1acdi"]
+[ext_resource type="Resource" uid="uid://tx2e3irmgi34" path="res://Moves/Submissions/side_headlock.tres" id="17_w8wh4"]
+[ext_resource type="Resource" uid="uid://caj0yqe76ynue" path="res://Moves/Strikes/Weak/toe_kick.tres" id="18_3xipu"]
+[ext_resource type="Resource" uid="uid://xxdn1ujrdv3g" path="res://Moves/Corner/corner_facebuster.tres" id="20_p61u7"]
+[ext_resource type="Resource" uid="uid://cktf30f3ul0vk" path="res://Moves/Submissions/heel_hook.tres" id="20_s2jw6"]
+[ext_resource type="Resource" uid="uid://bo1bg4xsrhsml" path="res://Moves/Corner/corner_lungblower.tres" id="22_netli"]
+[ext_resource type="Resource" uid="uid://7niv7innsbcu" path="res://Moves/Submissions/single_leg_boston_crab.tres" id="24_wqbny"]
+[ext_resource type="Resource" uid="uid://j2j6gnycuti6" path="res://Moves/Rope_Rebound/rebound_facebuster.tres" id="25_2abnk"]
+[ext_resource type="Resource" uid="uid://cybrmobabk2w2" path="res://Moves/Submissions/boston_crab.tres" id="28_g6gyf"]
+[ext_resource type="Resource" uid="uid://c86xr3buvcu64" path="res://Moves/Strikes/Medium/step_up_knee_strike.tres" id="29_wf8g8"]
+[ext_resource type="Resource" uid="uid://bv81pplrt1we7" path="res://Moves/Diving_Grounded/diving_double_stomp_press.tres" id="30_2abnk"]
+[ext_resource type="Resource" uid="uid://djnm5gp53ev15" path="res://Moves/Rope_Rebound/rebound_sunset_flip.tres" id="31_g6gyf"]
+[ext_resource type="Resource" uid="uid://xuns628oowib" path="res://Moves/Standing_Behind/victory_roll.tres" id="31_qg2ui"]
+[ext_resource type="Resource" uid="uid://c3k72jrkl5i2j" path="res://Moves/Running/running_tilt_a_whirl_backbreaker.tres" id="32_sxj26"]
+[ext_resource type="Resource" uid="uid://uel5aca5e3f6" path="res://Moves/Grounded/jaw_breaker_blow.tres" id="33_s2jw6"]
+[ext_resource type="Resource" uid="uid://4w4a2ppewyqp" path="res://Moves/Grounded/grounded_elbow_smash.tres" id="34_p2eb5"]
+[ext_resource type="Resource" uid="uid://4ndpktx2bdp4" path="res://Moves/Submissions/chickenwing.tres" id="34_wf8g8"]
+[ext_resource type="Resource" uid="uid://drhr3l07opfx" path="res://Moves/Running/running_rolling_crucifix.tres" id="35_j5mag"]
+[ext_resource type="Resource" uid="uid://dv25qckkgyxac" path="res://Moves/Grounded/grounded_palm_strike.tres" id="36_3tn83"]
+[ext_resource type="Resource" uid="uid://qv730i8a0bga" path="res://Moves/Submissions/crossface.tres" id="37_eqpc1"]
+[ext_resource type="Resource" uid="uid://cfpv1j2ltfttx" path="res://Moves/Strikes/Medium/running_big_boot.tres" id="38_pfj4l"]
+[ext_resource type="Resource" uid="uid://bqb2i6q7sj1ls" path="res://Moves/Grounded/mounted_punches.tres" id="39_8vrwt"]
+[ext_resource type="Resource" uid="uid://lu7h76k4ru0y" path="res://Moves/Strikes/Medium/sliding_lariat.tres" id="39_sxj26"]
+[ext_resource type="Resource" uid="uid://txrrr8fhre20" path="res://Moves/Submissions/rebound_armbar_takeover.tres" id="40_tn6fo"]
+[ext_resource type="Resource" uid="uid://fu4a2rdimdfq" path="res://Moves/Submissions/grounded_front_facelock.tres" id="41_bcrh4"]
+[ext_resource type="Resource" uid="uid://dh4mlkqumjkox" path="res://Moves/Standing_Front/reverse_sto.tres" id="42_cgh8s"]
+[ext_resource type="Resource" uid="uid://bchryiyi5d6mo" path="res://Moves/Corner/corner_sit_out_facebuster.tres" id="43_nae5n"]
+[ext_resource type="Resource" uid="uid://uxsbmqrqmabd" path="res://Moves/Running/running_face_wash_bulldog.tres" id="44_5v41a"]
+[ext_resource type="Resource" uid="uid://cgsltp777y82i" path="res://Moves/Standing_Front/snap_suplex.tres" id="45_addx5"]
+[ext_resource type="Resource" uid="uid://elp1wmo1x3la" path="res://Moves/Standing_Front/russian_leg_sweep.tres" id="46_qg2ui"]
+[ext_resource type="Resource" uid="uid://c2yculb50yrn2" path="res://Moves/Running/running_drop_toe_hold.tres" id="47_3flf2"]
+[ext_resource type="Resource" uid="uid://c2n0uhrpjt6j1" path="res://Moves/Strikes/Medium/spinning_back_elbow.tres" id="48_85top"]
+[ext_resource type="Resource" uid="uid://cpio7ikhoy0i6" path="res://Moves/Corner/corner_neckbreaker.tres" id="48_n7sbd"]
+[ext_resource type="Resource" uid="uid://c3872v6wxr006" path="res://Moves/Standing_Behind/back_suplex.tres" id="49_a1l5h"]
+[ext_resource type="Resource" uid="uid://domixxr44kp8y" path="res://Moves/Standing_Front/arm_drag.tres" id="51_ylqwo"]
+[ext_resource type="Resource" uid="uid://drgwa48dfq433" path="res://Moves/Rope_Rebound/rebound_swinging_ddt.tres" id="52_yfjpb"]
+[ext_resource type="Resource" uid="uid://bk7syuh85kuyq" path="res://Moves/Grounded/grounded_arm_trap_smash.tres" id="56_ast1r"]
+
+[resource]
+script = ExtResource("3_w3cgw")
+wrestler_name = "Lucia Vanta"
+gimmick_name = "The Red Ledger"
+gimmick_description = "Italian technician who wrestles with accountant precision and collector cruelty."
+wrestler_id = 28
+wrestler_class = Array[int]([2, 3])
+wrestler_gender = 2
+wrestler_disposition = 2
+Age = 29
+wrestler_height = "5'7"
+wrestler_weight = 139
+birthplace = 6
+europe_country = 3
+strength = 47.0
+speed = 81.0
+stamina = 81.0
+skill = 89.0
+striking = 77.0
+charisma = 80.0
+global_popularity = 13.0
+pop_north_america = 16.0
+pop_south_america = 8.0
+pop_europe = 24.0
+pop_asia = 10.0
+pop_africa = 8.0
+pop_oceania = 10.0
+move_set = Array[ExtResource("2_w8bnb")]([ExtResource("3_givu5"), ExtResource("4_yvmgv"), ExtResource("5_8nvr8"), ExtResource("6_3kq5f"), ExtResource("7_xnlci"), ExtResource("39_8vrwt"), ExtResource("9_cn0pu"), ExtResource("10_2irgw"), ExtResource("20_s2jw6"), ExtResource("12_466rg"), ExtResource("13_fqx6a"), ExtResource("14_b738q"), ExtResource("15_48arl"), ExtResource("16_1acdi"), ExtResource("17_w8wh4"), ExtResource("18_3xipu"), ExtResource("31_qg2ui"), ExtResource("20_p61u7"), ExtResource("9_1acdi"), ExtResource("22_netli"), ExtResource("34_wf8g8"), ExtResource("24_wqbny"), ExtResource("31_g6gyf"), ExtResource("56_ast1r"), ExtResource("39_sxj26"), ExtResource("28_g6gyf"), ExtResource("29_wf8g8"), ExtResource("30_2abnk"), ExtResource("8_48arl"), ExtResource("32_sxj26"), ExtResource("33_s2jw6"), ExtResource("34_p2eb5"), ExtResource("35_j5mag"), ExtResource("36_3tn83"), ExtResource("37_eqpc1"), ExtResource("38_pfj4l"), ExtResource("48_85top"), ExtResource("40_tn6fo"), ExtResource("41_bcrh4"), ExtResource("42_cgh8s"), ExtResource("43_nae5n"), ExtResource("44_5v41a"), ExtResource("45_addx5"), ExtResource("46_qg2ui"), ExtResource("47_3flf2"), ExtResource("48_n7sbd"), ExtResource("49_a1l5h"), ExtResource("25_2abnk"), ExtResource("51_ylqwo"), ExtResource("52_yfjpb")])

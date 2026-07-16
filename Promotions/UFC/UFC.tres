@@ -1,0 +1,62 @@
+[gd_resource type="Resource" script_class="PromotionResource" format=3 uid="uid://d1ybhdg6nx6nd"]
+
+[ext_resource type="Script" uid="uid://dur40byryil5w" path="res://Scripts/Data/PromotionData.gd" id="1"]
+[ext_resource type="Script" uid="uid://dwj45ptt6d1qp" path="res://Scripts/Data/WrestlerData.gd" id="1_mi3s5"]
+[ext_resource type="Resource" uid="uid://csun16vq0pl6p" path="res://Wrestlers/ufc/North_America/Heel/Male/cole_mercer.tres" id="2_iqqku"]
+[ext_resource type="Script" uid="uid://bsoy7pfr7publ" path="res://Scripts/Data/TitleData.gd" id="2_title_script"]
+[ext_resource type="Resource" uid="uid://c35q7f84cbnk" path="res://Wrestlers/ufc/North_America/Heel/Male/curtis_pakele.tres" id="3_tlku5"]
+[ext_resource type="Resource" uid="uid://cdv1sn8tko5hx" path="res://Wrestlers/ufc/Oceania/Face/Male/afa_togia.tres" id="4_0h5mc"]
+[ext_resource type="Resource" uid="uid://bcgqkdfft2rbo" path="res://Promotions/UFC/Titles/UFC_ULA_FALA.tres" id="4_main"]
+[ext_resource type="Resource" uid="uid://dtb13degej3oo" path="res://Wrestlers/ufc/Oceania/Face/Male/brock_tamihana.tres" id="5_j4m8d"]
+[ext_resource type="Resource" uid="uid://bo6nw4fdveqh5" path="res://Promotions/UFC/Titles/UFC_PACIFIC_TITLE.tres" id="5_singles"]
+[ext_resource type="Resource" uid="uid://dem0he0dw2p1a" path="res://Wrestlers/ufc/Oceania/Face/Male/kaleo_misa.tres" id="6_uvb8c"]
+[ext_resource type="Resource" uid="uid://yodqoivbul60" path="res://Promotions/UFC/Titles/UFC_SIAMUPINI_A_TAMAITAI.tres" id="6_womens"]
+[ext_resource type="Resource" uid="uid://dykgrn3cit4pq" path="res://Wrestlers/ufc/Oceania/Face/Male/kitiona_faumuina.tres" id="7_fxf0l"]
+[ext_resource type="Resource" uid="uid://bpeefamtdpa71" path="res://Wrestlers/ufc/Oceania/Face/Male/leka_toomalatai.tres" id="8_jowvm"]
+[ext_resource type="Resource" uid="uid://dkh3tma2xdgfb" path="res://Wrestlers/ufc/Oceania/Face/Male/maleko_vaea.tres" id="9_j01ii"]
+[ext_resource type="Resource" uid="uid://u0srimhdpuoy" path="res://Wrestlers/ufc/Oceania/Face/Male/mana_pula.tres" id="10_61i2n"]
+[ext_resource type="Resource" uid="uid://crky2f3bny0op" path="res://Wrestlers/ufc/Oceania/Face/Male/noa_alapati.tres" id="11_a8voc"]
+[ext_resource type="Resource" uid="uid://d13b171qkuh8g" path="res://Wrestlers/ufc/Oceania/Face/Male/peni_auelua.tres" id="12_tbtm0"]
+[ext_resource type="Resource" uid="uid://bvvbu410dsfae" path="res://Wrestlers/ufc/Oceania/Face/Male/rangi_tupuola.tres" id="13_x4m6i"]
+[ext_resource type="Resource" uid="uid://buqcxg8ku2ppf" path="res://Wrestlers/ufc/Oceania/Face/Male/samiuela_niko.tres" id="14_w383f"]
+[ext_resource type="Resource" uid="uid://rddlh7w45kae" path="res://Wrestlers/ufc/Oceania/Face/Male/tala_siope.tres" id="15_xjx2j"]
+[ext_resource type="Resource" uid="uid://rxlo6n4m58ry" path="res://Wrestlers/ufc/Oceania/Face/Male/tama_satele.tres" id="16_ut6ky"]
+[ext_resource type="Resource" uid="uid://7kykcx8q4u8v" path="res://Wrestlers/ufc/Oceania/Face/Male/tevita_hakaio.tres" id="17_l5u1p"]
+[ext_resource type="Resource" uid="uid://dnkwnoaayh71j" path="res://Wrestlers/ufc/Oceania/Heel/Male/faatoese_lemafa.tres" id="18_tv2tg"]
+[ext_resource type="Resource" uid="uid://mi4hdqmoxcwy" path="res://Wrestlers/ufc/Oceania/Heel/Male/fetu_aiono.tres" id="19_f4c1r"]
+[ext_resource type="Resource" uid="uid://4w61vh45ey7x" path="res://Wrestlers/ufc/Oceania/Heel/Male/hemi_koro.tres" id="20_h71tp"]
+[ext_resource type="Resource" uid="uid://7ysnk7b2hjv7" path="res://Wrestlers/ufc/Oceania/Heel/Male/ikaika_moana.tres" id="21_jmqwa"]
+[ext_resource type="Resource" uid="uid://g5g5lwlexf0b" path="res://Wrestlers/ufc/Oceania/Heel/Male/iosefa_mapu.tres" id="22_aopfs"]
+[ext_resource type="Resource" uid="uid://8ex4fr21e3h8" path="res://Wrestlers/ufc/Oceania/Heel/Male/jett_kuresa.tres" id="23_8r0ew"]
+[ext_resource type="Resource" uid="uid://cjoq52cxtetcd" path="res://Wrestlers/ufc/Oceania/Heel/Male/loto_savaliga.tres" id="24_bsdlr"]
+[ext_resource type="Resource" uid="uid://bld8vg2vy7hmn" path="res://Wrestlers/ufc/Oceania/Heel/Male/mika_taufale.tres" id="25_xdgdf"]
+[ext_resource type="Resource" uid="uid://u6xbptrjfdkv" path="res://Wrestlers/ufc/Oceania/Heel/Male/riko_vasa.tres" id="26_dxgke"]
+[ext_resource type="Resource" uid="uid://daclahovhdh0b" path="res://Wrestlers/ufc/Oceania/Heel/Male/sefa_leuta.tres" id="27_ug10j"]
+[ext_resource type="Resource" uid="uid://clle80yv50o5l" path="res://Wrestlers/ufc/Oceania/Heel/Male/sio_vunipola.tres" id="28_ws26s"]
+[ext_resource type="Resource" uid="uid://caayb5rgbe6fr" path="res://Wrestlers/ufc/Oceania/Heel/Male/tavita_soliola.tres" id="29_djrev"]
+[ext_resource type="Resource" uid="uid://bufgxsq4bdf3y" path="res://Wrestlers/ufc/Oceania/Face/Female/alamea_fepuleai.tres" id="35_x4fs7"]
+[ext_resource type="Resource" uid="uid://xx4jscbmygj5" path="res://Wrestlers/ufc/Oceania/Face/Female/moana_satele.tres" id="36_f6s38"]
+[ext_resource type="Resource" uid="uid://cx1clfvajrtje" path="res://Wrestlers/ufc/Oceania/Face/Female/nia_tufuga.tres" id="37_ndfkv"]
+[ext_resource type="Resource" uid="uid://bspld2g6qk75" path="res://Wrestlers/ufc/Oceania/Face/Female/vaea_lokeni.tres" id="38_ofrxb"]
+[ext_resource type="Resource" uid="uid://df2ysl7nbhkny" path="res://Wrestlers/ufc/Oceania/Heel/Female/kora_tamihana.tres" id="39_wurga"]
+[ext_resource type="Resource" uid="uid://dlckn3jrcalxt" path="res://Wrestlers/ufc/Oceania/Heel/Female/leilani_taua.tres" id="40_yh6f3"]
+[ext_resource type="Resource" uid="uid://bild1j1alff77" path="res://Wrestlers/ufc/Oceania/Heel/Female/sina_vaea.tres" id="41_s8krg"]
+[ext_resource type="Resource" uid="uid://mub8i7vb7u84" path="res://Wrestlers/ufc/Oceania/Heel/Female/tasi_aiono.tres" id="42_wlp67"]
+
+[resource]
+script = ExtResource("1")
+promotion_name = "Ula Fala Combat"
+promotion_initials = "UFC"
+promotion_id = 9
+preferred_styles = Array[int]([2, 4])
+home_region = 5
+oceania_country = 2
+mens_division = Array[ExtResource("1_mi3s5")]([ExtResource("2_iqqku"), ExtResource("3_tlku5"), ExtResource("4_0h5mc"), ExtResource("5_j4m8d"), ExtResource("6_uvb8c"), ExtResource("7_fxf0l"), ExtResource("8_jowvm"), ExtResource("9_j01ii"), ExtResource("10_61i2n"), ExtResource("11_a8voc"), ExtResource("12_tbtm0"), ExtResource("13_x4m6i"), ExtResource("14_w383f"), ExtResource("15_xjx2j"), ExtResource("16_ut6ky"), ExtResource("17_l5u1p"), ExtResource("18_tv2tg"), ExtResource("19_f4c1r"), ExtResource("20_h71tp"), ExtResource("21_jmqwa"), ExtResource("22_aopfs"), ExtResource("23_8r0ew"), ExtResource("24_bsdlr"), ExtResource("25_xdgdf"), ExtResource("26_dxgke"), ExtResource("27_ug10j"), ExtResource("28_ws26s"), ExtResource("29_djrev")])
+womens_division = Array[ExtResource("1_mi3s5")]([ExtResource("35_x4fs7"), ExtResource("36_f6s38"), ExtResource("37_ndfkv"), ExtResource("38_ofrxb"), ExtResource("39_wurga"), ExtResource("40_yh6f3"), ExtResource("41_s8krg"), ExtResource("42_wlp67")])
+titles = Array[ExtResource("2_title_script")]([ExtResource("4_main"), ExtResource("5_singles"), ExtResource("6_womens")])
+global_popularity = 17.0
+pop_north_america = 15.0
+pop_europe = 10.0
+pop_asia = 20.0
+pop_africa = 5.0
+pop_oceania = 50.0

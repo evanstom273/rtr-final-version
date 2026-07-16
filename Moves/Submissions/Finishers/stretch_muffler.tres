@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="MoveResource" format=3 uid="uid://cx46nxh27k1px"]
+
+[ext_resource type="Script" uid="uid://dsl2sqtwrkuos" path="res://Scripts/Data/MoveData.gd" id="1_0hhba"]
+
+[resource]
+script = ExtResource("1_0hhba")
+move_name = "Stretch Muffler"
+move_type = 5
+class_preferrence = Array[int]([2])
+move_target_parts = Array[int]([5, 6, 2])
+targeting_mode = 2
+default_side_target = 5
+required_attacker_position = 1
+required_target_position = 2
+resulting_attacker_position = 2
+resulting_target_position = 2
+is_finisher = true
+is_submission = true
+move_impact = 8

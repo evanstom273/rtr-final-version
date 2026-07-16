@@ -1,0 +1,118 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://Scripts/UI/moves_radial_menu.gd" id="1_menu"]
+[ext_resource type="PackedScene" path="res://Scenes/Match/move_category_radial_menu.tscn" id="2_category"]
+
+[sub_resource type="StyleBoxFlat" id="StyleMenuPanel"]
+bg_color = Color(0.045, 0.06, 0.09, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.78, 0.64, 0.2, 0.9)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[node name="MovesRadialMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("1_menu")
+
+[node name="Dim" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.78)
+
+[node name="CategoryMenu" parent="." instance=ExtResource("2_category")]
+unique_name_in_owner = true
+layout_mode = 1
+
+[node name="MoveCenter" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="MovePanel" type="PanelContainer" parent="MoveCenter"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(620, 700)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleMenuPanel")
+
+[node name="MoveMargin" type="MarginContainer" parent="MoveCenter/MovePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 18
+
+[node name="MoveContent" type="VBoxContainer" parent="MoveCenter/MovePanel/MoveMargin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="MoveCategoryTitle" type="Label" parent="MoveCenter/MovePanel/MoveMargin/MoveContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.82, 0.42, 1)
+theme_override_font_sizes/font_size = 22
+text = "MOVES"
+horizontal_alignment = 1
+
+[node name="TargetFocusRow" type="HBoxContainer" parent="MoveCenter/MovePanel/MoveMargin/MoveContent"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TargetFocusLabel" type="Label" parent="MoveCenter/MovePanel/MoveMargin/MoveContent/TargetFocusRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.72, 0.77, 0.86, 1)
+text = "TARGET FOCUS"
+vertical_alignment = 1
+
+[node name="TargetFocusSelector" type="OptionButton" parent="MoveCenter/MovePanel/MoveMargin/MoveContent/TargetFocusRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MoveGrid" type="GridContainer" parent="MoveCenter/MovePanel/MoveMargin/MoveContent"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+columns = 4
+
+[node name="MoveActions" type="HBoxContainer" parent="MoveCenter/MovePanel/MoveMargin/MoveContent"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="BackButton" type="Button" parent="MoveCenter/MovePanel/MoveMargin/MoveContent/MoveActions"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "BACK"
+
+[node name="CloseMovesButton" type="Button" parent="MoveCenter/MovePanel/MoveMargin/MoveContent/MoveActions"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "CLOSE"
