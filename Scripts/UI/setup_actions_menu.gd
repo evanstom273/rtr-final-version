@@ -3,36 +3,96 @@ class_name SetupActionsMenu
 
 signal action_selected(action_id: StringName)
 
-const STAND_UP := &"stand_up"
-const PREPARE_SPRINGBOARD := &"prepare_springboard"
-const START_RUNNING := &"start_running"
-const CLIMB_TOP_ROPE := &"climb_top_rope"
-const PICK_OPPONENT_UP := &"pick_opponent_up"
-const IRISH_WHIP := &"irish_whip"
-const GRAPPLE_OPPONENT := &"grapple_opponent"
-const THROW_INTO_CORNER := &"throw_into_corner"
-const WAKE_OPPONENT := &"wake_opponent"
-const STOP_RUNNING := &"stop_running"
-const LEAVE_CORNER := &"leave_corner"
-const REGAIN_FOOTING := &"regain_footing"
-const CLIMB_DOWN := &"climb_down"
-const RETURN_TO_RING := &"return_to_ring"
-const RESET_STANCE := &"reset_stance"
-const TAUNT := &"taunt"
+const STAND_UP := MatchSetupStateRules.STAND_UP
+const PREPARE_SPRINGBOARD := MatchSetupStateRules.PREPARE_SPRINGBOARD
+const START_RUNNING := MatchSetupStateRules.START_RUNNING
+const CLIMB_TOP_ROPE := MatchSetupStateRules.CLIMB_TOP_ROPE
+const PICK_OPPONENT_UP := MatchSetupStateRules.PICK_OPPONENT_UP
+const IRISH_WHIP := MatchSetupStateRules.IRISH_WHIP
+const GRAPPLE_OPPONENT := MatchSetupStateRules.GRAPPLE_OPPONENT
+const THROW_INTO_CORNER := MatchSetupStateRules.THROW_INTO_CORNER
+const WAKE_OPPONENT := MatchSetupStateRules.WAKE_OPPONENT
+const STOP_RUNNING := MatchSetupStateRules.STOP_RUNNING
+const LEAVE_CORNER := MatchSetupStateRules.LEAVE_CORNER
+const REGAIN_FOOTING := MatchSetupStateRules.REGAIN_FOOTING
+const CLIMB_DOWN := MatchSetupStateRules.CLIMB_DOWN
+const RETURN_TO_RING := MatchSetupStateRules.RETURN_TO_RING
+const RESET_STANCE := MatchSetupStateRules.RESET_STANCE
+const TAUNT := MatchSetupStateRules.TAUNT
+const STEP_TO_ROPES := MatchSetupStateRules.STEP_TO_ROPES
+const LEAVE_ROPES := MatchSetupStateRules.LEAVE_ROPES
+const GET_BEHIND_OPPONENT := MatchSetupStateRules.GET_BEHIND_OPPONENT
+const TURN_OPPONENT_FACE_UP := MatchSetupStateRules.TURN_OPPONENT_FACE_UP
+const TURN_OPPONENT_FACE_DOWN := MatchSetupStateRules.TURN_OPPONENT_FACE_DOWN
+const SIT_OPPONENT_UP_FRONT := MatchSetupStateRules.SIT_OPPONENT_UP_FRONT
+const SIT_OPPONENT_UP_BACK := MatchSetupStateRules.SIT_OPPONENT_UP_BACK
+const PULL_OPPONENT_TO_KNEES_FRONT := MatchSetupStateRules.PULL_OPPONENT_TO_KNEES_FRONT
+const PULL_OPPONENT_TO_KNEES_BACK := MatchSetupStateRules.PULL_OPPONENT_TO_KNEES_BACK
+const TURN_OPPONENT_IN_CORNER := MatchSetupStateRules.TURN_OPPONENT_IN_CORNER
+const SEAT_OPPONENT_IN_CORNER := MatchSetupStateRules.SEAT_OPPONENT_IN_CORNER
+const LEAN_OPPONENT_ON_ROPES_FRONT := MatchSetupStateRules.LEAN_OPPONENT_ON_ROPES_FRONT
+const LEAN_OPPONENT_ON_ROPES_BACK := MatchSetupStateRules.LEAN_OPPONENT_ON_ROPES_BACK
+const DRAPE_OPPONENT_ON_ROPES_FRONT := MatchSetupStateRules.DRAPE_OPPONENT_ON_ROPES_FRONT
+const DRAPE_OPPONENT_ON_ROPES_BACK := MatchSetupStateRules.DRAPE_OPPONENT_ON_ROPES_BACK
+const PLACE_OPPONENT_ON_APRON_FRONT := MatchSetupStateRules.PLACE_OPPONENT_ON_APRON_FRONT
+const PLACE_OPPONENT_ON_APRON_BACK := MatchSetupStateRules.PLACE_OPPONENT_ON_APRON_BACK
+const SET_OPPONENT_ON_TOP_ROPE_FRONT := MatchSetupStateRules.SET_OPPONENT_ON_TOP_ROPE_FRONT
+const SET_OPPONENT_ON_TOP_ROPE_BACK := MatchSetupStateRules.SET_OPPONENT_ON_TOP_ROPE_BACK
+const SEND_OPPONENT_OUTSIDE := MatchSetupStateRules.SEND_OPPONENT_OUTSIDE
+const CALL_OPPONENT_OUTSIDE := MatchSetupStateRules.CALL_OPPONENT_OUTSIDE
+const EXIT_RING := MatchSetupStateRules.EXIT_RING
+const TAKE_FIGHT_OUTSIDE := MatchSetupStateRules.TAKE_FIGHT_OUTSIDE
+const FIGHT_UP_RAMP := MatchSetupStateRules.FIGHT_UP_RAMP
+const RETURN_FROM_RAMP := MatchSetupStateRules.RETURN_FROM_RAMP
+const BRING_MATCH_BACK_TO_RING := MatchSetupStateRules.BRING_MATCH_BACK_TO_RING
+const CALL_OPPONENT_RUNNING := MatchSetupStateRules.CALL_OPPONENT_RUNNING
+const REGAIN_COMPOSURE := MatchSetupStateRules.REGAIN_COMPOSURE
+const PRESS_ADVANTAGE := MatchSetupStateRules.PRESS_ADVANTAGE
+const WAIT_FOR_COUNT := MatchSetupStateRules.WAIT_FOR_COUNT
+const RETRIEVE_STEEL_CHAIR := MatchSetupStateRules.RETRIEVE_STEEL_CHAIR
+const PICK_UP_WEAPON := MatchSetupStateRules.PICK_UP_WEAPON
+const DROP_WEAPON := MatchSetupStateRules.DROP_WEAPON
+const CHAIR_SHOT := MatchSetupStateRules.CHAIR_SHOT
+
+enum ActionGroup { RECOVERY, MOVEMENT, OPPONENT_SETUP, RING_POSITION, SHOWBOAT, WEAPON }
 
 var _attacker: WrestlerResource
 var _target: WrestlerResource
 var _allowed_actions: Array[StringName] = []
+var _grid_columns: int = 4
+var _button_height: float = 54.0
+var _disqualifications_enabled: bool = true
 
-@onready var _state_label: Label = %StateLabel
-@onready var _action_list: VBoxContainer = %ActionList
-@onready var _action_scroll: ScrollContainer = %ActionScroll
+@onready var _panel: PanelContainer = %SetupPanel
+@onready var _context_label: Label = %StateLabel
+@onready var _sections: VBoxContainer = %ActionSections
 @onready var _close_button: Button = %CloseButton
+@onready var _safe_area: MarginContainer = %ActionSafeArea
 
 
 func _ready() -> void:
+	ResponsiveUI.register_layout_target(self)
+	ResponsiveUI.register_safe_area(_safe_area)
 	_close_button.pressed.connect(close)
 	visible = false
+
+
+func _exit_tree() -> void:
+	ResponsiveUI.unregister_layout_target(self)
+	ResponsiveUI.unregister_safe_area(_safe_area)
+
+
+func set_responsive_layout(mode: int, effective_size: Vector2) -> void:
+	var portrait := effective_size.y > effective_size.x
+	_grid_columns = 2 if mode == ResponsiveUI.LayoutMode.PHONE and portrait else (3 if mode != ResponsiveUI.LayoutMode.DESKTOP else 4)
+	var panel_size := Vector2(
+		clampf(effective_size.x - 32.0, 600.0, 1120.0),
+		clampf(effective_size.y - 28.0, 460.0, 820.0),
+	)
+	_panel.custom_minimum_size = panel_size
+	_button_height = 46.0 if panel_size.y < 600.0 else 54.0
+	if visible:
+		_rebuild_actions()
 
 
 func open_for_match(
@@ -43,14 +103,20 @@ func open_for_match(
 	_attacker = attacker
 	_target = target
 	_allowed_actions = allowed_actions
+	if _allowed_actions.is_empty() and _attacker != null and _target != null:
+		_allowed_actions = get_valid_actions(_attacker, _target, true)
 	_rebuild_actions()
 	visible = true
 	_close_button.grab_focus()
 
 
+func set_rule_context(disqualifications_enabled: bool) -> void:
+	_disqualifications_enabled = disqualifications_enabled
+
+
 func close() -> void:
 	visible = false
-	_clear_actions()
+	_clear_sections()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -64,47 +130,7 @@ static func get_valid_actions(
 	target: WrestlerResource,
 	allow_reset_stance: bool = false,
 ) -> Array[StringName]:
-	var actions: Array[StringName] = []
-	if attacker == null or target == null:
-		return actions
-
-	var standing := WrestlerResource.Position.STANDING
-	var grounded := WrestlerResource.Position.GROUNDED
-	var top_rope := WrestlerResource.Position.TOP_ROPE
-
-	match attacker.position:
-		WrestlerResource.Position.GROUNDED:
-			actions.append(STAND_UP)
-		WrestlerResource.Position.RUNNING:
-			actions.append(STOP_RUNNING)
-		WrestlerResource.Position.IN_CORNER:
-			actions.append(LEAVE_CORNER)
-		WrestlerResource.Position.ROPE_REBOUND:
-			actions.append(REGAIN_FOOTING)
-		WrestlerResource.Position.TOP_ROPE:
-			actions.append(CLIMB_DOWN)
-		WrestlerResource.Position.APRON:
-			actions.append(RETURN_TO_RING)
-
-	if attacker.position == standing:
-		actions.append(START_RUNNING)
-		actions.append(CLIMB_TOP_ROPE)
-		actions.append(PREPARE_SPRINGBOARD)
-	if (
-		attacker.position in [standing, WrestlerResource.Position.APRON, top_rope]
-		and target.position in [standing, grounded]
-	):
-		actions.append(TAUNT)
-
-	if attacker.position == standing and target.position == grounded:
-		actions.append(PICK_OPPONENT_UP)
-	if attacker.position == standing and target.position == standing:
-		actions.append(GRAPPLE_OPPONENT)
-		actions.append(IRISH_WHIP)
-		actions.append(THROW_INTO_CORNER)
-	if attacker.position == top_rope and target.position == grounded:
-		actions.append(WAKE_OPPONENT)
-
+	var actions := MatchSetupStateRules.get_candidate_actions(attacker, target)
 	if actions.is_empty() and allow_reset_stance:
 		actions.append(RESET_STANCE)
 	return actions
@@ -119,83 +145,53 @@ static func has_valid_actions(
 
 
 func _rebuild_actions() -> void:
-	_clear_actions()
+	_clear_sections()
 	if _attacker == null or _target == null:
-		_state_label.text = "Assign both wrestlers to use setup actions."
+		_context_label.text = "Assign both wrestlers to use setup actions."
 		return
-
-	_state_label.text = "%s: %s   |   %s: %s" % [
-		_wrestler_name(_attacker),
-		_position_name(_attacker.position),
-		_wrestler_name(_target),
-		_position_name(_target.position),
-	]
-
-	var actions := _allowed_actions
-	if actions.is_empty():
-		actions = get_valid_actions(_attacker, _target, true)
-	for action_id in actions:
-		var details := _action_details(action_id, _attacker.position)
-		_add_action(action_id, str(details.title), str(details.description))
-
-	await get_tree().process_frame
-	_action_scroll.scroll_vertical = 0
+	_context_label.text = "%s vs %s" % [_state_name(_attacker), _state_name(_target)]
+	var grouped: Dictionary = {}
+	for group in ActionGroup.values():
+		grouped[group] = []
+	for action_id in _allowed_actions:
+		(grouped[_group_for_action(action_id)] as Array).append(action_id)
+	for group in ActionGroup.values():
+		var actions: Array = grouped[group]
+		if actions.is_empty():
+			continue
+		_add_group_section(group, actions)
 
 
-static func _action_details(
-	action_id: StringName,
-	attacker_position: int = WrestlerResource.Position.STANDING,
-) -> Dictionary:
-	match action_id:
-		STAND_UP:
-			return {"title": "STAND UP / RETURN TO STANDING", "description": "Push back to a standing position."}
-		START_RUNNING:
-			return {"title": "START RUNNING", "description": "Hit the ropes and build speed for a running attack."}
-		CLIMB_TOP_ROPE:
-			return {"title": "CLIMB TOP ROPE", "description": "Climb to the top turnbuckle for a diving move."}
-		PREPARE_SPRINGBOARD:
-			return {"title": "STEP TO APRON", "description": "Move onto the apron for a springboard move."}
-		RETURN_TO_RING:
-			return {"title": "RETURN TO RING", "description": "Return from the apron or top rope to standing."}
-		CLIMB_DOWN:
-			return {"title": "CLIMB DOWN", "description": "Leave the top rope and return to standing in the ring."}
-		PICK_OPPONENT_UP:
-			return {"title": "PICK OPPONENT UP", "description": "Drag the grounded opponent back to standing."}
-		GRAPPLE_OPPONENT:
-			return {"title": "GRAPPLE OPPONENT", "description": "Tie up while both wrestlers remain standing."}
-		IRISH_WHIP:
-			return {"title": "IRISH WHIP OPPONENT", "description": "Force the standing opponent into a rope rebound."}
-		THROW_INTO_CORNER:
-			return {"title": "THROW OPPONENT INTO CORNER", "description": "Drive the standing opponent into the corner."}
-		WAKE_OPPONENT:
-			return {"title": "WAKE OPPONENT / CALL TO FEET", "description": "Call the grounded opponent up while staying on the top rope."}
-		STOP_RUNNING:
-			return {"title": "STOP RUNNING / RESET STANCE", "description": "Slow down and return to standing."}
-		LEAVE_CORNER:
-			return {"title": "LEAVE THE CORNER", "description": "Step out of the corner and return to standing."}
-		REGAIN_FOOTING:
-			return {"title": "REGAIN FOOTING", "description": "Recover from the forced rope rebound."}
-		RESET_STANCE:
-			return {"title": "RESET STANCE", "description": "Use the match fallback and return to standing."}
-		TAUNT:
-			match attacker_position:
-				WrestlerResource.Position.TOP_ROPE:
-					return {"title": "TOP-ROPE TAUNT", "description": "Risk a high-reward pose from the top rope."}
-				WrestlerResource.Position.APRON:
-					return {"title": "APRON TAUNT", "description": "Play to the crowd from the apron for momentum."}
-			return {"title": "TAUNT / PLAY TO CROWD", "description": "Showboat for stamina, momentum, and a next-move boost."}
-	return {"title": "SETUP ACTION", "description": "Change the current match position."}
-
-
-func _add_action(action_id: StringName, title: String, description: String) -> void:
-	var button := Button.new()
-	button.custom_minimum_size = Vector2(0, 58)
-	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	button.text = title
-	button.tooltip_text = description
-	button.alignment = HORIZONTAL_ALIGNMENT_LEFT
-	button.pressed.connect(_select_action.bind(action_id))
-	_action_list.add_child(button)
+func _add_group_section(group: int, actions: Array) -> void:
+	var details := _group_details(group)
+	var section := VBoxContainer.new()
+	section.add_theme_constant_override("separation", 5)
+	var heading := Label.new()
+	heading.text = "%s  •  %d" % [str(details.label).to_upper(), actions.size()]
+	heading.add_theme_color_override("font_color", details.color)
+	heading.add_theme_font_size_override("font_size", 14)
+	section.add_child(heading)
+	var grid := GridContainer.new()
+	grid.columns = mini(_grid_columns, actions.size())
+	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	grid.add_theme_constant_override("h_separation", 7)
+	grid.add_theme_constant_override("v_separation", 7)
+	section.add_child(grid)
+	for action_value in actions:
+		var action_id := StringName(action_value)
+		var action_details := _action_details(action_id, _attacker.position, _attacker.area)
+		if action_id == CHAIR_SHOT and _disqualifications_enabled:
+			action_details.title = "CHAIR SHOT — WILL CAUSE DISQUALIFICATION"
+			action_details.description = "Committing this illegal chair attack will immediately cost the match."
+		var button := Button.new()
+		button.custom_minimum_size = Vector2(0, _button_height)
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		button.text = str(action_details.title)
+		button.tooltip_text = str(action_details.description)
+		button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		button.pressed.connect(_select_action.bind(action_id))
+		grid.add_child(button)
+	_sections.add_child(section)
 
 
 func _select_action(action_id: StringName) -> void:
@@ -203,18 +199,54 @@ func _select_action(action_id: StringName) -> void:
 	close()
 
 
-func _clear_actions() -> void:
-	for child in _action_list.get_children():
+func _clear_sections() -> void:
+	for child in _sections.get_children():
 		child.queue_free()
 
 
-func _position_name(current_position: int) -> String:
-	for key in WrestlerResource.Position:
-		if int(WrestlerResource.Position[key]) == current_position:
-			return "Not Set" if key == "NONE" else str(key).replace("_", " ").to_lower().capitalize()
-	return "Unknown"
+func _group_for_action(action_id: StringName) -> int:
+	if action_id == TAUNT:
+		return ActionGroup.SHOWBOAT
+	if action_id in [RETRIEVE_STEEL_CHAIR, PICK_UP_WEAPON, DROP_WEAPON, CHAIR_SHOT]:
+		return ActionGroup.WEAPON
+	if MatchSetupStateRules.is_recovery(action_id) or action_id == RESET_STANCE:
+		return ActionGroup.RECOVERY
+	if action_id in [START_RUNNING, CLIMB_TOP_ROPE, PREPARE_SPRINGBOARD, STEP_TO_ROPES]:
+		return ActionGroup.MOVEMENT
+	if action_id in [SEND_OPPONENT_OUTSIDE, CALL_OPPONENT_OUTSIDE, EXIT_RING, TAKE_FIGHT_OUTSIDE, FIGHT_UP_RAMP, RETURN_FROM_RAMP, BRING_MATCH_BACK_TO_RING]:
+		return ActionGroup.RING_POSITION
+	return ActionGroup.OPPONENT_SETUP
 
 
-func _wrestler_name(wrestler: WrestlerResource) -> String:
-	var display_name: String = wrestler.wrestler_name.strip_edges()
-	return "Unnamed Wrestler" if display_name.is_empty() else display_name
+func _group_details(group: int) -> Dictionary:
+	match group:
+		ActionGroup.RECOVERY:
+			return {"label": "Recovery", "color": Color(0.44, 0.75, 1.0, 1.0)}
+		ActionGroup.MOVEMENT:
+			return {"label": "Movement", "color": Color(0.55, 0.8, 1.0, 1.0)}
+		ActionGroup.OPPONENT_SETUP:
+			return {"label": "Opponent Setup", "color": Color(0.92, 0.93, 0.9, 1.0)}
+		ActionGroup.RING_POSITION:
+			return {"label": "Ring Position", "color": Color(0.83, 0.67, 0.24, 1.0)}
+		ActionGroup.SHOWBOAT:
+			return {"label": "Showboat", "color": Color(0.96, 0.8, 0.28, 1.0)}
+		ActionGroup.WEAPON:
+			return {"label": "Weapons", "color": Color(1.0, 0.48, 0.36, 1.0)}
+	return {"label": "Setup", "color": Color(0.84, 0.87, 0.92, 1.0)}
+
+
+static func _action_details(
+	action_id: StringName,
+	attacker_position: int = WrestlerResource.Position.STANDING,
+	attacker_area: int = WrestlerResource.Area.IN_RING,
+) -> Dictionary:
+	return MatchSetupStateRules.action_details(action_id, {
+		"position": attacker_position,
+		"orientation": WrestlerResource.Orientation.FRONT,
+		"area": attacker_area,
+		"motion_state": WrestlerResource.MotionState.STATIONARY,
+	})
+
+
+func _state_name(wrestler: WrestlerResource) -> String:
+	return "Unassigned" if wrestler == null else MatchSetupStateRules.state_name(wrestler)

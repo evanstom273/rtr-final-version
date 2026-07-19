@@ -290,43 +290,16 @@ func _validate_move(move: MoveResource, move_path: String) -> Array[String]:
 
 
 func _expected_positions_for_type(move_type: MoveResource.MoveType) -> Array[int]:
-	match move_type:
-		MoveResource.MoveType.ROPE_REBOUND:
-			return [WrestlerResource.Position.STANDING, WrestlerResource.Position.ROPE_REBOUND]
-		MoveResource.MoveType.SPRINGBOARD:
-			return [WrestlerResource.Position.APRON, WrestlerResource.Position.STANDING]
-		MoveResource.MoveType.CORNER:
-			return [WrestlerResource.Position.STANDING, WrestlerResource.Position.IN_CORNER]
-		MoveResource.MoveType.DIVING_STANDING:
-			return [WrestlerResource.Position.TOP_ROPE, WrestlerResource.Position.STANDING]
-		MoveResource.MoveType.DIVING_GROUNDED:
-			return [WrestlerResource.Position.TOP_ROPE, WrestlerResource.Position.GROUNDED]
-		_:
-			return []
+	# Move type no longer implies posture. Position, orientation, area and motion
+	# requirements are authored independently in the current move schema.
+	return []
 
 
 func _move_type_to_string(move_type: MoveResource.MoveType) -> String:
-	match move_type:
-		MoveResource.MoveType.STANDING_FRONT:
-			return "Standing_Front"
-		MoveResource.MoveType.STANDING_BEHIND:
-			return "Standing_Behind"
-		MoveResource.MoveType.RUNNING:
-			return "Running"
-		MoveResource.MoveType.ROPE_REBOUND:
-			return "Rope_Rebound"
-		MoveResource.MoveType.GROUNDED:
-			return "Grounded"
-		MoveResource.MoveType.SPRINGBOARD:
-			return "Springboard"
-		MoveResource.MoveType.CORNER:
-			return "Corner"
-		MoveResource.MoveType.DIVING_STANDING:
-			return "Diving_Standing"
-		MoveResource.MoveType.DIVING_GROUNDED:
-			return "Diving_Grounded"
-		_:
-			return "None"
+	for key in MoveResource.MoveType:
+		if int(MoveResource.MoveType[key]) == int(move_type):
+			return str(key).replace("_", " ").to_lower().capitalize()
+	return "None"
 
 
 func _targeting_mode_to_string(mode: MoveResource.TargetingMode) -> String:
@@ -344,23 +317,10 @@ func _targeting_mode_to_string(mode: MoveResource.TargetingMode) -> String:
 
 
 func _position_to_string(position: WrestlerResource.Position) -> String:
-	match position:
-		WrestlerResource.Position.STANDING:
-			return "Standing"
-		WrestlerResource.Position.GROUNDED:
-			return "Grounded"
-		WrestlerResource.Position.IN_CORNER:
-			return "In_Corner"
-		WrestlerResource.Position.RUNNING:
-			return "Running"
-		WrestlerResource.Position.ROPE_REBOUND:
-			return "Rope_Rebound"
-		WrestlerResource.Position.TOP_ROPE:
-			return "Top_Rope"
-		WrestlerResource.Position.APRON:
-			return "Apron"
-		_:
-			return "None"
+	for key in WrestlerResource.Position:
+		if int(WrestlerResource.Position[key]) == int(position):
+			return str(key).replace("_", " ").to_lower().capitalize()
+	return "None"
 
 
 func _class_array_to_string(classes: Array[WrestlerResource.WrestlerClass]) -> String:

@@ -1,8 +1,13 @@
 extends RefCounted
 class_name MatchSideState
 
+const MAX_FINISHER_STOCK := 3
+
 var wrestler: WrestlerResource
 var current_position: int = WrestlerResource.Position.STANDING
+var current_orientation: int = WrestlerResource.Orientation.FRONT
+var current_area: int = WrestlerResource.Area.IN_RING
+var current_motion_state: int = WrestlerResource.MotionState.STATIONARY
 var head_hp: float = 100.0
 var body_hp: float = 100.0
 var left_arm_hp: float = 100.0
@@ -12,7 +17,31 @@ var right_leg_hp: float = 100.0
 var stamina: float = 100.0
 var fatigue: float = 0.0
 var momentum: float = 0.0
+var signature_ready: bool = false
+var finisher_stock: int = 0
+var signatures_earned: int = 0
+var signatures_landed: int = 0
+var finisher_stock_earned: int = 0
+var finisher_stock_spent: int = 0
+var held_weapon: WeaponResource
+var held_weapon_uses_remaining: int = 0
+var outside_seconds: int = 0
+var late_count_returns: int = 0
+var weapons_retrieved: int = 0
+var dropped_weapons_picked_up: int = 0
+var last_weapon_action_time: int = -100000
+var weapon_attacks_attempted: int = 0
+var weapon_attacks_landed: int = 0
+var weapon_attacks_reversed: int = 0
+var illegal_weapon_uses: int = 0
+var legal_weapon_attacks: int = 0
+var disqualifications_caused: int = 0
+var weapon_types_used: Array[String] = []
+var weapons_broken: int = 0
 var last_position: int = WrestlerResource.Position.STANDING
+var last_orientation: int = WrestlerResource.Orientation.FRONT
+var last_area: int = WrestlerResource.Area.IN_RING
+var last_motion_state: int = WrestlerResource.MotionState.STATIONARY
 var last_action_result: int = 0
 var recent_moves_used: Array[String] = []
 var recent_move_types: Array[int] = []
@@ -120,7 +149,13 @@ var recent_target_parts: Array[int] = []
 func initialize(value: WrestlerResource) -> void:
 	wrestler = value
 	current_position = WrestlerResource.Position.STANDING
+	current_orientation = WrestlerResource.Orientation.FRONT
+	current_area = WrestlerResource.Area.IN_RING
+	current_motion_state = WrestlerResource.MotionState.STATIONARY
 	last_position = current_position
+	last_orientation = current_orientation
+	last_area = current_area
+	last_motion_state = current_motion_state
 	head_hp = 100.0
 	body_hp = 100.0
 	left_arm_hp = 100.0
@@ -130,6 +165,27 @@ func initialize(value: WrestlerResource) -> void:
 	stamina = 100.0
 	fatigue = 0.0
 	momentum = 0.0
+	signature_ready = false
+	finisher_stock = 0
+	signatures_earned = 0
+	signatures_landed = 0
+	finisher_stock_earned = 0
+	finisher_stock_spent = 0
+	held_weapon = null
+	held_weapon_uses_remaining = 0
+	outside_seconds = 0
+	late_count_returns = 0
+	weapons_retrieved = 0
+	dropped_weapons_picked_up = 0
+	last_weapon_action_time = -100000
+	weapon_attacks_attempted = 0
+	weapon_attacks_landed = 0
+	weapon_attacks_reversed = 0
+	illegal_weapon_uses = 0
+	legal_weapon_attacks = 0
+	disqualifications_caused = 0
+	weapon_types_used.clear()
+	weapons_broken = 0
 	last_action_result = 0
 	recent_moves_used.clear()
 	recent_move_types.clear()
@@ -240,6 +296,43 @@ func set_position(value: int) -> void:
 	current_position = value
 	if wrestler != null:
 		wrestler.position = value as WrestlerResource.Position
+
+
+func set_orientation(value: int) -> void:
+	if value == WrestlerResource.Orientation.NONE:
+		return
+	last_orientation = current_orientation
+	current_orientation = value
+	if wrestler != null:
+		wrestler.orientation = value
+
+
+func set_area(value: int) -> void:
+	last_area = current_area
+	current_area = value
+	if wrestler != null:
+		wrestler.area = value
+
+
+func set_motion_state(value: int) -> void:
+	last_motion_state = current_motion_state
+	current_motion_state = value
+	if wrestler != null:
+		wrestler.motion_state = value
+
+
+func set_match_state(
+	position_value: int,
+	orientation_value: int,
+	area_value: int,
+	motion_value: int,
+) -> void:
+	if position_value != WrestlerResource.Position.NONE:
+		set_position(position_value)
+	if orientation_value != WrestlerResource.Orientation.NONE:
+		set_orientation(orientation_value)
+	set_area(area_value)
+	set_motion_state(motion_value)
 
 
 func get_part_hp(part: int) -> float:
@@ -446,8 +539,73 @@ func add_fatigue(amount: float) -> void:
 
 
 func add_momentum(amount: float) -> void:
+	var was_ready := signature_ready
 	momentum = clampf(momentum + amount, 0.0, 100.0)
+	if not was_ready and momentum >= 100.0:
+		signature_ready = true
+		signatures_earned += 1
 	sync_to_resource()
+
+
+func all_assigned_moves() -> Array[MoveResource]:
+	var moves: Array[MoveResource] = []
+	if wrestler == null:
+		return moves
+	for move in wrestler.move_set:
+		if move != null and move not in moves:
+			moves.append(move)
+	for move in wrestler.signature_moves:
+		if move != null and move not in moves:
+			moves.append(move)
+	for move in wrestler.finisher_moves:
+		if move != null and move not in moves:
+			moves.append(move)
+	return moves
+
+
+func is_signature_move(move: MoveResource) -> bool:
+	return wrestler != null and move != null and move in wrestler.signature_moves
+
+
+func is_finisher_move(move: MoveResource) -> bool:
+	return wrestler != null and move != null and (move.is_finisher or move in wrestler.finisher_moves)
+
+
+func can_use_move(move: MoveResource) -> bool:
+	if move == null or move not in all_assigned_moves():
+		return false
+	if is_finisher_move(move):
+		return finisher_stock > 0
+	if is_signature_move(move):
+		return signature_ready
+	return true
+
+
+func convert_landed_signature() -> bool:
+	if not signature_ready:
+		return false
+	signature_ready = false
+	momentum = 0.0
+	signatures_landed += 1
+	if finisher_stock < MAX_FINISHER_STOCK:
+		finisher_stock += 1
+		finisher_stock_earned += 1
+	sync_to_resource()
+	return true
+
+
+func spend_finisher() -> bool:
+	if finisher_stock <= 0:
+		return false
+	finisher_stock -= 1
+	finisher_stock_spent += 1
+	return true
+
+
+func refund_finisher() -> void:
+	if finisher_stock < MAX_FINISHER_STOCK:
+		finisher_stock += 1
+	finisher_stock_spent = maxi(0, finisher_stock_spent - 1)
 
 
 func record_move_used(move: MoveResource, landed: bool = true) -> void:
@@ -617,6 +775,9 @@ func total_hp() -> float:
 func snapshot() -> Dictionary:
 	return {
 		"position": current_position,
+		"orientation": current_orientation,
+		"area": current_area,
+		"motion_state": current_motion_state,
 		"head_hp": head_hp,
 		"body_hp": body_hp,
 		"left_arm_hp": left_arm_hp,
@@ -626,6 +787,12 @@ func snapshot() -> Dictionary:
 		"stamina": stamina,
 		"fatigue": fatigue,
 		"momentum": momentum,
+		"signature_ready": signature_ready,
+		"finisher_stock": finisher_stock,
+		"max_finisher_stock": MAX_FINISHER_STOCK,
+		"held_weapon_name": held_weapon.display_name if held_weapon != null else "",
+		"held_weapon_id": String(held_weapon.weapon_id) if held_weapon != null else "",
+		"held_weapon_uses_remaining": held_weapon_uses_remaining if held_weapon != null else 0,
 	}
 
 
@@ -633,6 +800,9 @@ func sync_to_resource() -> void:
 	if wrestler == null:
 		return
 	wrestler.position = current_position as WrestlerResource.Position
+	wrestler.orientation = current_orientation
+	wrestler.area = current_area
+	wrestler.motion_state = current_motion_state
 	wrestler.head_hp = head_hp
 	wrestler.body_hp = body_hp
 	wrestler.left_arm_hp = left_arm_hp

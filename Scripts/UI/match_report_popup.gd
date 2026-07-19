@@ -5,9 +5,13 @@ signal return_requested
 signal new_match_requested
 
 const REPORT_DIRECTORY := "user://match_reports"
+const TOUCH_SCROLL_DEADZONE := 8.0
 
 var _report: Dictionary = {}
 var latest_export_path: String = ""
+var _touch_scroll_active: bool = false
+var _touch_scroll_index: int = -1
+var _touch_scroll_distance: float = 0.0
 
 @onready var _safe_area: MarginContainer = %ReportSafeArea
 @onready var _outer_margin: MarginContainer = %ReportOuterMargin
@@ -21,6 +25,9 @@ var latest_export_path: String = ""
 @onready var _result_value: Label = %ResultValue
 @onready var _time_value: Label = %TimeValue
 @onready var _finish_move_value: Label = %FinishMoveValue
+@onready var _setup_method_value: Label = %SetupMethodValue
+@onready var _locks_value: Label = %LocksValue
+@onready var _randomized_value: Label = %RandomizedValue
 @onready var _player_heading: Label = %PlayerReportHeading
 @onready var _player_stats: Label = %PlayerReportStats
 @onready var _ai_heading: Label = %AIReportHeading
@@ -39,6 +46,13 @@ func _ready() -> void:
 	_export_button.pressed.connect(_export_text_report)
 	_new_match_button.pressed.connect(_on_new_match_pressed)
 	_return_button.pressed.connect(_return_to_match)
+	# The complete report uses one authoritative vertical scroller. The inner
+	# match-log container is retained for scene compatibility but must not capture
+	# mobile drags from the outer report page.
+	_match_log_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_match_log_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_match_log_scroll.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_match_log_text.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	visible = false
 
 
@@ -72,6 +86,18 @@ func open_report(report: Dictionary) -> void:
 	_result_value.text = str(_report.get("result", "Not Set"))
 	_time_value.text = str(_report.get("final_time", "00:00"))
 	_finish_move_value.text = str(_report.get("finish_move", "None"))
+	_setup_method_value.text = "%s\n%s" % [
+		str(_report.get("match_setup", "Manual")),
+		str(_report.get("rules_summary", "Rules not recorded")),
+	]
+	_locks_value.text = "Player %s / AI %s" % [
+		"Locked" if bool(_report.get("player_locked", false)) else "Open",
+		"Locked" if bool(_report.get("ai_locked", false)) else "Open",
+	]
+	_randomized_value.text = "Player %s / AI %s" % [
+		"Yes" if bool(_report.get("player_randomly_selected", false)) else "No",
+		"Yes" if bool(_report.get("ai_randomly_selected", false)) else "No",
+	]
 	var player_stats: Dictionary = _report.get("player", {})
 	var ai_stats: Dictionary = _report.get("ai", {})
 	_player_heading.text = str(player_stats.get("heading", "PLAYER"))
@@ -92,7 +118,38 @@ func open_report(report: Dictionary) -> void:
 
 
 func close_report() -> void:
+	_reset_touch_scroll()
 	visible = false
+
+
+func _input(event: InputEvent) -> void:
+	if not visible or not is_instance_valid(_page_scroll):
+		return
+	if event is InputEventScreenTouch:
+		var touch := event as InputEventScreenTouch
+		if touch.pressed:
+			if _page_scroll.get_global_rect().has_point(touch.position):
+				_touch_scroll_active = true
+				_touch_scroll_index = touch.index
+				_touch_scroll_distance = 0.0
+		elif _touch_scroll_active and touch.index == _touch_scroll_index:
+			_reset_touch_scroll()
+		return
+	if event is InputEventScreenDrag:
+		var drag := event as InputEventScreenDrag
+		if not _touch_scroll_active or drag.index != _touch_scroll_index:
+			return
+		_touch_scroll_distance += absf(drag.relative.y)
+		if _touch_scroll_distance < TOUCH_SCROLL_DEADZONE:
+			return
+		_page_scroll.scroll_vertical -= roundi(drag.relative.y)
+		get_viewport().set_input_as_handled()
+
+
+func _reset_touch_scroll() -> void:
+	_touch_scroll_active = false
+	_touch_scroll_index = -1
+	_touch_scroll_distance = 0.0
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -197,7 +254,30 @@ func _format_side_stats(stats: Dictionary) -> String:
 	return "\n".join([
 		"Moves: %d attempted / %d landed" % [int(stats.get("move_attempts", 0)), int(stats.get("moves_landed", 0))],
 		"Finishers: %d attempted / %d landed" % [int(stats.get("finisher_attempts", 0)), int(stats.get("finishers_landed", 0))],
+		"Signature flow: %d earned / %d landed | Ready: %s" % [
+			int(stats.get("signatures_earned", 0)),
+			int(stats.get("signatures_landed", 0)),
+			"Yes" if bool(stats.get("signature_ready", false)) else "No",
+		],
+		"Finisher stock: %d/3 | %d earned / %d spent" % [
+			int(stats.get("finisher_stock", 0)),
+			int(stats.get("finisher_stock_earned", 0)),
+			int(stats.get("finisher_stock_spent", 0)),
+		],
 		"Reversals: %d" % int(stats.get("reversals", 0)),
+		"Outside: %ds | Late returns: %d" % [int(stats.get("outside_seconds", 0)), int(stats.get("late_count_returns", 0))],
+		"Weapons: %d retrieved | %d attempted | %d landed | %d reversed" % [
+			int(stats.get("weapons_retrieved", 0)),
+			int(stats.get("weapon_attacks_attempted", 0)),
+			int(stats.get("weapon_attacks_landed", 0)),
+			int(stats.get("weapon_attacks_reversed", 0)),
+		],
+		"Weapon types: %s | Illegal %d | Legal %d | DQs caused %d" % [
+			str(stats.get("weapon_types_used", "None")),
+			int(stats.get("illegal_weapon_uses", 0)),
+			int(stats.get("legal_weapon_attacks", 0)),
+			int(stats.get("disqualifications_caused", 0)),
+		],
 		"Setup actions: %d" % int(stats.get("setup_actions", 0)),
 		"Pins / Kickouts: %d / %d" % [int(stats.get("pin_attempts", 0)), int(stats.get("kickouts", 0))],
 		"Kickout meter: %d attempts | %d successes | %d near misses | %d timeouts" % [

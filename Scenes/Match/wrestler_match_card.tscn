@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://Scripts/UI/wrestler_match_card.gd" id="1_card"]
 [ext_resource type="PackedScene" path="res://Scenes/Match/body_damage_mannequin.tscn" id="2_mannequin"]
@@ -29,6 +29,18 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
+[sub_resource type="StyleBoxFlat" id="StyleStateSummary"]
+bg_color = Color(0.025, 0.035, 0.055, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.18, 0.23, 0.31, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
 [node name="WrestlerMatchCard" type="PanelContainer"]
 custom_minimum_size = Vector2(300, 0)
 size_flags_horizontal = 3
@@ -57,12 +69,14 @@ horizontal_alignment = 1
 
 [node name="NameValue" type="Label" parent="Margin/Content"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 34)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.25, 0.64, 1, 1)
 theme_override_font_sizes/font_size = 28
 text = "No wrestler assigned"
 horizontal_alignment = 1
-autowrap_mode = 2
+vertical_alignment = 1
+text_overrun_behavior = 3
 
 [node name="TopSeparator" type="HSeparator" parent="Margin/Content"]
 layout_mode = 2
@@ -90,7 +104,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "—"
-autowrap_mode = 2
+text_overrun_behavior = 3
 
 [node name="HeightLabel" type="Label" parent="Margin/Content/ProfileGrid"]
 layout_mode = 2
@@ -152,7 +166,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "—"
-autowrap_mode = 2
+text_overrun_behavior = 3
 
 [node name="GimmickLabel" type="Label" parent="Margin/Content"]
 layout_mode = 2
@@ -268,6 +282,40 @@ theme_override_styles/fill = SubResource("StyleProgressFill")
 [node name="AttributesSeparator" type="HSeparator" parent="Margin/Content"]
 layout_mode = 2
 
+[node name="SignatureMovesValue" type="Label" parent="Margin/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.82, 0.95, 1)
+theme_override_font_sizes/font_size = 13
+text = "SIGNATURES  None assigned"
+autowrap_mode = 2
+max_lines_visible = 2
+text_overrun_behavior = 4
+
+[node name="FinisherMovesValue" type="Label" parent="Margin/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.8, 0.28, 1)
+theme_override_font_sizes/font_size = 13
+text = "FINISHERS  None assigned"
+autowrap_mode = 2
+max_lines_visible = 2
+text_overrun_behavior = 4
+
+[node name="HeldWeaponValue" type="Label" parent="Margin/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.56, 0.62, 0.72, 1)
+theme_override_font_sizes/font_size = 12
+text = "HELD WEAPON  None"
+text_overrun_behavior = 3
+
+[node name="KeyMovesSeparator" type="HSeparator" parent="Margin/Content"]
+layout_mode = 2
+
 [node name="ConditionHeading" type="Label" parent="Margin/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.88, 0.94, 1)
@@ -327,11 +375,35 @@ size_flags_horizontal = 3
 theme_override_styles/background = SubResource("StyleProgressBackground")
 theme_override_styles/fill = SubResource("StyleProgressFill")
 
-[node name="PositionLabel" type="Label" parent="Margin/Content/ConditionPanel/StatusGrid"]
+[node name="StateSummary" type="PanelContainer" parent="Margin/Content/ConditionPanel"]
+custom_minimum_size = Vector2(0, 54)
 layout_mode = 2
-text = "Position"
+theme_override_styles/panel = SubResource("StyleStateSummary")
 
-[node name="PositionValue" type="Label" parent="Margin/Content/ConditionPanel/StatusGrid"]
+[node name="StateMargin" type="MarginContainer" parent="Margin/Content/ConditionPanel/StateSummary"]
+layout_mode = 2
+theme_override_constants/margin_left = 9
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 9
+theme_override_constants/margin_bottom = 5
+
+[node name="StateRow" type="HBoxContainer" parent="Margin/Content/ConditionPanel/StateSummary/StateMargin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="PositionLabel" type="Label" parent="Margin/Content/ConditionPanel/StateSummary/StateMargin/StateRow"]
+custom_minimum_size = Vector2(68, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+text = "STATE"
+vertical_alignment = 1
+
+[node name="PositionValue" type="Label" parent="Margin/Content/ConditionPanel/StateSummary/StateMargin/StateRow"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 text = "Not Set"
+vertical_alignment = 1
+autowrap_mode = 3
+max_lines_visible = 2
+text_overrun_behavior = 4

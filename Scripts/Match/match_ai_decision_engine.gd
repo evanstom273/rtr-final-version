@@ -5,9 +5,6 @@ const KIND_MOVE := &"move"
 const KIND_SETUP := &"setup"
 const KIND_PIN := &"pin"
 
-const FINISHER_MINIMUM_TIME := 600
-const FINISHER_MOMENTUM := 60.0
-
 var last_setup_intent: StringName = &""
 var target_focus_body_part: int = MoveResource.MoveTargetParts.NONE
 var last_successful_move_type: int = MoveResource.MoveType.NONE
@@ -19,6 +16,8 @@ var reversal_pin_opportunity: bool = false
 var big_move_followup_opportunity: bool = false
 var setup_intent_decisions_remaining: int = 0
 var setup_intent_pending_attempt: bool = false
+var planned_setup_actions: Array[StringName] = []
+var planned_followup_move_key: String = ""
 var setup_cooldown_turns: int = 0
 var recent_setup_actions: Array[StringName] = []
 var target_focus_unavailable_turns: int = 0
@@ -51,6 +50,8 @@ func reset() -> void:
 	big_move_followup_opportunity = false
 	setup_intent_decisions_remaining = 0
 	setup_intent_pending_attempt = false
+	planned_setup_actions.clear()
+	planned_followup_move_key = ""
 	setup_cooldown_turns = 0
 	recent_setup_actions.clear()
 	target_focus_unavailable_turns = 0
@@ -66,6 +67,22 @@ func reset() -> void:
 
 func set_seed(value: int) -> void:
 	_rng.seed = value
+
+
+func has_executable_candidate(
+	valid_moves: Array[MoveResource],
+	valid_setups: Array[StringName],
+	can_pin: bool,
+) -> bool:
+	# Intentionally non-mutating: the watchdog must be able to inspect flow
+	# without consuming intent lifetimes, RNG values, or diagnostic counters.
+	for move in valid_moves:
+		if move != null:
+			return true
+	for action_id in valid_setups:
+		if not action_id.is_empty():
+			return true
+	return can_pin
 
 
 func choose_action(
@@ -102,9 +119,9 @@ func choose_action(
 		and match_time_seconds < ai_state.taunt_cooldown_until_seconds
 	):
 		ai_state.ai_taunts_rejected_cooldown += 1
-		_debug_setup_rejection(SetupActionsMenu.TAUNT, "shared two-minute cooldown")
+		_debug_setup_rejection(MatchSetupStateRules.TAUNT, "shared two-minute cooldown")
 	for action_id in valid_setups:
-		if action_id == SetupActionsMenu.TAUNT and _reject_ai_taunt(
+		if action_id == MatchSetupStateRules.TAUNT and _reject_ai_taunt(
 			ai_state,
 			target_state,
 			valid_moves,
@@ -112,8 +129,16 @@ func choose_action(
 			best_move_score,
 		):
 			continue
-		var score := _score_setup(ai_state, target_state, action_id, valid_moves, match_time_seconds)
-		candidates.append({"kind": KIND_SETUP, "score": score, "move": null, "setup_action": action_id})
+		var setup_plan := _best_setup_plan(ai_state, target_state, action_id, match_time_seconds)
+		var score := _score_setup(ai_state, target_state, action_id, valid_moves, match_time_seconds, setup_plan)
+		candidates.append({
+			"kind": KIND_SETUP,
+			"score": score,
+			"move": null,
+			"setup_action": action_id,
+			"setup_path": setup_plan.get("actions", []),
+			"planned_move": setup_plan.get("move"),
+		})
 	var pin_score := _score_pin(ai_state, target_state, match_time_seconds, best_move_score)
 	if pin_score > -INF:
 		candidates.append({"kind": KIND_PIN, "score": pin_score, "move": null, "setup_action": &""})
@@ -128,7 +153,11 @@ func choose_action(
 			ai_state.setup_actions_without_followup += 1
 			_abandon_setup_intent(ai_state)
 	var selected: Dictionary
-	if not matching_intent_moves.is_empty():
+	if not planned_setup_actions.is_empty():
+		selected = _candidate_for_setup_action(candidates, planned_setup_actions[0])
+		if selected.is_empty():
+			_abandon_setup_intent(ai_state)
+	elif not matching_intent_moves.is_empty():
 		# A successful setup gets one guaranteed chance to pay off. Weighted
 		# randomness previously allowed a recovery or another setup to beat this
 		# follow-up, producing top-rope/running/apron loops without an attack.
@@ -152,6 +181,16 @@ func choose_action(
 	if selected.is_empty():
 		fallback_actions += 1
 		return {}
+	if StringName(selected.get("kind", &"")) == KIND_SETUP:
+		var selected_path: Array = selected.get("setup_path", [])
+		var selected_action := StringName(selected.get("setup_action", &""))
+		if not planned_setup_actions.is_empty() and planned_setup_actions[0] == selected_action:
+			planned_setup_actions.pop_front()
+		elif planned_setup_actions.is_empty() and not selected_path.is_empty():
+			planned_setup_actions.clear()
+			for index in range(1, selected_path.size()):
+				planned_setup_actions.append(StringName(selected_path[index]))
+			planned_followup_move_key = _move_key(selected.get("planned_move") as MoveResource)
 	var had_intent_opportunity := not matching_intent_moves.is_empty()
 	var selected_move := selected.get("move") as MoveResource
 	if had_intent_opportunity:
@@ -176,13 +215,17 @@ func note_setup_executed(action_id: StringName, ai_state: MatchSideState = null)
 	if not _setup_creates_intent(action_id):
 		_clear_setup_intent()
 		return
-	if not last_setup_intent.is_empty() and last_setup_intent != action_id:
+	if (
+		not last_setup_intent.is_empty()
+		and last_setup_intent != action_id
+		and planned_followup_move_key.is_empty()
+	):
 		if ai_state != null:
 			_abandon_setup_intent(ai_state)
 		else:
 			_clear_setup_intent()
 	last_setup_intent = action_id
-	setup_intent_decisions_remaining = 2
+	setup_intent_decisions_remaining = maxi(2, planned_setup_actions.size() + 1)
 	setup_intent_pending_attempt = false
 	if ai_state != null:
 		ai_state.setup_intents_created += 1
@@ -386,6 +429,8 @@ func _score_move(
 
 	if move.is_finisher:
 		score += _finisher_bonus(ai_state, target_state, move, match_time_seconds, target_resolution)
+	elif ai_state.is_signature_move(move):
+		score += 45.0 if ai_state.finisher_stock < MatchSideState.MAX_FINISHER_STOCK else 8.0
 	if move.is_submission:
 		score += _submission_bonus(ai_state, target_state, move, match_time_seconds, target_resolution)
 	score += _class_personality_move_bonus(ai_state.wrestler, move)
@@ -513,6 +558,7 @@ func _score_setup(
 	action_id: StringName,
 	valid_moves: Array[MoveResource],
 	match_time_seconds: int,
+	setup_plan: Dictionary = {},
 ) -> float:
 	var score := 40.0
 	if MatchInteractionModel.is_contested_setup(action_id):
@@ -524,13 +570,16 @@ func _score_setup(
 			action_id,
 		)
 		score -= response_chance * 0.08
-	var projected := _project_positions(ai_state.current_position, target_state.current_position, action_id)
-	var future_moves := _moves_for_positions(
+	var projected := _project_states(ai_state, target_state, action_id)
+	var future_moves := _moves_for_states(
 		ai_state,
-		int(projected.get("attacker", ai_state.current_position)),
-		int(projected.get("target", target_state.current_position)),
+		projected.get("attacker", ai_state.snapshot()),
+		projected.get("target", target_state.snapshot()),
 		match_time_seconds,
 	)
+	var planned_move := setup_plan.get("move") as MoveResource
+	if future_moves.is_empty() and planned_move != null:
+		future_moves.append(planned_move)
 	var future_finishers := _count_finishers(future_moves)
 	var mandatory_recovery := _is_mandatory_recovery(action_id, valid_moves)
 	if future_moves.is_empty() and not mandatory_recovery:
@@ -538,9 +587,9 @@ func _score_setup(
 		ai_state.dead_end_setups_prevented += 1
 		_debug_setup_rejection(action_id, "no valid move after projected positions")
 	match action_id:
-		SetupActionsMenu.STAND_UP:
+		MatchSetupStateRules.STAND_UP:
 			score += 100.0 if target_state.current_position == WrestlerResource.Position.STANDING else 70.0
-		SetupActionsMenu.PICK_OPPONENT_UP:
+		MatchSetupStateRules.PICK_OPPONENT_UP:
 			score += 45.0
 			if future_moves.size() >= 4:
 				score += 20.0
@@ -556,7 +605,7 @@ func _score_setup(
 				score -= 10.0
 			if player_crash_opportunity:
 				score += 15.0
-		SetupActionsMenu.IRISH_WHIP:
+		MatchSetupStateRules.IRISH_WHIP:
 			score += 45.0
 			if not future_moves.is_empty():
 				score += 25.0
@@ -566,7 +615,7 @@ func _score_setup(
 				score += 10.0
 			if ai_state.stamina < 30.0:
 				score -= 10.0
-		SetupActionsMenu.THROW_INTO_CORNER:
+		MatchSetupStateRules.THROW_INTO_CORNER:
 			score += 45.0
 			if not future_moves.is_empty():
 				score += 25.0
@@ -576,7 +625,7 @@ func _score_setup(
 				score += 10.0
 			if ai_state.stamina < 30.0:
 				score -= 10.0
-		SetupActionsMenu.START_RUNNING:
+		MatchSetupStateRules.START_RUNNING:
 			score += 35.0
 			if not future_moves.is_empty():
 				score += 25.0
@@ -586,7 +635,7 @@ func _score_setup(
 				score -= 15.0
 			if ai_state.fatigue > 70.0:
 				score -= 20.0
-		SetupActionsMenu.CLIMB_TOP_ROPE:
+		MatchSetupStateRules.CLIMB_TOP_ROPE:
 			score += 35.0
 			if not future_moves.is_empty():
 				score += 30.0
@@ -598,7 +647,7 @@ func _score_setup(
 				score -= 25.0
 			if target_state.momentum > 70.0:
 				score -= 15.0
-		SetupActionsMenu.PREPARE_SPRINGBOARD:
+		MatchSetupStateRules.PREPARE_SPRINGBOARD:
 			score += 35.0
 			if not future_moves.is_empty():
 				score += 30.0
@@ -608,7 +657,7 @@ func _score_setup(
 				score -= 20.0
 			if ai_state.fatigue > 70.0:
 				score -= 20.0
-		SetupActionsMenu.WAKE_OPPONENT:
+		MatchSetupStateRules.WAKE_OPPONENT:
 			score += 50.0
 			if not future_moves.is_empty():
 				score += 35.0
@@ -616,7 +665,7 @@ func _score_setup(
 				score += 45.0
 			if not valid_moves.is_empty():
 				score -= 25.0
-		SetupActionsMenu.RETURN_TO_RING, SetupActionsMenu.CLIMB_DOWN:
+		MatchSetupStateRules.RETURN_TO_RING, MatchSetupStateRules.CLIMB_DOWN:
 			score += 20.0
 			if valid_moves.is_empty():
 				score += 60.0
@@ -626,14 +675,14 @@ func _score_setup(
 				score += 30.0
 			if not valid_moves.is_empty():
 				score -= 30.0
-		SetupActionsMenu.STOP_RUNNING, SetupActionsMenu.LEAVE_CORNER, SetupActionsMenu.REGAIN_FOOTING:
+		MatchSetupStateRules.STOP_RUNNING, MatchSetupStateRules.LEAVE_CORNER, MatchSetupStateRules.REGAIN_FOOTING:
 			score += 80.0 if valid_moves.is_empty() else 20.0
-		SetupActionsMenu.GRAPPLE_OPPONENT:
+		MatchSetupStateRules.GRAPPLE_OPPONENT:
 			if future_moves.size() >= 4:
 				score += 10.0
 			if _has_class(ai_state.wrestler, WrestlerResource.WrestlerClass.TECHNICIAN):
 				score += 10.0
-		SetupActionsMenu.TAUNT:
+		MatchSetupStateRules.TAUNT:
 			# A taunt should remain an occasional flavour/condition choice rather
 			# than compete evenly with real offence.
 			score -= 35.0
@@ -653,23 +702,28 @@ func _score_setup(
 				score += 4.0
 			elif ai_state.momentum > 85.0:
 				score -= 10.0
-			if ai_state.current_position == WrestlerResource.Position.APRON:
+			if ai_state.current_area == WrestlerResource.Area.APRON:
 				score += 5.0
-			elif ai_state.current_position == WrestlerResource.Position.TOP_ROPE:
+			elif ai_state.current_area == WrestlerResource.Area.TOP_ROPE:
 				score += 8.0
 			if ai_state.wrestler != null:
 				score += clampf((ai_state.wrestler.charisma - 50.0) * 0.20, -10.0, 10.0)
 				if ai_state.wrestler.wrestler_disposition == WrestlerResource.WrestlerDisposition.HEEL:
 					score += 5.0
 				if (
-					ai_state.current_position in [WrestlerResource.Position.APRON, WrestlerResource.Position.TOP_ROPE]
+					ai_state.current_area in [WrestlerResource.Area.APRON, WrestlerResource.Area.TOP_ROPE]
 					and _has_class(ai_state.wrestler, WrestlerResource.WrestlerClass.HIGH_FLYER)
 				):
 					score += 5.0
 	var movement_setup := action_id in [
-		SetupActionsMenu.START_RUNNING,
-		SetupActionsMenu.CLIMB_TOP_ROPE,
-		SetupActionsMenu.PREPARE_SPRINGBOARD,
+		MatchSetupStateRules.START_RUNNING,
+		MatchSetupStateRules.CLIMB_TOP_ROPE,
+		MatchSetupStateRules.PREPARE_SPRINGBOARD,
+		MatchSetupStateRules.STEP_TO_ROPES,
+		MatchSetupStateRules.SEND_OPPONENT_OUTSIDE,
+		MatchSetupStateRules.CALL_OPPONENT_OUTSIDE,
+		MatchSetupStateRules.TAKE_FIGHT_OUTSIDE,
+		MatchSetupStateRules.FIGHT_UP_RAMP,
 	]
 	var high_value_followup := _has_high_value_followup(future_moves, target_state)
 	if movement_setup and ai_state.stamina < 20.0:
@@ -702,25 +756,25 @@ func _score_setup(
 	var escalation := MatchInteractionModel.build_late_match_profile(match_time_seconds)
 	if movement_setup and not mandatory_recovery:
 		score -= float(escalation.get("movement_setup_penalty", 0.0))
-	if _has_class(ai_state.wrestler, WrestlerResource.WrestlerClass.POWERHOUSE) and action_id in [SetupActionsMenu.IRISH_WHIP, SetupActionsMenu.THROW_INTO_CORNER]:
+	if _has_class(ai_state.wrestler, WrestlerResource.WrestlerClass.POWERHOUSE) and action_id in [MatchSetupStateRules.IRISH_WHIP, MatchSetupStateRules.THROW_INTO_CORNER]:
 		score += 10.0
 	var targeting_threat := _incoming_targeting_context(ai_state, target_state)
 	if not targeting_threat.is_empty():
 		var threatened_part := int(targeting_threat.get("part", MoveResource.MoveTargetParts.NONE))
 		var threatened_hp := float(targeting_threat.get("hp", 100.0))
 		if action_id in [
-			SetupActionsMenu.IRISH_WHIP,
-			SetupActionsMenu.THROW_INTO_CORNER,
-			SetupActionsMenu.GRAPPLE_OPPONENT,
+			MatchSetupStateRules.IRISH_WHIP,
+			MatchSetupStateRules.THROW_INTO_CORNER,
+			MatchSetupStateRules.GRAPPLE_OPPONENT,
 		]:
 			score += 8.0
 		if action_id in [
-			SetupActionsMenu.STOP_RUNNING,
-			SetupActionsMenu.LEAVE_CORNER,
-			SetupActionsMenu.REGAIN_FOOTING,
-			SetupActionsMenu.RETURN_TO_RING,
-			SetupActionsMenu.CLIMB_DOWN,
-			SetupActionsMenu.RESET_STANCE,
+			MatchSetupStateRules.STOP_RUNNING,
+			MatchSetupStateRules.LEAVE_CORNER,
+			MatchSetupStateRules.REGAIN_FOOTING,
+			MatchSetupStateRules.RETURN_TO_RING,
+			MatchSetupStateRules.CLIMB_DOWN,
+			MatchSetupStateRules.RESET_STANCE,
 		]:
 			score += 10.0
 		if movement_setup and threatened_part in [
@@ -876,13 +930,18 @@ func _best_move_candidate(candidates: Array[Dictionary]) -> Dictionary:
 
 func _best_recovery_candidate(candidates: Array[Dictionary]) -> Dictionary:
 	var priority := [
-		SetupActionsMenu.STAND_UP,
-		SetupActionsMenu.REGAIN_FOOTING,
-		SetupActionsMenu.LEAVE_CORNER,
-		SetupActionsMenu.RETURN_TO_RING,
-		SetupActionsMenu.CLIMB_DOWN,
-		SetupActionsMenu.STOP_RUNNING,
-		SetupActionsMenu.RESET_STANCE,
+		MatchSetupStateRules.STAND_UP,
+		MatchSetupStateRules.REGAIN_COMPOSURE,
+		MatchSetupStateRules.PRESS_ADVANTAGE,
+		MatchSetupStateRules.REGAIN_FOOTING,
+		MatchSetupStateRules.LEAVE_CORNER,
+		MatchSetupStateRules.LEAVE_ROPES,
+		MatchSetupStateRules.RETURN_TO_RING,
+		MatchSetupStateRules.RETURN_FROM_RAMP,
+		MatchSetupStateRules.BRING_MATCH_BACK_TO_RING,
+		MatchSetupStateRules.CLIMB_DOWN,
+		MatchSetupStateRules.STOP_RUNNING,
+		MatchSetupStateRules.RESET_STANCE,
 	]
 	for wanted_action in priority:
 		for candidate in candidates:
@@ -907,6 +966,19 @@ func _best_intent_move_candidate(candidates: Array[Dictionary], intent: StringNa
 			continue
 		var move := candidate.get("move") as MoveResource
 		if move == null or not _intent_matches_move(intent, move):
+			continue
+		if best.is_empty() or float(candidate.get("score", -INF)) > float(best.get("score", -INF)):
+			best = candidate
+	return best
+
+
+func _candidate_for_setup_action(candidates: Array[Dictionary], action_id: StringName) -> Dictionary:
+	var best: Dictionary = {}
+	for candidate in candidates:
+		if (
+			StringName(candidate.get("kind", &"")) != KIND_SETUP
+			or StringName(candidate.get("setup_action", &"")) != action_id
+		):
 			continue
 		if best.is_empty() or float(candidate.get("score", -INF)) > float(best.get("score", -INF)):
 			best = candidate
@@ -961,25 +1033,41 @@ func _record_choice(candidate: Dictionary, ai_state: MatchSideState) -> void:
 		recent_setup_actions.pop_front()
 
 
-func _project_positions(attacker_position: int, target_position: int, action_id: StringName) -> Dictionary:
-	var projected_attacker := attacker_position
-	var projected_target := target_position
-	match action_id:
-		SetupActionsMenu.STAND_UP, SetupActionsMenu.STOP_RUNNING, SetupActionsMenu.LEAVE_CORNER, SetupActionsMenu.REGAIN_FOOTING, SetupActionsMenu.CLIMB_DOWN, SetupActionsMenu.RETURN_TO_RING:
-			projected_attacker = WrestlerResource.Position.STANDING
-		SetupActionsMenu.START_RUNNING:
-			projected_attacker = WrestlerResource.Position.RUNNING
-		SetupActionsMenu.CLIMB_TOP_ROPE:
-			projected_attacker = WrestlerResource.Position.TOP_ROPE
-		SetupActionsMenu.PREPARE_SPRINGBOARD:
-			projected_attacker = WrestlerResource.Position.APRON
-		SetupActionsMenu.PICK_OPPONENT_UP, SetupActionsMenu.WAKE_OPPONENT:
-			projected_target = WrestlerResource.Position.STANDING
-		SetupActionsMenu.IRISH_WHIP:
-			projected_target = WrestlerResource.Position.ROPE_REBOUND
-		SetupActionsMenu.THROW_INTO_CORNER:
-			projected_target = WrestlerResource.Position.IN_CORNER
-	return {"attacker": projected_attacker, "target": projected_target}
+func _project_states(attacker_state: MatchSideState, target_state: MatchSideState, action_id: StringName) -> Dictionary:
+	return MatchSetupStateRules.project_action(action_id, attacker_state.snapshot(), target_state.snapshot())
+
+
+func _best_setup_plan(
+	ai_state: MatchSideState,
+	target_state: MatchSideState,
+	action_id: StringName,
+	match_time_seconds: int,
+) -> Dictionary:
+	if ai_state == null or ai_state.wrestler == null:
+		return {}
+	var best: Dictionary = {}
+	var best_score := -INF
+	for path_data in MatchSetupStateRules.find_followup_paths(
+		ai_state.all_assigned_moves(),
+		ai_state.snapshot(),
+		target_state.snapshot(),
+		2,
+	):
+		var path: Array = path_data.get("actions", [])
+		var move := path_data.get("move") as MoveResource
+		if path.is_empty() or StringName(path[0]) != action_id or move == null:
+			continue
+		if not ai_state.can_use_move(move):
+			continue
+		var score := float(move.move_impact) * 10.0 - float(path.size() - 1) * 12.0
+		if move.is_finisher:
+			score += 35.0
+		if move.is_submission:
+			score += 8.0
+		if score > best_score:
+			best_score = score
+			best = path_data
+	return best
 
 
 func _reject_ai_taunt(
@@ -992,25 +1080,25 @@ func _reject_ai_taunt(
 	if match_time_seconds < ai_state.taunt_cooldown_until_seconds:
 		return true
 	if valid_moves.is_empty():
-		_debug_setup_rejection(SetupActionsMenu.TAUNT, "no current move; preserve recovery/setup flow")
+		_debug_setup_rejection(MatchSetupStateRules.TAUNT, "no current move; preserve recovery/setup flow")
 		return true
 	for move in valid_moves:
 		if move != null and move.is_finisher:
-			_debug_setup_rejection(SetupActionsMenu.TAUNT, "available finisher")
+			_debug_setup_rejection(MatchSetupStateRules.TAUNT, "available finisher")
 			return true
 	if _score_pin(ai_state, target_state, match_time_seconds, best_move_score) >= 45.0:
-		_debug_setup_rejection(SetupActionsMenu.TAUNT, "credible pin available")
+		_debug_setup_rejection(MatchSetupStateRules.TAUNT, "credible pin available")
 		return true
 	var interruption_chance := MatchInteractionModel.response_success_chance(
 		ai_state,
 		target_state,
 		null,
 		match_time_seconds,
-		SetupActionsMenu.TAUNT,
+		MatchSetupStateRules.TAUNT,
 	)
 	if target_state.current_position == WrestlerResource.Position.STANDING and interruption_chance >= 45.0:
 		ai_state.ai_taunts_rejected_risk += 1
-		_debug_setup_rejection(SetupActionsMenu.TAUNT, "standing opponent interruption risk %.1f" % interruption_chance)
+		_debug_setup_rejection(MatchSetupStateRules.TAUNT, "standing opponent interruption risk %.1f" % interruption_chance)
 		return true
 	return false
 
@@ -1021,9 +1109,9 @@ func _taunt_positions_are_stable(ai_state: MatchSideState, target_state: MatchSi
 		and target_state != null
 		and ai_state.current_position in [
 			WrestlerResource.Position.STANDING,
-			WrestlerResource.Position.APRON,
-			WrestlerResource.Position.TOP_ROPE,
+			WrestlerResource.Position.PERCHED,
 		]
+		and ai_state.current_area in [WrestlerResource.Area.IN_RING, WrestlerResource.Area.APRON, WrestlerResource.Area.TOP_ROPE, WrestlerResource.Area.OUTSIDE, WrestlerResource.Area.RAMP]
 		and target_state.current_position in [
 			WrestlerResource.Position.STANDING,
 			WrestlerResource.Position.GROUNDED,
@@ -1033,17 +1121,14 @@ func _taunt_positions_are_stable(ai_state: MatchSideState, target_state: MatchSi
 
 func _is_mandatory_recovery(action_id: StringName, valid_moves: Array[MoveResource]) -> bool:
 	if action_id in [
-		SetupActionsMenu.STAND_UP,
-		SetupActionsMenu.REGAIN_FOOTING,
-		SetupActionsMenu.LEAVE_CORNER,
-		SetupActionsMenu.RESET_STANCE,
+		MatchSetupStateRules.STAND_UP,
+		MatchSetupStateRules.REGAIN_FOOTING,
+		MatchSetupStateRules.REGAIN_COMPOSURE,
+		MatchSetupStateRules.PRESS_ADVANTAGE,
+		MatchSetupStateRules.RESET_STANCE,
 	]:
 		return true
-	if action_id in [
-		SetupActionsMenu.RETURN_TO_RING,
-		SetupActionsMenu.CLIMB_DOWN,
-		SetupActionsMenu.STOP_RUNNING,
-	]:
+	if MatchSetupStateRules.is_recovery(action_id):
 		return valid_moves.is_empty()
 	return false
 
@@ -1061,6 +1146,8 @@ func _clear_setup_intent() -> void:
 	last_setup_intent = &""
 	setup_intent_decisions_remaining = 0
 	setup_intent_pending_attempt = false
+	planned_setup_actions.clear()
+	planned_followup_move_key = ""
 
 
 func _abandon_setup_intent(ai_state: MatchSideState) -> void:
@@ -1076,23 +1163,35 @@ func _debug_setup_rejection(action_id: StringName, reason: String) -> void:
 		print("AI setup rejected/penalized: %s (%s)" % [String(action_id), reason])
 
 
-func _moves_for_positions(
+func _moves_for_states(
 	ai_state: MatchSideState,
-	attacker_position: int,
-	target_position: int,
+	attacker_state: Dictionary,
+	target_state: Dictionary,
 	match_time_seconds: int,
 ) -> Array[MoveResource]:
 	var moves: Array[MoveResource] = []
 	if ai_state.wrestler == null:
 		return moves
-	for move in ai_state.wrestler.move_set:
+	for move in ai_state.all_assigned_moves():
 		if move == null:
 			continue
-		if not _position_matches(move.required_attacker_position, attacker_position):
+		if not _position_matches(move.required_attacker_position, int(attacker_state.get("position", WrestlerResource.Position.NONE))):
 			continue
-		if not _position_matches(move.required_target_position, target_position):
+		if not _position_matches(move.required_target_position, int(target_state.get("position", WrestlerResource.Position.NONE))):
 			continue
-		if move.is_finisher and (ai_state.momentum < FINISHER_MOMENTUM or match_time_seconds < FINISHER_MINIMUM_TIME):
+		if not _orientation_matches(move.required_attacker_orientation, int(attacker_state.get("orientation", WrestlerResource.Orientation.NONE))):
+			continue
+		if not _orientation_matches(move.required_target_orientation, int(target_state.get("orientation", WrestlerResource.Orientation.NONE))):
+			continue
+		if not MatchAreaRules.move_areas_match(
+			move,
+			int(attacker_state.get("area", WrestlerResource.Area.IN_RING)),
+			int(target_state.get("area", WrestlerResource.Area.IN_RING)),
+		):
+			continue
+		if move.required_attacker_motion_state != int(attacker_state.get("motion_state", WrestlerResource.MotionState.STATIONARY)) or move.required_target_motion_state != int(target_state.get("motion_state", WrestlerResource.MotionState.STATIONARY)):
+			continue
+		if not ai_state.can_use_move(move):
 			continue
 		moves.append(move)
 	return moves
@@ -1248,35 +1347,36 @@ func _move_targets_part(move: MoveResource, part: int) -> bool:
 
 
 func _intent_matches_move(intent: StringName, move: MoveResource) -> bool:
+	if move == null:
+		return false
+	if not planned_followup_move_key.is_empty():
+		return _move_key(move) == planned_followup_move_key
 	match intent:
-		SetupActionsMenu.IRISH_WHIP:
-			return move.move_type == MoveResource.MoveType.ROPE_REBOUND
-		SetupActionsMenu.THROW_INTO_CORNER:
-			return move.move_type == MoveResource.MoveType.CORNER
-		SetupActionsMenu.START_RUNNING:
+		MatchSetupStateRules.IRISH_WHIP:
+			return move.required_target_motion_state == WrestlerResource.MotionState.ROPE_REBOUND or (move.required_target_area_mode == MoveResource.AreaRequirementMode.SPECIFIC and move.required_target_area == WrestlerResource.Area.ROPES)
+		MatchSetupStateRules.THROW_INTO_CORNER:
+			return move.required_target_area_mode == MoveResource.AreaRequirementMode.SPECIFIC and move.required_target_area == WrestlerResource.Area.CORNER
+		MatchSetupStateRules.START_RUNNING:
 			return move.move_type == MoveResource.MoveType.RUNNING
-		SetupActionsMenu.CLIMB_TOP_ROPE:
-			return move.move_type in [MoveResource.MoveType.DIVING_STANDING, MoveResource.MoveType.DIVING_GROUNDED]
-		SetupActionsMenu.WAKE_OPPONENT:
-			return move.move_type == MoveResource.MoveType.DIVING_STANDING
-		SetupActionsMenu.PREPARE_SPRINGBOARD:
+		MatchSetupStateRules.CLIMB_TOP_ROPE:
+			return move.move_type == MoveResource.MoveType.AERIAL or (move.required_attacker_area_mode == MoveResource.AreaRequirementMode.SPECIFIC and move.required_attacker_area == WrestlerResource.Area.TOP_ROPE)
+		MatchSetupStateRules.WAKE_OPPONENT:
+			return move.move_type == MoveResource.MoveType.AERIAL and move.required_target_position == WrestlerResource.Position.STANDING
+		MatchSetupStateRules.PREPARE_SPRINGBOARD:
 			return move.move_type == MoveResource.MoveType.SPRINGBOARD
-		SetupActionsMenu.PICK_OPPONENT_UP, SetupActionsMenu.GRAPPLE_OPPONENT:
-			return move.move_type in [MoveResource.MoveType.STANDING_FRONT, MoveResource.MoveType.STANDING_BEHIND]
-	return false
+		MatchSetupStateRules.PICK_OPPONENT_UP, MatchSetupStateRules.GRAPPLE_OPPONENT:
+			return move.move_type in [MoveResource.MoveType.GRAPPLE, MoveResource.MoveType.SUBMISSION]
+	return not MatchSetupStateRules.is_recovery(intent) and intent != MatchSetupStateRules.TAUNT
 
 
 func _setup_creates_intent(action_id: StringName) -> bool:
-	return action_id in [
-		SetupActionsMenu.PICK_OPPONENT_UP,
-		SetupActionsMenu.GRAPPLE_OPPONENT,
-		SetupActionsMenu.IRISH_WHIP,
-		SetupActionsMenu.THROW_INTO_CORNER,
-		SetupActionsMenu.START_RUNNING,
-		SetupActionsMenu.CLIMB_TOP_ROPE,
-		SetupActionsMenu.PREPARE_SPRINGBOARD,
-		SetupActionsMenu.WAKE_OPPONENT,
-	]
+	return not MatchSetupStateRules.is_recovery(action_id) and action_id != MatchSetupStateRules.TAUNT
+
+
+func _move_key(move: MoveResource) -> String:
+	if move == null:
+		return ""
+	return move.resource_path if not move.resource_path.is_empty() else move.move_name
 
 
 func _class_personality_move_bonus(wrestler: WrestlerResource, move: MoveResource) -> float:
@@ -1296,8 +1396,7 @@ func _class_personality_move_bonus(wrestler: WrestlerResource, move: MoveResourc
 	if _has_class(wrestler, WrestlerResource.WrestlerClass.HIGH_FLYER) and move.move_type in [
 		MoveResource.MoveType.RUNNING,
 		MoveResource.MoveType.SPRINGBOARD,
-		MoveResource.MoveType.DIVING_STANDING,
-		MoveResource.MoveType.DIVING_GROUNDED,
+		MoveResource.MoveType.AERIAL,
 	]:
 		bonus += 15.0
 	if _has_class(wrestler, WrestlerResource.WrestlerClass.STRIKER):
@@ -1361,6 +1460,10 @@ func _count_finishers(moves: Array[MoveResource]) -> int:
 
 func _position_matches(required: int, actual: int) -> bool:
 	return required == WrestlerResource.Position.NONE or required == actual
+
+
+func _orientation_matches(required: int, actual: int) -> bool:
+	return required == WrestlerResource.Orientation.NONE or required == actual
 
 
 func _is_high_risk(move: MoveResource) -> bool:

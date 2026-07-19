@@ -20,6 +20,9 @@ var match_state: Dictionary = {}
 @onready var _disposition_value: Label = %DispositionValue
 @onready var _classes_value: Label = %ClassesValue
 @onready var _position_value: Label = %PositionValue
+@onready var _signature_moves_value: Label = %SignatureMovesValue
+@onready var _finisher_moves_value: Label = %FinisherMovesValue
+@onready var _held_weapon_value: Label = %HeldWeaponValue
 
 @onready var _margin: MarginContainer = $Margin
 @onready var _content: VBoxContainer = $Margin/Content
@@ -82,6 +85,8 @@ func _apply_compact_layout(portrait_phone: bool) -> void:
 	_gimmick_label.visible = false
 	_role_title.add_theme_font_size_override("font_size", 14 if portrait_phone else 16)
 	_name_value.add_theme_font_size_override("font_size", 20 if portrait_phone else 25)
+	_signature_moves_value.add_theme_font_size_override("font_size", 11 if portrait_phone else 13)
+	_finisher_moves_value.add_theme_font_size_override("font_size", 11 if portrait_phone else 13)
 	for heading in [_profile_heading, _attributes_heading, _condition_heading]:
 		heading.add_theme_font_size_override("font_size", 13 if portrait_phone else 15)
 	add_theme_font_size_override("font_size", 13 if portrait_phone else 15)
@@ -124,7 +129,42 @@ func refresh() -> void:
 	_gender_value.text = _format_enum(WrestlerResource.WrestlerGender, int(wrestler.wrestler_gender), "Not Set")
 	_disposition_value.text = _format_enum(WrestlerResource.WrestlerDisposition, int(wrestler.wrestler_disposition), "Not Set")
 	_classes_value.text = _format_classes(wrestler.wrestler_class)
-	_position_value.text = _format_position(int(match_state.get("position", wrestler.position)))
+	var signature_ready := bool(match_state.get("signature_ready", false))
+	var finisher_stock := clampi(int(match_state.get("finisher_stock", 0)), 0, 3)
+	_signature_moves_value.text = "SIGNATURE %s  %s" % [
+		"[READY]" if signature_ready else "[LOCKED]",
+		_format_move_names(wrestler.signature_moves),
+	]
+	_finisher_moves_value.text = "FINISHERS %s  %s" % [
+		_format_finisher_stock(finisher_stock),
+		_format_move_names(wrestler.finisher_moves),
+	]
+	_signature_moves_value.add_theme_color_override(
+		"font_color",
+		Color(0.98, 0.82, 0.3, 1.0) if signature_ready else Color(0.58, 0.68, 0.82, 1.0),
+	)
+	_finisher_moves_value.add_theme_color_override(
+		"font_color",
+		Color(0.98, 0.82, 0.3, 1.0) if finisher_stock > 0 else Color(0.62, 0.65, 0.7, 1.0),
+	)
+	var held_weapon_name := str(match_state.get("held_weapon_name", "")).strip_edges()
+	var durability := int(match_state.get("held_weapon_uses_remaining", 0))
+	_held_weapon_value.text = "HELD WEAPON  %s" % (
+		"%s  •  %d USE%s" % [held_weapon_name, durability, "" if durability == 1 else "S"]
+		if not held_weapon_name.is_empty()
+		else "None"
+	)
+	_held_weapon_value.add_theme_color_override(
+		"font_color",
+		Color(1.0, 0.58, 0.38, 1.0) if not held_weapon_name.is_empty() else Color(0.56, 0.62, 0.72, 1.0),
+	)
+	_position_value.text = _format_match_state()
+	_name_value.tooltip_text = _name_value.text
+	_origin_value.tooltip_text = _origin_value.text
+	_classes_value.tooltip_text = _classes_value.text
+	_signature_moves_value.tooltip_text = _signature_moves_value.text
+	_finisher_moves_value.tooltip_text = _finisher_moves_value.text
+	_position_value.tooltip_text = _position_value.text.replace("\n", " • ")
 
 	_strength_bar.value = wrestler.strength
 	_speed_bar.value = wrestler.speed
@@ -169,11 +209,32 @@ func _show_unassigned() -> void:
 	_gender_value.text = "—"
 	_disposition_value.text = "—"
 	_classes_value.text = "—"
+	_signature_moves_value.text = "SIGNATURE [LOCKED]  None assigned"
+	_finisher_moves_value.text = "FINISHERS [ ][ ][ ]  None assigned"
+	_held_weapon_value.text = "HELD WEAPON  None"
 	_position_value.text = "Not Set"
 	_body_damage_mannequin.clear_health()
 
 	for bar: ProgressBar in _all_bars():
 		bar.value = 0.0
+
+
+func _format_move_names(moves: Array[MoveResource]) -> String:
+	var names: Array[String] = []
+	for move in moves:
+		if move == null:
+			continue
+		var move_name := move.move_name.strip_edges()
+		if not move_name.is_empty() and move_name not in names:
+			names.append(move_name)
+	return " • ".join(names) if not names.is_empty() else "None assigned"
+
+
+func _format_finisher_stock(stock: int) -> String:
+	var cells := ""
+	for index in range(3):
+		cells += "[F]" if index < stock else "[ ]"
+	return cells
 
 
 func _apply_accent() -> void:
@@ -265,6 +326,26 @@ func _format_position(value: int) -> String:
 	if value == WrestlerResource.Position.NONE:
 		return "Not Set"
 	return _format_enum(WrestlerResource.Position, value, "Not Set")
+
+
+func _format_match_state() -> String:
+	var position := _format_position(int(match_state.get("position", wrestler.position)))
+	var orientation := _format_enum(
+		WrestlerResource.Orientation,
+		int(match_state.get("orientation", wrestler.orientation)),
+		"None",
+	)
+	var area := _format_enum(
+		WrestlerResource.Area,
+		int(match_state.get("area", wrestler.area)),
+		"Ring",
+	)
+	var motion := _format_enum(
+		WrestlerResource.MotionState,
+		int(match_state.get("motion_state", wrestler.motion_state)),
+		"Still",
+	)
+	return "%s • %s\n%s • %s" % [position, orientation, area, motion]
 
 
 func _format_enum(enum_values: Dictionary, value: int, fallback: String) -> String:

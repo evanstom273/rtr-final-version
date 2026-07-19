@@ -102,7 +102,7 @@ func _tooltip_text(valid_count: int, locked_only: bool, has_valid_finisher: bool
 	if locked_only:
 		return "Open this category to inspect its currently locked finisher."
 	if not _enabled_for_selection:
-		return "No moves match the current attacker and target positions."
+		return "No moves match the current posture, orientation, area, and motion state."
 	if has_valid_finisher:
 		return "%d valid moves, including an available finisher." % valid_count
 	return "Open %d currently valid moves." % valid_count

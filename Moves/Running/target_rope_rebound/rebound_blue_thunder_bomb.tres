@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="MoveResource" format=3]
+
+[ext_resource type="Script" path="res://Scripts/Data/MoveData.gd" id="1_by8fx"]
+
+[resource]
+resource_name = "Rebound Blue Thunder Bomb"
+script = ExtResource("1_by8fx")
+move_name = "Rebound Blue Thunder Bomb"
+move_type = 6
+class_preferrence = Array[int]([1, 2])
+move_target_parts = Array[int]([2])
+required_attacker_position = 1
+required_attacker_orientation = 1
+required_attacker_area_mode = 3
+required_target_position = 1
+required_target_orientation = 1
+required_target_area_mode = 3
+required_target_motion_state = 2
+resulting_attacker_position = 3
+resulting_attacker_orientation = 1
+resulting_target_position = 2
+resulting_target_orientation = 3
+strike_weight = 2
+move_impact = 8

@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" path="res://Scenes/Match/match_report_popup.tscn" id="6_report"]
 [ext_resource type="PackedScene" path="res://Scenes/Match/match_result_popup.tscn" id="7_result"]
 [ext_resource type="PackedScene" path="res://Scenes/Match/match_setup_popup.tscn" id="8_match_setup"]
+[ext_resource type="PackedScene" path="res://Scenes/Match/UI/match_ring_view.tscn" id="9_ring"]
 
 [sub_resource type="StyleBoxFlat" id="StyleSelectorPanel"]
 bg_color = Color(0.065, 0.085, 0.125, 1)
@@ -133,42 +134,6 @@ theme_override_constants/margin_bottom = 18
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="HBoxContainer" type="HBoxContainer" parent="SafeArea/PageMargin/Page" unique_id=334203751]
-layout_mode = 2
-
-[node name="VSeparator" type="VSeparator" parent="SafeArea/PageMargin/Page/HBoxContainer" unique_id=2102733296]
-modulate = Color(1, 1, 1, 0)
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Title" type="Label" parent="SafeArea/PageMargin/Page/HBoxContainer" unique_id=394111846]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.9, 0.92, 0.96, 1)
-theme_override_font_sizes/font_size = 26
-text = "VWF CHAMPIONSHIP MATCH"
-horizontal_alignment = 1
-
-[node name="Title3" type="Label" parent="SafeArea/PageMargin/Page/HBoxContainer" unique_id=577784686]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.92, 0.96, 1)
-theme_override_font_sizes/font_size = 26
-text = " / "
-horizontal_alignment = 1
-
-[node name="Title2" type="Label" parent="SafeArea/PageMargin/Page/HBoxContainer" unique_id=1194119049]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.9, 0.92, 0.96, 1)
-theme_override_font_sizes/font_size = 26
-text = "VWF CHAMPIONSHIP MATCH"
-horizontal_alignment = 1
-
-[node name="VSeparator3" type="VSeparator" parent="SafeArea/PageMargin/Page/HBoxContainer" unique_id=587128403]
-modulate = Color(1, 1, 1, 0)
-layout_mode = 2
-size_flags_horizontal = 3
-
 [node name="SelectorPanel" type="PanelContainer" parent="SafeArea/PageMargin/Page" unique_id=1023246354]
 visible = false
 layout_mode = 2
@@ -283,53 +248,64 @@ unique_name_in_owner = true
 layout_mode = 2
 role_title = "PLAYER"
 
-[node name="CenterColumn" type="PanelContainer" parent="SafeArea/PageMargin/Page/CardsRow" unique_id=1392193778]
+[node name="VBoxContainer" type="VBoxContainer" parent="SafeArea/PageMargin/Page/CardsRow" unique_id=1163582937]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.65
+theme_override_constants/separation = 10
+
+[node name="CenterColumn" type="PanelContainer" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer" unique_id=1392193778]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-size_flags_stretch_ratio = 1.35
+size_flags_stretch_ratio = 1.75
 theme_override_styles/panel = SubResource("StyleCenterPanel")
 
-[node name="CenterMargin" type="MarginContainer" parent="SafeArea/PageMargin/Page/CardsRow/CenterColumn" unique_id=1089231513]
+[node name="CenterMargin" type="MarginContainer" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn" unique_id=1089231513]
 layout_mode = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 12
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 12
 
-[node name="CenterContent" type="VBoxContainer" parent="SafeArea/PageMargin/Page/CardsRow/CenterColumn/CenterMargin" unique_id=2125172075]
+[node name="CenterContent" type="VBoxContainer" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn/CenterMargin" unique_id=2125172075]
 layout_mode = 2
 theme_override_constants/separation = 9
 
-[node name="VSBannerPanel" type="PanelContainer" parent="SafeArea/PageMargin/Page/CardsRow/CenterColumn/CenterMargin/CenterContent" unique_id=783188190]
+[node name="VSBannerPanel" type="PanelContainer" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn/CenterMargin/CenterContent" unique_id=783188190]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBanner")
 
-[node name="VSBanner" type="Label" parent="SafeArea/PageMargin/Page/CardsRow/CenterColumn/CenterMargin/CenterContent/VSBannerPanel" unique_id=123716363]
+[node name="VSBanner" type="Label" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn/CenterMargin/CenterContent/VSBannerPanel" unique_id=123716363]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.79, 0.25, 1)
 theme_override_font_sizes/font_size = 18
-text = "PLAYER  VS.  AI"
+text = "STANDARD SINGLES MATCH"
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
 
-[node name="MatchMeta" type="HBoxContainer" parent="SafeArea/PageMargin/Page/CardsRow/CenterColumn/CenterMargin/CenterContent" unique_id=976994377]
+[node name="MatchMeta" type="HBoxContainer" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn/CenterMargin/CenterContent" unique_id=976994377]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="AttackerIndicator" type="Label" parent="SafeArea/PageMargin/Page/CardsRow/CenterColumn/CenterMargin/CenterContent/MatchMeta" unique_id=235919819]
+[node name="AttackerIndicator" type="Label" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn/CenterMargin/CenterContent/MatchMeta" unique_id=235919819]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.25, 0.64, 1, 1)
 text = "ATTACKER: PLAYER"
-autowrap_mode = 2
+vertical_alignment = 1
+text_overrun_behavior = 3
 
-[node name="MatchClock" type="Label" parent="SafeArea/PageMargin/Page/CardsRow/CenterColumn/CenterMargin/CenterContent/MatchMeta" unique_id=1765864616]
+[node name="MatchClock" type="Label" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn/CenterMargin/CenterContent/MatchMeta" unique_id=1765864616]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
@@ -338,7 +314,18 @@ theme_override_font_sizes/font_size = 18
 text = "00:00"
 horizontal_alignment = 2
 
-[node name="ResultBanner" type="Label" parent="SafeArea/PageMargin/Page/CardsRow/CenterColumn/CenterMargin/CenterContent" unique_id=50655362]
+[node name="RefereeCountBadge" type="Label" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn/CenterMargin/CenterContent/MatchMeta" unique_id=1678564118]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(104, 24)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.8, 0.28, 1)
+theme_override_font_sizes/font_size = 16
+text = "COUNT: 0 / 10"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="ResultBanner" type="Label" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn/CenterMargin/CenterContent" unique_id=50655362]
 unique_name_in_owner = true
 visible = false
 custom_minimum_size = Vector2(0, 54)
@@ -350,7 +337,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
 
-[node name="ViewReportButton" type="Button" parent="SafeArea/PageMargin/Page/CardsRow/CenterColumn/CenterMargin/CenterContent" unique_id=564354340]
+[node name="ViewReportButton" type="Button" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn/CenterMargin/CenterContent" unique_id=564354340]
 unique_name_in_owner = true
 visible = false
 custom_minimum_size = Vector2(0, 44)
@@ -359,77 +346,81 @@ theme_override_colors/font_color = Color(0.95, 0.79, 0.25, 1)
 theme_override_styles/normal = SubResource("StyleAction")
 text = "VIEW MATCH REPORT"
 
-[node name="LogPanel" type="PanelContainer" parent="SafeArea/PageMargin/Page/CardsRow/CenterColumn/CenterMargin/CenterContent" unique_id=706493988]
+[node name="LogPanel" type="PanelContainer" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn/CenterMargin/CenterContent" unique_id=706493988]
 custom_minimum_size = Vector2(0, 140)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleLog")
 
-[node name="LogMargin" type="MarginContainer" parent="SafeArea/PageMargin/Page/CardsRow/CenterColumn/CenterMargin/CenterContent/LogPanel" unique_id=1921789160]
+[node name="LogMargin" type="MarginContainer" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn/CenterMargin/CenterContent/LogPanel" unique_id=1921789160]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="LogContent" type="VBoxContainer" parent="SafeArea/PageMargin/Page/CardsRow/CenterColumn/CenterMargin/CenterContent/LogPanel/LogMargin" unique_id=44484541]
+[node name="LogContent" type="VBoxContainer" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn/CenterMargin/CenterContent/LogPanel/LogMargin" unique_id=44484541]
 layout_mode = 2
 theme_override_constants/separation = 7
 
-[node name="LogHeading" type="Label" parent="SafeArea/PageMargin/Page/CardsRow/CenterColumn/CenterMargin/CenterContent/LogPanel/LogMargin/LogContent" unique_id=2097000643]
+[node name="LogHeading" type="Label" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn/CenterMargin/CenterContent/LogPanel/LogMargin/LogContent" unique_id=2097000643]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.78, 0.82, 0.9, 1)
 text = "MATCH LOG"
 horizontal_alignment = 1
 
-[node name="MatchLogScroll" type="ScrollContainer" parent="SafeArea/PageMargin/Page/CardsRow/CenterColumn/CenterMargin/CenterContent/LogPanel/LogMargin/LogContent" unique_id=1464560991]
+[node name="MatchLogScroll" type="ScrollContainer" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn/CenterMargin/CenterContent/LogPanel/LogMargin/LogContent" unique_id=1464560991]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 3
-vertical_scroll_mode = 3
+vertical_scroll_mode = 2
 scroll_deadzone = 8
 
-[node name="MatchLogList" type="VBoxContainer" parent="SafeArea/PageMargin/Page/CardsRow/CenterColumn/CenterMargin/CenterContent/LogPanel/LogMargin/LogContent/MatchLogScroll" unique_id=483158782]
+[node name="MatchLogList" type="VBoxContainer" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn/CenterMargin/CenterContent/LogPanel/LogMargin/LogContent/MatchLogScroll" unique_id=483158782]
 unique_name_in_owner = true
+clip_contents = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 7
 
-[node name="ActionSeparator" type="HSeparator" parent="SafeArea/PageMargin/Page/CardsRow/CenterColumn/CenterMargin/CenterContent" unique_id=313239232]
+[node name="ActionSeparator" type="HSeparator" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn/CenterMargin/CenterContent" unique_id=313239232]
 layout_mode = 2
 
-[node name="MoveSelectorButton" type="Button" parent="SafeArea/PageMargin/Page/CardsRow/CenterColumn/CenterMargin/CenterContent" unique_id=887059678]
+[node name="MoveSelectorButton" type="Button" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn/CenterMargin/CenterContent" unique_id=887059678]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleAction")
 text = "SELECT MOVE"
+text_overrun_behavior = 3
 
-[node name="SetupActionsButton" type="Button" parent="SafeArea/PageMargin/Page/CardsRow/CenterColumn/CenterMargin/CenterContent" unique_id=1325093146]
+[node name="SetupActionsButton" type="Button" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn/CenterMargin/CenterContent" unique_id=1325093146]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.55, 0.78, 1, 1)
 theme_override_styles/normal = SubResource("StyleAction")
 text = "SETUP / SHOWBOAT"
+text_overrun_behavior = 3
 
-[node name="ExecuteButton" type="Button" parent="SafeArea/PageMargin/Page/CardsRow/CenterColumn/CenterMargin/CenterContent" unique_id=59498598]
+[node name="ExecuteButton" type="Button" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn/CenterMargin/CenterContent" unique_id=59498598]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.79, 0.25, 1)
 theme_override_styles/normal = SubResource("StyleAction")
 text = "EXECUTE"
+text_overrun_behavior = 3
 
-[node name="PinButton" type="Button" parent="SafeArea/PageMargin/Page/CardsRow/CenterColumn/CenterMargin/CenterContent" unique_id=1037054906]
+[node name="PinButton" type="Button" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn/CenterMargin/CenterContent" unique_id=1037054906]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 theme_override_styles/normal = SubResource("StylePin")
 text = "PIN"
 
-[node name="NewMatchButton" type="Button" parent="SafeArea/PageMargin/Page/CardsRow/CenterColumn/CenterMargin/CenterContent" unique_id=389250817]
+[node name="NewMatchButton" type="Button" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn/CenterMargin/CenterContent" unique_id=389250817]
 unique_name_in_owner = true
 visible = false
 custom_minimum_size = Vector2(0, 48)
@@ -437,6 +428,10 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.79, 0.25, 1)
 theme_override_styles/normal = SubResource("StyleAction")
 text = "SET UP NEW MATCH"
+
+[node name="RingView" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer" unique_id=337326215 instance=ExtResource("9_ring")]
+unique_name_in_owner = true
+layout_mode = 2
 
 [node name="AIScroll" type="MarginContainer" parent="SafeArea/PageMargin/Page/CardsRow" unique_id=979147966]
 layout_mode = 2
@@ -448,6 +443,40 @@ unique_name_in_owner = true
 layout_mode = 2
 role_title = "AI"
 accent_color = Color(0.93, 0.3, 0.3, 1)
+
+[node name="PortraitRotateOverlay" type="ColorRect" parent="." unique_id=1439042001]
+unique_name_in_owner = true
+visible = false
+z_index = 90
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.018, 0.025, 0.04, 0.985)
+
+[node name="RotateMessage" type="Label" parent="PortraitRotateOverlay" unique_id=1439042002]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -210.0
+offset_top = -70.0
+offset_right = 210.0
+offset_bottom = 70.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.9, 0.93, 0.98, 1)
+theme_override_font_sizes/font_size = 24
+text = "ROTATE TO LANDSCAPE
+
+The tactical match view is designed for landscape play."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
 
 [node name="MovesRadialMenu" parent="." unique_id=1861384882 instance=ExtResource("3_menu")]
 unique_name_in_owner = true

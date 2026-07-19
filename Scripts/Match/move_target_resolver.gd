@@ -18,6 +18,10 @@ static func resolve(
 ) -> Dictionary:
 	if move == null:
 		return _fallback_resolution()
+	# Weapon actions can be aimed at any explicit focus. Their fallback target
+	# remains authored on the weapon/move when the selector is left on Auto.
+	if move.move_type == MoveResource.MoveType.WEAPON and is_target_focus(requested_focus):
+		return _single_part_resolution(requested_focus, true)
 	var mode := int(move.targeting_mode)
 	var listed_parts := _listed_parts(move)
 	var parts: Array[int] = []
@@ -257,4 +261,20 @@ static func _fallback_resolution() -> Dictionary:
 		"focus_applied": false,
 		"full_tag": "BODY",
 		"compact_tag": "B",
+	}
+
+
+static func _single_part_resolution(part: int, focus_applied: bool) -> Dictionary:
+	var parts: Array[int] = [part]
+	return {
+		"parts": parts,
+		"primary_part": part,
+		"story_part": part,
+		"damage_weights": {part: 1.0},
+		"pressure_parts": parts.duplicate(),
+		"pressure_uses_average": false,
+		"is_bilateral": false,
+		"focus_applied": focus_applied,
+		"full_tag": part_label(part).to_upper(),
+		"compact_tag": _compact_tag(MoveResource.TargetingMode.FIXED_PARTS, parts),
 	}

@@ -11,14 +11,38 @@ enum Asia_Countries { JAPAN, CHINA, SOUTH_KOREA, INDIA, OTHER }
 enum Oceania_Countries { AUSTRALIA, NEW_ZEALAND, SAMOA, OTHER }
 enum Africa_Countries { GHANA, NIGERIA, EGYPT, SOUTH_AFRICA, OTHER }
 enum Position {
-	NONE = 0,
-	STANDING = 1,
-	GROUNDED = 2,
-	IN_CORNER = 3,
-	RUNNING = 4,
-	ROPE_REBOUND = 5,
-	TOP_ROPE = 6,
-	APRON = 7,
+	NONE,
+	STANDING,
+	GROUNDED,
+	SEATED,
+	KNEELING,
+	PERCHED
+}
+
+enum Orientation {
+	NONE,
+	FRONT,
+	BACK,
+	FACE_UP,
+	FACE_DOWN
+}
+
+enum Area {
+	IN_RING,
+	CORNER,
+	ROPES,
+	APRON,
+	OUTSIDE,
+	RAMP,
+	TOP_ROPE
+}
+
+enum MotionState {
+	STATIONARY,
+	RUNNING,
+	ROPE_REBOUND,
+	RISING,
+	STAGGERING
 }
 
 enum WrestlerGender { NONE, MALE, FEMALE }
@@ -96,10 +120,15 @@ enum WrestlerStatus {NONE, ACTIVE, INJURED, RETIRED }
 @export_range(0, 100, 5) var right_leg_hp: float = 100
 @export_range(0,100, 1) var momentum: float = 0.0
 var position: Position = Position.STANDING
+var orientation: int = Orientation.FRONT
+var area: int = Area.IN_RING
+var motion_state: int = MotionState.STATIONARY
 
 # --- Moveset ---
 @export_group("Moveset")
-@export var move_set: Array[MoveResource]
+@export var move_set: Array[MoveResource] = []
+@export var signature_moves: Array[MoveResource] = []
+@export var finisher_moves: Array[MoveResource] = []
 
 func _validate_property(property: Dictionary):
 	# Hide country enums that don't match the current birthplace

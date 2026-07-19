@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="MoveResource" format=3]
+
+[ext_resource type="Script" path="res://Scripts/Data/MoveData.gd" id="1_rsw4l"]
+
+[resource]
+resource_name = "Springboard Blockbuster"
+script = ExtResource("1_rsw4l")
+move_name = "Springboard Blockbuster"
+move_type = 5
+class_preferrence = Array[int]([0])
+move_target_parts = Array[int]([1])
+required_attacker_position = 1
+required_attacker_orientation = 1
+required_attacker_area_mode = 0
+required_attacker_area = 3
+required_target_position = 1
+required_target_orientation = 1
+required_target_area_mode = 0
+resulting_attacker_position = 2
+resulting_attacker_orientation = 3
+resulting_attacker_area_mode = 1
+resulting_target_position = 2
+resulting_target_orientation = 3
+resulting_target_area_mode = 1
+interaction_override = 2
+strike_weight = 2
+move_impact = 7

@@ -230,6 +230,41 @@ size_flags_horizontal = 3
 text = "None"
 autowrap_mode = 2
 
+[node name="SetupMethodLabel" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/SummaryPanel/SummaryMargin/SummaryGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+text = "Match Setup"
+
+[node name="SetupMethodValue" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/SummaryPanel/SummaryMargin/SummaryGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Manual"
+
+[node name="LocksLabel" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/SummaryPanel/SummaryMargin/SummaryGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+text = "Locks"
+
+[node name="LocksValue" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/SummaryPanel/SummaryMargin/SummaryGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Player Open / AI Open"
+autowrap_mode = 2
+
+[node name="RandomizedLabel" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/SummaryPanel/SummaryMargin/SummaryGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+text = "Randomized"
+
+[node name="RandomizedValue" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/SummaryPanel/SummaryMargin/SummaryGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Player No / AI No"
+autowrap_mode = 2
+
 [node name="StatsHeading" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.88, 0.94, 1)
@@ -320,7 +355,7 @@ theme_override_constants/margin_bottom = 10
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
-horizontal_scroll_mode = 3
+horizontal_scroll_mode = 0
 vertical_scroll_mode = 0
 scroll_deadzone = 8
 

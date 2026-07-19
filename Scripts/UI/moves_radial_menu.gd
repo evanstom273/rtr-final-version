@@ -11,25 +11,29 @@ const MOVE_GRID_GAP := 8.0
 const MOVE_GRID_RESERVED_HEIGHT := 205.0
 const MIN_MOVE_BUTTON_WIDTH := 150.0
 const CATEGORY_DEFINITIONS: Array[Dictionary] = [
-	{"id": MoveResource.MoveType.STANDING_FRONT, "label": "Standing Front", "icon_id": &"standing_front"},
-	{"id": MoveResource.MoveType.STANDING_BEHIND, "label": "Standing Behind", "icon_id": &"standing_behind"},
-	{"id": MoveResource.MoveType.RUNNING, "label": "Running", "icon_id": &"running"},
-	{"id": MoveResource.MoveType.ROPE_REBOUND, "label": "Rope Rebound", "icon_id": &"rope_rebound"},
-	{"id": MoveResource.MoveType.GROUNDED, "label": "Grounded", "icon_id": &"grounded"},
+	{"id": MoveResource.MoveType.STRIKE, "label": "Strikes", "icon_id": &"strike"},
+	{"id": MoveResource.MoveType.GRAPPLE, "label": "Grapples", "icon_id": &"grapple"},
+	{"id": MoveResource.MoveType.SUBMISSION, "label": "Submissions", "icon_id": &"submission"},
+	{"id": MoveResource.MoveType.AERIAL, "label": "Aerial", "icon_id": &"aerial"},
 	{"id": MoveResource.MoveType.SPRINGBOARD, "label": "Springboard", "icon_id": &"springboard"},
-	{"id": MoveResource.MoveType.CORNER, "label": "Corner", "icon_id": &"corner"},
-	{"id": MoveResource.MoveType.DIVING_STANDING, "label": "Diving Standing", "icon_id": &"diving_standing"},
-	{"id": MoveResource.MoveType.DIVING_GROUNDED, "label": "Diving Grounded", "icon_id": &"diving_grounded"},
+	{"id": MoveResource.MoveType.RUNNING, "label": "Running", "icon_id": &"running"},
+	{"id": MoveResource.MoveType.REVERSAL, "label": "Reversals", "icon_id": &"reversal"},
+	{"id": MoveResource.MoveType.PINNING_MOVE, "label": "Pinning Moves", "icon_id": &"pinning"},
+	{"id": MoveResource.MoveType.WEAPON, "label": "Weapons", "icon_id": &"weapon"},
+	{"id": MoveResource.MoveType.ENVIRONMENTAL, "label": "Environment", "icon_id": &"environmental"},
 ]
 
 var _wrestler: WrestlerResource
 var _target: WrestlerResource
 var _target_state: MatchSideState
+var _extra_moves: Array[MoveResource] = []
 var _valid_move_filter: Callable
 var _unavailable_reason_filter: Callable
 var _interaction_allowed_filter: Callable
 var _last_attacker_position: int = -1
 var _last_target_position: int = -1
+var _last_attacker_state_key: String = ""
+var _last_target_state_key: String = ""
 var _visible_move_count: int = 0
 var _move_panel_size: Vector2 = Vector2(980, 650)
 var _target_focus: int = MoveResource.MoveTargetParts.NONE
@@ -83,6 +87,7 @@ func open_for_wrestler(
 	unavailable_reason_filter: Callable = Callable(),
 	interaction_allowed_filter: Callable = Callable(),
 	target_state: MatchSideState = null,
+	extra_moves: Array[MoveResource] = [],
 ) -> void:
 	_wrestler = value
 	_target = target
@@ -90,8 +95,11 @@ func open_for_wrestler(
 	_unavailable_reason_filter = unavailable_reason_filter
 	_interaction_allowed_filter = interaction_allowed_filter
 	_target_state = target_state
+	_extra_moves = extra_moves.duplicate()
 	_last_attacker_position = value.position if value != null else -1
 	_last_target_position = target.position if target != null else -1
+	_last_attacker_state_key = _resource_state_key(value)
+	_last_target_state_key = _resource_state_key(target)
 	visible = true
 	_show_categories()
 
@@ -105,11 +113,15 @@ func refresh_match_state(
 ) -> void:
 	var next_attacker_position := attacker.position if attacker != null else -1
 	var next_target_position := target.position if target != null else -1
+	var next_attacker_state_key := _resource_state_key(attacker)
+	var next_target_state_key := _resource_state_key(target)
 	var state_changed := (
 		attacker != _wrestler
 		or target != _target
 		or next_attacker_position != _last_attacker_position
 		or next_target_position != _last_target_position
+		or next_attacker_state_key != _last_attacker_state_key
+		or next_target_state_key != _last_target_state_key
 	)
 	_wrestler = attacker
 	_target = target
@@ -118,6 +130,8 @@ func refresh_match_state(
 	_target_state = target_state
 	_last_attacker_position = next_attacker_position
 	_last_target_position = next_target_position
+	_last_attacker_state_key = next_attacker_state_key
+	_last_target_state_key = next_target_state_key
 	if not is_node_ready():
 		return
 	if state_changed and visible:
@@ -190,6 +204,8 @@ func _show_move_category(move_type: int) -> void:
 		var prefix := ""
 		if move.is_finisher:
 			prefix += "(F)"
+		elif _wrestler != null and move in _wrestler.signature_moves:
+			prefix += "(SIG)"
 		if move.is_submission:
 			prefix += "(S)"
 		var target_resolution := MoveTargetResolver.resolve(move, _target_focus, _target_state)
@@ -210,6 +226,11 @@ func _show_move_category(move_type: int) -> void:
 			button.add_theme_color_override("font_color", FINISHER_COLOR)
 			button.add_theme_color_override("font_hover_color", FINISHER_COLOR.lightened(0.15))
 			button.add_theme_color_override("font_pressed_color", FINISHER_COLOR)
+		elif _wrestler != null and move in _wrestler.signature_moves:
+			var signature_color := Color(0.48, 0.78, 1.0, 1.0)
+			button.add_theme_color_override("font_color", signature_color)
+			button.add_theme_color_override("font_hover_color", signature_color.lightened(0.15))
+			button.add_theme_color_override("font_pressed_color", signature_color)
 		button.pressed.connect(_select_move.bind(move))
 		_move_grid.add_child(button)
 
@@ -245,8 +266,8 @@ func _refresh_category_menu() -> void:
 		})
 	_category_menu.set_menu_data(
 		categories,
-		_position_label(_wrestler.position if _wrestler != null else WrestlerResource.Position.NONE),
-		_position_label(_target.position if _target != null else WrestlerResource.Position.NONE),
+		_state_label(_wrestler),
+		_state_label(_target),
 	)
 
 
@@ -262,7 +283,7 @@ func _valid_moves_for_type(move_type: int) -> Array[MoveResource]:
 	var matches: Array[MoveResource] = []
 	if _wrestler == null:
 		return matches
-	for move in _wrestler.move_set:
+	for move in _all_assigned_moves():
 		if (
 			move != null
 			and int(move.move_type) == move_type
@@ -276,7 +297,7 @@ func _display_moves_for_type(move_type: int) -> Array[MoveResource]:
 	var matches: Array[MoveResource] = []
 	if _wrestler == null:
 		return matches
-	for move in _wrestler.move_set:
+	for move in _all_assigned_moves():
 		if (
 			move != null
 			and int(move.move_type) == move_type
@@ -285,6 +306,25 @@ func _display_moves_for_type(move_type: int) -> Array[MoveResource]:
 		):
 			matches.append(move)
 	return matches
+
+
+func _all_assigned_moves() -> Array[MoveResource]:
+	var moves: Array[MoveResource] = []
+	if _wrestler == null:
+		return moves
+	for move in _wrestler.move_set:
+		if move != null and move not in moves:
+			moves.append(move)
+	for move in _wrestler.signature_moves:
+		if move != null and move not in moves:
+			moves.append(move)
+	for move in _wrestler.finisher_moves:
+		if move != null and move not in moves:
+			moves.append(move)
+	for move in _extra_moves:
+		if move != null and move not in moves:
+			moves.append(move)
+	return moves
 
 
 func _locked_finishers_for_type(move_type: int) -> Array[MoveResource]:
@@ -312,6 +352,11 @@ func _positions_are_valid(move: MoveResource) -> bool:
 	return (
 		_position_matches(move.required_attacker_position, _wrestler.position)
 		and _position_matches(move.required_target_position, _target.position)
+		and _orientation_matches(move.required_attacker_orientation, _wrestler.orientation)
+		and _orientation_matches(move.required_target_orientation, _target.orientation)
+		and MatchAreaRules.move_areas_match(move, _wrestler.area, _target.area)
+		and move.required_attacker_motion_state == _wrestler.motion_state
+		and move.required_target_motion_state == _target.motion_state
 	)
 
 
@@ -323,6 +368,10 @@ func _unavailable_reason(move: MoveResource) -> String:
 
 func _position_matches(required: int, actual: int) -> bool:
 	return required == WrestlerResource.Position.NONE or required == actual
+
+
+func _orientation_matches(required: int, actual: int) -> bool:
+	return required == WrestlerResource.Orientation.NONE or required == actual
 
 
 func _clear_move_buttons() -> void:
@@ -410,6 +459,30 @@ func _position_label(position: int) -> String:
 				return "Not Set"
 			if key == "IN_CORNER":
 				return "Corner"
+			return str(key).replace("_", " ").to_lower().capitalize()
+	return "Unknown"
+
+
+func _state_label(wrestler: WrestlerResource) -> String:
+	if wrestler == null:
+		return "Not Set"
+	return "%s %s · %s · %s" % [
+		_position_label(wrestler.position),
+		_enum_label(WrestlerResource.Orientation, wrestler.orientation),
+		_enum_label(WrestlerResource.Area, wrestler.area),
+		_enum_label(WrestlerResource.MotionState, wrestler.motion_state),
+	]
+
+
+func _resource_state_key(wrestler: WrestlerResource) -> String:
+	if wrestler == null:
+		return ""
+	return "%d:%d:%d:%d" % [wrestler.position, wrestler.orientation, wrestler.area, wrestler.motion_state]
+
+
+func _enum_label(values: Dictionary, value: int) -> String:
+	for key in values:
+		if int(values[key]) == value:
 			return str(key).replace("_", " ").to_lower().capitalize()
 	return "Unknown"
 

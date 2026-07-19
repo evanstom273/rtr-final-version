@@ -25,6 +25,26 @@ func _draw() -> void:
 	var center := size * 0.5
 	var width := maxf(1.6, 2.2 * unit)
 	match icon_id:
+		&"strike":
+			_draw_impact(center, unit, width)
+		&"grapple":
+			_draw_standing_front(center, unit, width)
+		&"throw":
+			_draw_standing_behind(center, unit, width)
+		&"slam":
+			_draw_grounded(center, unit, width)
+		&"submission":
+			_draw_lock(center, unit)
+		&"aerial":
+			_draw_diving(center, unit, width, true)
+		&"reversal":
+			_draw_rope_rebound(center, unit, width)
+		&"pinning":
+			_draw_grounded(center, unit, width)
+		&"weapon":
+			_draw_impact(center, unit, width)
+		&"environmental":
+			_draw_corner(center, unit, width)
 		&"standing_front":
 			_draw_standing_front(center, unit, width)
 		&"standing_behind":

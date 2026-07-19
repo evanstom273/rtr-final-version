@@ -162,6 +162,74 @@ layout_mode = 2
 mouse_filter = 2
 color = Color(0.78, 0.64, 0.2, 0.8)
 
+[node name="RulesPanel" type="PanelContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleSidePanel")
+
+[node name="RulesMargin" type="MarginContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RulesPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 7
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 7
+
+[node name="RulesRow" type="BoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RulesPanel/RulesMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="RulesHeading" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RulesPanel/RulesMargin/RulesRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.8, 0.28, 1)
+text = "MATCH RULES"
+vertical_alignment = 1
+
+[node name="DQEnabled" type="CheckButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RulesPanel/RulesMargin/RulesRow"]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+text = "DISQUALIFICATIONS"
+
+[node name="CountOutsEnabled" type="CheckButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RulesPanel/RulesMargin/RulesRow"]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+text = "COUNT-OUTS"
+
+[node name="CountLimitLabel" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RulesPanel/RulesMargin/RulesRow"]
+layout_mode = 2
+text = "LIMIT"
+vertical_alignment = 1
+
+[node name="CountLimit" type="SpinBox" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RulesPanel/RulesMargin/RulesRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(82, 0)
+layout_mode = 2
+min_value = 1.0
+max_value = 100.0
+value = 10.0
+
+[node name="ActionClockLabel" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RulesPanel/RulesMargin/RulesRow"]
+layout_mode = 2
+text = "CLOCK STEP"
+vertical_alignment = 1
+
+[node name="ActionClockStep" type="OptionButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RulesPanel/RulesMargin/RulesRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 0)
+layout_mode = 2
+fit_to_longest_item = false
+
+[node name="RulesSummary" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RulesPanel/RulesMargin/RulesRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.72, 0.79, 0.9, 1)
+text = "DQ: ON | COUNT-OUT: ON (10) | CLOCK: 15s | WEAPONS: ILLEGAL"
+horizontal_alignment = 2
+vertical_alignment = 1
+text_overrun_behavior = 3
+
 [node name="SelectionRow" type="BoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -185,11 +253,21 @@ theme_override_constants/margin_bottom = 10
 layout_mode = 2
 theme_override_constants/separation = 7
 
-[node name="PlayerHeading" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin/PlayerContent"]
+[node name="PlayerHeader" type="HBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin/PlayerContent"]
 layout_mode = 2
+
+[node name="PlayerHeading" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin/PlayerContent/PlayerHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.25, 0.64, 1, 1)
 theme_override_font_sizes/font_size = 19
 text = "PLAYER WRESTLER"
+
+[node name="PlayerLock" type="CheckButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin/PlayerContent/PlayerHeader"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 44)
+layout_mode = 2
+text = "LOCK PLAYER"
 
 [node name="PlayerFilters" type="BoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin/PlayerContent"]
 unique_name_in_owner = true
@@ -234,7 +312,7 @@ allow_rmb_select = true
 max_text_lines = 1
 
 [node name="PlayerSummary" type="VBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin/PlayerContent"]
-custom_minimum_size = Vector2(0, 146)
+custom_minimum_size = Vector2(0, 166)
 layout_mode = 2
 theme_override_constants/separation = 4
 
@@ -250,7 +328,7 @@ autowrap_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.76, 0.8, 0.88, 1)
-text = "Finishers: None\nClass: None\nGimmick: None\nNationality: Not Set\nPromotion: Not Assigned"
+text = "Signatures: None\nFinishers: None\nClass: None\nGimmick: None\nNationality: Not Set\nPromotion: Not Assigned"
 autowrap_mode = 2
 
 [node name="OpponentPanel" type="PanelContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow"]
@@ -270,8 +348,18 @@ theme_override_constants/margin_bottom = 10
 layout_mode = 2
 theme_override_constants/separation = 7
 
-[node name="OpponentHeading" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin/OpponentContent"]
+[node name="OpponentHeader" type="HBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin/OpponentContent"]
 layout_mode = 2
+
+[node name="AILock" type="CheckButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin/OpponentContent/OpponentHeader"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 44)
+layout_mode = 2
+text = "LOCK AI"
+
+[node name="OpponentHeading" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin/OpponentContent/OpponentHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.93, 0.3, 0.3, 1)
 theme_override_font_sizes/font_size = 19
 text = "AI OPPONENT"
@@ -320,7 +408,7 @@ allow_rmb_select = true
 max_text_lines = 1
 
 [node name="OpponentSummary" type="VBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin/OpponentContent"]
-custom_minimum_size = Vector2(0, 146)
+custom_minimum_size = Vector2(0, 166)
 layout_mode = 2
 theme_override_constants/separation = 4
 
@@ -337,7 +425,7 @@ autowrap_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.76, 0.8, 0.88, 1)
-text = "Finishers: None\nClass: None\nGimmick: None\nNationality: Not Set\nPromotion: Not Assigned"
+text = "Signatures: None\nFinishers: None\nClass: None\nGimmick: None\nNationality: Not Set\nPromotion: Not Assigned"
 horizontal_alignment = 2
 autowrap_mode = 2
 
@@ -348,6 +436,43 @@ theme_override_colors/font_color = Color(0.82, 0.74, 0.46, 1)
 text = "Choose two different wrestlers."
 horizontal_alignment = 1
 autowrap_mode = 2
+
+[node name="RandomButtons" type="BoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="RandomMatchButton" type="Button" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RandomButtons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/normal = SubResource("StyleStart")
+theme_override_styles/hover = SubResource("StyleStartHover")
+theme_override_styles/pressed = SubResource("StyleStartHover")
+theme_override_styles/focus = SubResource("StyleStartHover")
+text = "RANDOM MATCH"
+
+[node name="RandomPlayerButton" type="Button" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RandomButtons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(190, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/normal = SubResource("StyleCancel")
+theme_override_styles/hover = SubResource("StyleStartHover")
+theme_override_styles/focus = SubResource("StyleStartHover")
+text = "RANDOM PLAYER"
+
+[node name="RandomAIButton" type="Button" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RandomButtons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(170, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/normal = SubResource("StyleCancel")
+theme_override_styles/hover = SubResource("StyleStartHover")
+theme_override_styles/focus = SubResource("StyleStartHover")
+text = "RANDOM AI"
 
 [node name="SetupButtons" type="BoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content"]
 unique_name_in_owner = true

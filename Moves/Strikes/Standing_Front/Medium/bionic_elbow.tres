@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="MoveResource" format=3]
+
+[ext_resource type="Script" path="res://Scripts/Data/MoveData.gd" id="1_mh230"]
+
+[resource]
+resource_name = "Bionic Elbow"
+script = ExtResource("1_mh230")
+move_name = "Bionic Elbow"
+move_type = 1
+move_target_parts = Array[int]([1])
+required_attacker_position = 1
+required_attacker_orientation = 1
+required_target_position = 1
+required_target_orientation = 1
+resulting_attacker_position = 1
+resulting_attacker_orientation = 1
+resulting_target_position = 1
+resulting_target_orientation = 1
+resulting_target_motion_state = 4
+is_strike = true
+strike_weight = 1
+move_impact = 5
+metadata/physical_description = "A raised pointed elbow is brought down sharply onto the opponent’s forehead."
+metadata/style_tags = PackedStringArray("SHOWMAN", "BRAWLER", "ALL_ROUNDER")
+metadata/confidence = "HIGH"
+metadata/catalogue_notes = "Standing theatrical elbow strike, not a diving elbow."
+metadata/catalogue_source = "rise_to_relevance_standing_front_strikes.md"

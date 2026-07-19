@@ -4,6 +4,7 @@ class_name ControlMeterInteraction
 signal result_selected(request_id: int, result: int, timed_out: bool, marker_value: float)
 
 const EDGE_MARGIN := 0.06
+const MIN_ONE_WAY_TARGET_TRAVEL := 0.24
 const FEEDBACK_SECONDS := 0.10
 const DEFAULT_GOLD_ZONE_SCALE := 0.25
 const MIN_GOLD_ZONE_SCALE := 0.10
@@ -98,9 +99,23 @@ func open_interaction(request: Dictionary) -> void:
 		_rng.seed = int(request.get("rng_seed", 0))
 	else:
 		_rng.randomize()
+	if _one_way:
+		_direction = _next_one_way_direction
+		_next_one_way_direction *= -1.0
+	else:
+		_direction = 1.0
 	var half_window := _success_window / 200.0
 	var minimum_center := EDGE_MARGIN + half_window
 	var maximum_center := 1.0 - EDGE_MARGIN - half_window
+	var minimum_travel := clampf(
+		float(request.get("minimum_target_travel", MIN_ONE_WAY_TARGET_TRAVEL)),
+		0.12,
+		0.42,
+	)
+	if _one_way and _direction > 0.0:
+		minimum_center = maxf(minimum_center, minimum_travel + half_window)
+	elif _one_way and _direction < 0.0:
+		maximum_center = minf(maximum_center, 1.0 - minimum_travel - half_window)
 	if request.has("zone_center"):
 		_zone_center = clampf(float(request.get("zone_center", 0.5)), minimum_center, maximum_center)
 	else:
@@ -109,12 +124,9 @@ func open_interaction(request: Dictionary) -> void:
 	_prompt.text = str(request.get("prompt", "Stop the marker inside the gold zone."))
 	_tap_button.text = str(request.get("button_text", "TAKE CONTROL"))
 	if _one_way:
-		_direction = _next_one_way_direction
 		_marker_value = 0.0 if _direction > 0.0 else 1.0
-		_next_one_way_direction *= -1.0
 	else:
 		_marker_value = 0.0
-		_direction = 1.0
 	_elapsed = 0.0
 	_active = true
 	_resolved = false

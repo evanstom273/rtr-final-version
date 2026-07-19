@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="MoveResource" format=3]
+
+[ext_resource type="Script" path="res://Scripts/Data/MoveData.gd" id="1_6dypg"]
+
+[resource]
+resource_name = "Cross Chop"
+script = ExtResource("1_6dypg")
+move_name = "Cross Chop"
+move_type = 1
+class_preferrence = Array[int]([3, 1])
+move_target_parts = Array[int]([2])
+required_attacker_position = 1
+required_attacker_orientation = 1
+required_target_position = 1
+required_target_orientation = 1
+resulting_attacker_position = 1
+resulting_attacker_orientation = 1
+resulting_target_position = 1
+resulting_target_orientation = 1
+resulting_target_motion_state = 4
+is_strike = true
+strike_weight = 1
+move_impact = 5
+metadata/physical_description = "Both forearms cross inward across the opponent’s upper chest and throat line."
+metadata/style_tags = PackedStringArray("STRONG_STYLE", "SHOWMAN", "POWER")
+metadata/confidence = "HIGH"
+metadata/catalogue_notes = "Two-arm crossing action; not a clothesline."
+metadata/catalogue_source = "rise_to_relevance_standing_front_strikes.md"

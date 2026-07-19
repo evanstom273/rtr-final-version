@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="MoveResource" format=3]
+
+[ext_resource type="Script" path="res://Scripts/Data/MoveData.gd" id="1_rj7v5"]
+
+[resource]
+resource_name = "Jumping Roundhouse Kick"
+script = ExtResource("1_rj7v5")
+move_name = "Jumping Roundhouse Kick"
+move_type = 1
+class_preferrence = Array[int]([3])
+move_target_parts = Array[int]([1])
+required_attacker_position = 1
+required_attacker_orientation = 1
+required_target_position = 1
+required_target_orientation = 1
+resulting_attacker_position = 2
+resulting_attacker_orientation = 4
+resulting_target_position = 2
+resulting_target_orientation = 3
+is_strike = true
+strike_weight = 2
+move_impact = 8
+metadata/physical_description = "A vertical leap adds force to a roundhouse kick across the opponent’s head."
+metadata/style_tags = PackedStringArray("MARTIAL_ARTS", "STRIKER", "SHOWMAN")
+metadata/confidence = "HIGH"
+metadata/catalogue_notes = "Stationary jump with no running approach; attacker falls after impact."
+metadata/catalogue_source = "rise_to_relevance_standing_front_strikes.md"

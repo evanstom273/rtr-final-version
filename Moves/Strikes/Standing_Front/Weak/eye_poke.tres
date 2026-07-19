@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="MoveResource" format=3]
+
+[ext_resource type="Script" path="res://Scripts/Data/MoveData.gd" id="1_wjkmf"]
+
+[resource]
+resource_name = "Eye Poke"
+script = ExtResource("1_wjkmf")
+move_name = "Eye Poke"
+move_type = 1
+class_preferrence = Array[int]([4])
+move_target_parts = Array[int]([1])
+required_attacker_position = 1
+required_attacker_orientation = 1
+required_target_position = 1
+required_target_orientation = 1
+resulting_attacker_position = 1
+resulting_attacker_orientation = 1
+resulting_target_position = 1
+resulting_target_orientation = 1
+resulting_target_motion_state = 4
+is_strike = true
+move_impact = 2
+metadata/physical_description = "A quick finger jab is directed toward the opponent’s eyes."
+metadata/style_tags = PackedStringArray("BRAWLER", "HARDCORE", "SHOWMAN")
+metadata/confidence = "HIGH"
+metadata/catalogue_notes = "Low-damage foul used mainly to interrupt or create an opening."
+metadata/catalogue_source = "rise_to_relevance_standing_front_strikes.md"

@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="MoveResource" format=3]
+
+[ext_resource type="Script" path="res://Scripts/Data/MoveData.gd" id="1_o44eh"]
+
+[resource]
+resource_name = "Jumping Cutter"
+script = ExtResource("1_o44eh")
+move_name = "Jumping Cutter"
+move_type = 2
+class_preferrence = Array[int]([0, 2])
+move_target_parts = Array[int]([1])
+required_attacker_position = 1
+required_attacker_orientation = 1
+required_attacker_area_mode = 3
+required_target_position = 1
+required_target_orientation = 1
+required_target_area_mode = 3
+resulting_attacker_position = 2
+resulting_attacker_orientation = 3
+resulting_target_position = 2
+resulting_target_orientation = 4
+strike_weight = 2
+move_impact = 8

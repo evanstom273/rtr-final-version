@@ -1,7 +1,7 @@
 extends Control
 class_name MatchSetupPopup
 
-signal match_requested(player: WrestlerResource, opponent: WrestlerResource)
+signal match_requested(player: WrestlerResource, opponent: WrestlerResource, setup_metadata: Dictionary)
 signal cancelled
 
 const PROMOTIONS_DIRECTORY := "res://Promotions"
@@ -18,11 +18,21 @@ var _opponent_filtered_indices: Array[int] = []
 var _selected_player: WrestlerResource
 var _selected_opponent: WrestlerResource
 var _allow_cancel: bool = false
+var _player_locked: bool = false
+var _ai_locked: bool = false
+var _launch_pending: bool = false
+var _recent_wrestler_paths := PackedStringArray()
+var _rng := RandomNumberGenerator.new()
+var _pending_setup_method: String = "Manual"
+var _player_randomly_selected: bool = false
+var _ai_randomly_selected: bool = false
+var _touch_scroll_states: Dictionary = {}
 
 @onready var _safe_area: MarginContainer = %SetupSafeArea
 @onready var _outer_margin: MarginContainer = %SetupOuterMargin
 @onready var _selection_row: BoxContainer = %SelectionRow
 @onready var _buttons: BoxContainer = %SetupButtons
+@onready var _random_buttons: BoxContainer = %RandomButtons
 @onready var _player_filters: BoxContainer = %PlayerFilters
 @onready var _opponent_filters: BoxContainer = %OpponentFilters
 @onready var _player_search: LineEdit = %PlayerSearch
@@ -40,9 +50,21 @@ var _allow_cancel: bool = false
 @onready var _status: Label = %SetupStatus
 @onready var _start_button: Button = %StartMatchButton
 @onready var _cancel_button: Button = %CancelSetupButton
+@onready var _player_lock: CheckButton = %PlayerLock
+@onready var _ai_lock: CheckButton = %AILock
+@onready var _random_match_button: Button = %RandomMatchButton
+@onready var _random_player_button: Button = %RandomPlayerButton
+@onready var _random_ai_button: Button = %RandomAIButton
+@onready var _rules_row: BoxContainer = %RulesRow
+@onready var _dq_enabled: CheckButton = %DQEnabled
+@onready var _count_outs_enabled: CheckButton = %CountOutsEnabled
+@onready var _count_limit: SpinBox = %CountLimit
+@onready var _action_clock_step: OptionButton = %ActionClockStep
+@onready var _rules_summary: Label = %RulesSummary
 
 
 func _ready() -> void:
+	_rng.randomize()
 	ResponsiveUI.register_layout_target(self)
 	ResponsiveUI.register_safe_area(_safe_area)
 	_populate_class_filters()
@@ -56,8 +78,21 @@ func _ready() -> void:
 	_opponent_list.item_selected.connect(_on_opponent_selected)
 	_player_list.item_activated.connect(_on_player_selected)
 	_opponent_list.item_activated.connect(_on_opponent_selected)
+	_player_list.gui_input.connect(_on_roster_list_gui_input.bind(_player_list))
+	_opponent_list.gui_input.connect(_on_roster_list_gui_input.bind(_opponent_list))
 	_start_button.pressed.connect(_on_start_pressed)
+	_player_lock.toggled.connect(_on_player_lock_toggled)
+	_ai_lock.toggled.connect(_on_ai_lock_toggled)
+	_random_match_button.pressed.connect(_on_random_match_pressed)
+	_random_player_button.pressed.connect(_on_random_player_pressed)
+	_random_ai_button.pressed.connect(_on_random_ai_pressed)
 	_cancel_button.pressed.connect(_on_cancel_pressed)
+	_dq_enabled.toggled.connect(_on_rules_changed)
+	_count_outs_enabled.toggled.connect(_on_rules_changed)
+	_count_limit.value_changed.connect(_on_count_limit_changed)
+	_configure_action_clock_steps()
+	_action_clock_step.item_selected.connect(_on_action_clock_step_changed)
+	_refresh_rules_summary()
 	visible = false
 
 
@@ -70,8 +105,10 @@ func set_responsive_layout(mode: int, effective_size: Vector2) -> void:
 	var portrait_phone := mode == ResponsiveUI.LayoutMode.PHONE and effective_size.y > effective_size.x
 	_selection_row.vertical = portrait_phone
 	_buttons.vertical = portrait_phone
+	_random_buttons.vertical = portrait_phone
 	_player_filters.vertical = portrait_phone
 	_opponent_filters.vertical = portrait_phone
+	_rules_row.vertical = portrait_phone
 	var horizontal_margin := int(ResponsiveUI.choose(10, 20, 34))
 	var vertical_margin := int(ResponsiveUI.choose(8, 16, 24))
 	_outer_margin.add_theme_constant_override("margin_left", horizontal_margin)
@@ -80,7 +117,11 @@ func set_responsive_layout(mode: int, effective_size: Vector2) -> void:
 	_outer_margin.add_theme_constant_override("margin_bottom", vertical_margin)
 	_selection_row.add_theme_constant_override("separation", int(ResponsiveUI.choose(10, 14, 18)))
 	_buttons.add_theme_constant_override("separation", int(ResponsiveUI.choose(8, 12, 14)))
-	var list_height := 150.0 if portrait_phone else float(ResponsiveUI.choose(230, 300, 360))
+	_random_buttons.add_theme_constant_override("separation", int(ResponsiveUI.choose(8, 12, 14)))
+	var list_height := 150.0 if portrait_phone else minf(
+		float(ResponsiveUI.choose(230, 300, 360)),
+		clampf(effective_size.y * 0.34, 170.0, 380.0),
+	)
 	_player_list.custom_minimum_size.y = list_height
 	_opponent_list.custom_minimum_size.y = list_height
 
@@ -90,6 +131,7 @@ func open_setup(
 	current_player: WrestlerResource = null,
 	current_opponent: WrestlerResource = null,
 	allow_cancel: bool = false,
+	recent_wrestler_paths: PackedStringArray = PackedStringArray(),
 ) -> void:
 	_roster = roster.duplicate()
 	_load_champion_paths()
@@ -101,6 +143,11 @@ func open_setup(
 	if _selected_opponent == null or _same_wrestler(_selected_player, _selected_opponent):
 		_selected_opponent = _first_wrestler_except(_selected_player)
 	_allow_cancel = allow_cancel
+	_recent_wrestler_paths = recent_wrestler_paths.duplicate()
+	_launch_pending = false
+	_pending_setup_method = "Manual"
+	_player_randomly_selected = false
+	_ai_randomly_selected = false
 	_cancel_button.visible = allow_cancel
 	_player_search.clear()
 	_opponent_search.clear()
@@ -112,12 +159,28 @@ func open_setup(
 	_refresh_player_list()
 	_refresh_opponent_list()
 	_refresh_selection_state()
+	_apply_lock_state()
 	visible = true
 	_player_search.grab_focus()
 
 
 func close_setup() -> void:
 	visible = false
+	_launch_pending = false
+
+
+func confirm_launch() -> void:
+	if not _launch_pending:
+		return
+	_launch_pending = false
+	visible = false
+
+
+func reject_launch(message: String) -> void:
+	_launch_pending = false
+	_status.text = message
+	_refresh_selection_state(false)
+	_apply_lock_state()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -236,31 +299,94 @@ func _on_opponent_promotion_changed(_index: int) -> void:
 	_refresh_opponent_list()
 
 
+func _on_roster_list_gui_input(event: InputEvent, list: ItemList) -> void:
+	var state_key := list.get_instance_id()
+	if event is InputEventScreenTouch:
+		var touch := event as InputEventScreenTouch
+		if touch.pressed:
+			_touch_scroll_states[state_key] = {
+				"active": true,
+				"dragged": false,
+				"distance": 0.0,
+				"touch_index": touch.index,
+			}
+		else:
+			var state: Dictionary = _touch_scroll_states.get(state_key, {})
+			if (
+				bool(state.get("active", false))
+				and int(state.get("touch_index", -1)) == touch.index
+				and not bool(state.get("dragged", false))
+			):
+				_select_roster_item_at_touch(list, touch.position)
+			_touch_scroll_states.erase(state_key)
+		list.accept_event()
+		return
+	if event is InputEventScreenDrag:
+		var drag := event as InputEventScreenDrag
+		var state: Dictionary = _touch_scroll_states.get(state_key, {})
+		if not bool(state.get("active", false)) or int(state.get("touch_index", -1)) != drag.index:
+			return
+		var distance := float(state.get("distance", 0.0)) + absf(drag.relative.y)
+		state["distance"] = distance
+		if distance >= 8.0:
+			state["dragged"] = true
+		_touch_scroll_states[state_key] = state
+		var scroll_bar := list.get_v_scroll_bar()
+		if scroll_bar != null:
+			scroll_bar.value -= drag.relative.y
+		list.accept_event()
+
+
+func _select_roster_item_at_touch(list: ItemList, local_position: Vector2) -> void:
+	var item_index := list.get_item_at_position(local_position, true)
+	if item_index < 0 or item_index >= list.item_count or list.is_item_disabled(item_index):
+		return
+	list.select(item_index)
+	if list == _player_list:
+		_on_player_selected(item_index)
+	elif list == _opponent_list:
+		_on_opponent_selected(item_index)
+
+
 func _on_player_selected(list_index: int) -> void:
+	if _player_locked or _launch_pending:
+		return
 	if list_index < 0 or list_index >= _player_list.item_count or _player_list.is_item_disabled(list_index):
 		return
 	var roster_index := int(_player_list.get_item_metadata(list_index))
 	if roster_index < 0 or roster_index >= _roster.size():
 		return
 	_selected_player = _roster[roster_index]
+	_player_randomly_selected = false
+	_update_pending_setup_method()
 	_refresh_selection_state()
 
 
 func _on_opponent_selected(list_index: int) -> void:
+	if _ai_locked or _launch_pending:
+		return
 	if list_index < 0 or list_index >= _opponent_list.item_count or _opponent_list.is_item_disabled(list_index):
 		return
 	var roster_index := int(_opponent_list.get_item_metadata(list_index))
 	if roster_index < 0 or roster_index >= _roster.size():
 		return
 	_selected_opponent = _roster[roster_index]
+	_ai_randomly_selected = false
+	_update_pending_setup_method()
 	_refresh_selection_state()
 
 
-func _refresh_selection_state() -> void:
+func _refresh_selection_state(update_status: bool = true) -> void:
 	_update_wrestler_summary(_player_summary_name, _player_summary_details, _selected_player)
 	_update_wrestler_summary(_opponent_summary_name, _opponent_summary_details, _selected_opponent)
 	var duplicate := _same_wrestler(_selected_player, _selected_opponent)
-	_start_button.disabled = _selected_player == null or _selected_opponent == null or duplicate
+	var invalid := _selected_player == null or _selected_opponent == null or duplicate
+	_start_button.disabled = invalid or _launch_pending
+	_random_match_button.disabled = _launch_pending or _roster.size() < 2
+	_random_player_button.disabled = _launch_pending or _player_locked or _player_filtered_indices.is_empty()
+	_random_ai_button.disabled = _launch_pending or _ai_locked or _opponent_filtered_indices.is_empty()
+	if not update_status:
+		return
 	if _roster.size() < 2:
 		_status.text = "At least two wrestlers are required to start a match."
 	elif duplicate:
@@ -272,10 +398,239 @@ func _refresh_selection_state() -> void:
 func _on_start_pressed() -> void:
 	if _start_button.disabled:
 		return
-	var player := _selected_player
-	var opponent := _selected_opponent
-	close_setup()
-	match_requested.emit(player, opponent)
+	var method := _pending_setup_method
+	if method == "Random Both" and (_player_locked or _ai_locked):
+		method = "Random With Locks"
+	_request_launch(
+		_selected_player,
+		_selected_opponent,
+		method,
+		_player_randomly_selected,
+		_ai_randomly_selected,
+	)
+
+
+func _on_random_match_pressed() -> void:
+	if _launch_pending:
+		return
+	var pair := _choose_random_pair(_player_locked, _ai_locked)
+	if pair.is_empty():
+		_status.text = "No valid matchup exists within the active filters and locks."
+		return
+	_selected_player = pair.player
+	_selected_opponent = pair.opponent
+	_player_randomly_selected = not _player_locked
+	_ai_randomly_selected = not _ai_locked
+	_pending_setup_method = "Random With Locks" if _player_locked or _ai_locked else "Random Both"
+	_refresh_player_list()
+	_refresh_opponent_list()
+	_refresh_selection_state()
+	_status.text = "Random preview: %s vs. %s. Press START MATCH to continue or adjust either side." % [
+		_display_name(_selected_player),
+		_display_name(_selected_opponent),
+	]
+
+
+func _on_random_player_pressed() -> void:
+	if _launch_pending or _player_locked:
+		return
+	var wrestler := _choose_random_side(_player_filtered_indices, _selected_opponent)
+	if wrestler == null:
+		_status.text = "No filtered Player wrestler can face the selected AI wrestler."
+		return
+	_selected_player = wrestler
+	_player_randomly_selected = true
+	_update_pending_setup_method()
+	_refresh_player_list()
+	_refresh_selection_state()
+	_status.text = "Random Player selected: %s. Press START MATCH when ready." % _display_name(_selected_player)
+
+
+func _on_random_ai_pressed() -> void:
+	if _launch_pending or _ai_locked:
+		return
+	var wrestler := _choose_random_side(_opponent_filtered_indices, _selected_player)
+	if wrestler == null:
+		_status.text = "No filtered AI wrestler can face the selected Player wrestler."
+		return
+	_selected_opponent = wrestler
+	_ai_randomly_selected = true
+	_update_pending_setup_method()
+	_refresh_opponent_list()
+	_refresh_selection_state()
+	_status.text = "Random AI selected: %s. Press START MATCH when ready." % _display_name(_selected_opponent)
+
+
+func _update_pending_setup_method() -> void:
+	if _player_randomly_selected and _ai_randomly_selected:
+		_pending_setup_method = "Random With Locks" if _player_locked or _ai_locked else "Random Both"
+	elif _player_randomly_selected:
+		_pending_setup_method = "Random Player"
+	elif _ai_randomly_selected:
+		_pending_setup_method = "Random AI"
+	else:
+		_pending_setup_method = "Manual"
+
+
+func _request_launch(
+	player: WrestlerResource,
+	opponent: WrestlerResource,
+	method: String,
+	player_random: bool,
+	ai_random: bool,
+) -> void:
+	if _launch_pending:
+		return
+	if player == null or opponent == null or _same_wrestler(player, opponent):
+		_status.text = "Choose two different wrestlers."
+		return
+	_launch_pending = true
+	_status.text = "Starting %s vs. %s..." % [_display_name(player), _display_name(opponent)]
+	_apply_lock_state()
+	match_requested.emit(player, opponent, {
+		"match_setup": method,
+		"player_locked": _player_locked,
+		"ai_locked": _ai_locked,
+		"player_randomly_selected": player_random,
+		"ai_randomly_selected": ai_random,
+		"match_rules": _selected_rules_dictionary(),
+	})
+
+
+func _on_rules_changed(_enabled: bool) -> void:
+	_count_limit.editable = _count_outs_enabled.button_pressed
+	_refresh_rules_summary()
+
+
+func _on_count_limit_changed(_value: float) -> void:
+	_refresh_rules_summary()
+
+
+func _on_action_clock_step_changed(_index: int) -> void:
+	_refresh_rules_summary()
+
+
+func _configure_action_clock_steps() -> void:
+	_action_clock_step.clear()
+	for seconds in MatchRules.ACTION_CLOCK_OPTIONS:
+		_action_clock_step.add_item("%d SEC" % int(seconds), int(seconds))
+		if int(seconds) == MatchRules.DEFAULT_ACTION_CLOCK_SECONDS:
+			_action_clock_step.select(_action_clock_step.item_count - 1)
+
+
+func _selected_rules_dictionary() -> Dictionary:
+	return {
+		"disqualifications_enabled": _dq_enabled.button_pressed,
+		"count_outs_enabled": _count_outs_enabled.button_pressed,
+		"count_out_limit": int(_count_limit.value),
+		"action_clock_seconds": _action_clock_step.get_selected_id(),
+		"weapons_enabled": true,
+		"pinfall_enabled": true,
+		"submission_enabled": true,
+	}
+
+
+func _refresh_rules_summary() -> void:
+	if not is_node_ready():
+		return
+	var rules := MatchRules.from_dictionary(_selected_rules_dictionary())
+	_rules_summary.text = rules.summary()
+
+
+func _choose_random_pair(lock_player: bool, lock_ai: bool) -> Dictionary:
+	var player_candidates := _candidate_wrestlers(_player_filtered_indices)
+	var ai_candidates := _candidate_wrestlers(_opponent_filtered_indices)
+	if lock_player:
+		player_candidates.clear()
+		if _contains_wrestler(_selected_player):
+			player_candidates.append(_selected_player)
+	if lock_ai:
+		ai_candidates.clear()
+		if _contains_wrestler(_selected_opponent):
+			ai_candidates.append(_selected_opponent)
+	var pairs := _viable_pairs(player_candidates, ai_candidates, true)
+	if pairs.is_empty():
+		pairs = _viable_pairs(player_candidates, ai_candidates, false)
+	return {} if pairs.is_empty() else pairs[_rng.randi_range(0, pairs.size() - 1)]
+
+
+func _choose_random_side(indices: Array[int], excluded: WrestlerResource) -> WrestlerResource:
+	var candidates := _candidate_wrestlers(indices)
+	var preferred: Array[WrestlerResource] = []
+	for wrestler in candidates:
+		if not _same_wrestler(wrestler, excluded) and not _was_recent(wrestler):
+			preferred.append(wrestler)
+	if preferred.is_empty():
+		for wrestler in candidates:
+			if not _same_wrestler(wrestler, excluded):
+				preferred.append(wrestler)
+	return null if preferred.is_empty() else preferred[_rng.randi_range(0, preferred.size() - 1)]
+
+
+func _candidate_wrestlers(indices: Array[int]) -> Array[WrestlerResource]:
+	var candidates: Array[WrestlerResource] = []
+	for roster_index in indices:
+		if roster_index < 0 or roster_index >= _roster.size():
+			continue
+		var wrestler := _roster[roster_index]
+		if wrestler != null:
+			candidates.append(wrestler)
+	return candidates
+
+
+func _viable_pairs(
+	players: Array[WrestlerResource],
+	opponents: Array[WrestlerResource],
+	avoid_recent: bool,
+) -> Array[Dictionary]:
+	var pairs: Array[Dictionary] = []
+	for player in players:
+		for opponent in opponents:
+			if player == null or opponent == null or _same_wrestler(player, opponent):
+				continue
+			if avoid_recent and ((not _player_locked and _was_recent(player)) or (not _ai_locked and _was_recent(opponent))):
+				continue
+			pairs.append({"player": player, "opponent": opponent})
+	return pairs
+
+
+func _was_recent(wrestler: WrestlerResource) -> bool:
+	return wrestler != null and not wrestler.resource_path.is_empty() and wrestler.resource_path in _recent_wrestler_paths
+
+
+func _on_player_lock_toggled(pressed: bool) -> void:
+	_player_locked = pressed
+	_update_pending_setup_method()
+	_apply_lock_state()
+
+
+func _on_ai_lock_toggled(pressed: bool) -> void:
+	_ai_locked = pressed
+	_update_pending_setup_method()
+	_apply_lock_state()
+
+
+func _apply_lock_state() -> void:
+	_player_lock.button_pressed = _player_locked
+	_ai_lock.button_pressed = _ai_locked
+	var player_frozen := _player_locked or _launch_pending
+	var ai_frozen := _ai_locked or _launch_pending
+	_player_search.editable = not player_frozen
+	_player_class_filter.disabled = player_frozen
+	_player_promotion_filter.disabled = player_frozen
+	_player_list.mouse_filter = Control.MOUSE_FILTER_IGNORE if player_frozen else Control.MOUSE_FILTER_STOP
+	_player_list.focus_mode = Control.FOCUS_NONE if player_frozen else Control.FOCUS_ALL
+	_player_list.modulate.a = 0.48 if player_frozen else 1.0
+	_opponent_search.editable = not ai_frozen
+	_opponent_class_filter.disabled = ai_frozen
+	_opponent_promotion_filter.disabled = ai_frozen
+	_opponent_list.mouse_filter = Control.MOUSE_FILTER_IGNORE if ai_frozen else Control.MOUSE_FILTER_STOP
+	_opponent_list.focus_mode = Control.FOCUS_NONE if ai_frozen else Control.FOCUS_ALL
+	_opponent_list.modulate.a = 0.48 if ai_frozen else 1.0
+	_player_lock.disabled = _launch_pending
+	_ai_lock.disabled = _launch_pending
+	_cancel_button.disabled = _launch_pending
+	_refresh_selection_state(false)
 
 
 func _on_cancel_pressed() -> void:
@@ -303,7 +658,8 @@ func _update_wrestler_summary(name_label: Label, details_label: Label, wrestler:
 	var gimmick_description := wrestler.gimmick_description.strip_edges()
 	if not gimmick_description.is_empty():
 		gimmick += " — %s" % gimmick_description
-	details_label.text = "Finishers: %s\nClass: %s\nGimmick: %s\nNationality: %s\nPromotion: %s" % [
+	details_label.text = "Signatures: %s\nFinishers: %s\nClass: %s\nGimmick: %s\nNationality: %s\nPromotion: %s" % [
+		_format_signatures(wrestler),
 		_format_finishers(wrestler),
 		_format_classes(wrestler.wrestler_class),
 		gimmick,
@@ -347,9 +703,23 @@ func _name_color(wrestler: WrestlerResource) -> Color:
 
 
 func _format_finishers(wrestler: WrestlerResource) -> String:
+	var assigned: Array[MoveResource] = []
+	assigned.append_array(wrestler.finisher_moves)
+	if assigned.is_empty():
+		for move in wrestler.move_set:
+			if move != null and move.is_finisher:
+				assigned.append(move)
+	return _format_move_names(assigned)
+
+
+func _format_signatures(wrestler: WrestlerResource) -> String:
+	return _format_move_names(wrestler.signature_moves)
+
+
+func _format_move_names(moves: Array[MoveResource]) -> String:
 	var names: Array[String] = []
-	for move in wrestler.move_set:
-		if move != null and move.is_finisher:
+	for move in moves:
+		if move != null:
 			var move_name := move.move_name.strip_edges()
 			if not move_name.is_empty() and move_name not in names:
 				names.append(move_name)

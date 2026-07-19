@@ -413,36 +413,14 @@ func _build_moveset_stats(move_set: Array[MoveResource]) -> Dictionary:
 			else:
 				stats["strike_regular_count"] = int(stats["strike_regular_count"]) + 1
 
+		# Legacy positional buckets remain in this report for compatibility, but
+		# only categories with direct modern equivalents are populated here.
 		match move.move_type:
-			MoveResource.MoveType.STANDING_FRONT:
-				if is_finisher:
-					stats["standing_front_finisher_count"] = int(stats["standing_front_finisher_count"]) + 1
-				else:
-					stats["standing_front_regular_count"] = int(stats["standing_front_regular_count"]) + 1
-
-			MoveResource.MoveType.STANDING_BEHIND:
-				if is_finisher:
-					stats["standing_behind_finisher_count"] = int(stats["standing_behind_finisher_count"]) + 1
-				else:
-					stats["standing_behind_regular_count"] = int(stats["standing_behind_regular_count"]) + 1
-
 			MoveResource.MoveType.RUNNING:
 				if is_finisher:
 					stats["running_finisher_count"] = int(stats["running_finisher_count"]) + 1
 				else:
 					stats["running_regular_count"] = int(stats["running_regular_count"]) + 1
-
-			MoveResource.MoveType.ROPE_REBOUND:
-				if is_finisher:
-					stats["rebound_finisher_count"] = int(stats["rebound_finisher_count"]) + 1
-				else:
-					stats["rebound_regular_count"] = int(stats["rebound_regular_count"]) + 1
-
-			MoveResource.MoveType.GROUNDED:
-				if is_finisher:
-					stats["grounded_finisher_count"] = int(stats["grounded_finisher_count"]) + 1
-				else:
-					stats["grounded_regular_count"] = int(stats["grounded_regular_count"]) + 1
 
 			MoveResource.MoveType.SPRINGBOARD:
 				stats["springboard_total_count"] = int(stats["springboard_total_count"]) + 1
@@ -452,30 +430,12 @@ func _build_moveset_stats(move_set: Array[MoveResource]) -> Dictionary:
 					stats["springboard_regular_count"] = int(stats["springboard_regular_count"]) + 1
 					stats["aerial_regular_count"] = int(stats["aerial_regular_count"]) + 1
 
-			MoveResource.MoveType.CORNER:
-				if is_finisher:
-					stats["corner_finisher_count"] = int(stats["corner_finisher_count"]) + 1
-				else:
-					stats["corner_regular_count"] = int(stats["corner_regular_count"]) + 1
-
-			MoveResource.MoveType.DIVING_STANDING:
+			MoveResource.MoveType.AERIAL:
 				stats["diving_total_count"] = int(stats["diving_total_count"]) + 1
 				if is_finisher:
 					stats["diving_finisher_count"] = int(stats["diving_finisher_count"]) + 1
-					stats["diving_standing_finisher_count"] = int(stats["diving_standing_finisher_count"]) + 1
 				else:
 					stats["diving_regular_count"] = int(stats["diving_regular_count"]) + 1
-					stats["diving_standing_regular_count"] = int(stats["diving_standing_regular_count"]) + 1
-					stats["aerial_regular_count"] = int(stats["aerial_regular_count"]) + 1
-
-			MoveResource.MoveType.DIVING_GROUNDED:
-				stats["diving_total_count"] = int(stats["diving_total_count"]) + 1
-				if is_finisher:
-					stats["diving_finisher_count"] = int(stats["diving_finisher_count"]) + 1
-					stats["diving_grounded_finisher_count"] = int(stats["diving_grounded_finisher_count"]) + 1
-				else:
-					stats["diving_regular_count"] = int(stats["diving_regular_count"]) + 1
-					stats["diving_grounded_regular_count"] = int(stats["diving_grounded_regular_count"]) + 1
 					stats["aerial_regular_count"] = int(stats["aerial_regular_count"]) + 1
 
 			_:
@@ -872,27 +832,10 @@ func _class_array_to_string(classes: Array[WrestlerResource.WrestlerClass]) -> S
 
 
 func _move_type_to_string(move_type: MoveResource.MoveType) -> String:
-	match move_type:
-		MoveResource.MoveType.STANDING_FRONT:
-			return "Standing_Front"
-		MoveResource.MoveType.STANDING_BEHIND:
-			return "Standing_Behind"
-		MoveResource.MoveType.RUNNING:
-			return "Running"
-		MoveResource.MoveType.ROPE_REBOUND:
-			return "Rope_Rebound"
-		MoveResource.MoveType.GROUNDED:
-			return "Grounded"
-		MoveResource.MoveType.SPRINGBOARD:
-			return "Springboard"
-		MoveResource.MoveType.CORNER:
-			return "Corner"
-		MoveResource.MoveType.DIVING_STANDING:
-			return "Diving_Standing"
-		MoveResource.MoveType.DIVING_GROUNDED:
-			return "Diving_Grounded"
-		_:
-			return "None"
+	for key in MoveResource.MoveType:
+		if int(MoveResource.MoveType[key]) == int(move_type):
+			return str(key).replace("_", " ").to_lower().capitalize()
+	return "None"
 
 
 func _normalize_name(move_name: String) -> String:

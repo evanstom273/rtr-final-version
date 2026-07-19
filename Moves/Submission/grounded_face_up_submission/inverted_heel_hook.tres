@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="MoveResource" format=3]
+
+[ext_resource type="Script" path="res://Scripts/Data/MoveData.gd" id="1_iv7xs"]
+
+[resource]
+resource_name = "Inverted Heel Hook"
+script = ExtResource("1_iv7xs")
+move_name = "Inverted Heel Hook"
+move_type = 3
+class_preferrence = Array[int]([2])
+move_target_parts = Array[int]([5, 6])
+targeting_mode = 2
+default_side_target = 5
+required_attacker_position = 1
+required_attacker_orientation = 1
+required_attacker_area_mode = 3
+required_target_position = 2
+required_target_orientation = 3
+required_target_area_mode = 3
+resulting_attacker_position = 4
+resulting_attacker_orientation = 1
+resulting_target_position = 2
+resulting_target_orientation = 3
+is_finisher = true
+is_submission = true
+interaction_override = 4
+strike_weight = 2
+move_impact = 9

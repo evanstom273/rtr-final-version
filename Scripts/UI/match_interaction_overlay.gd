@@ -38,6 +38,10 @@ func is_interaction_active() -> bool:
 	return _interaction_active
 
 
+func get_active_request_id() -> int:
+	return _active_request_id
+
+
 func run_timing_circle(request: Dictionary) -> Dictionary:
 	var prepared := _prepare_request(request)
 	var request_id := int(prepared.request_id)

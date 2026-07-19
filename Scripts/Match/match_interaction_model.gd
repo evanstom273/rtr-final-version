@@ -64,18 +64,17 @@ static func get_interaction_type_for_move(move: MoveResource) -> int:
 			return InteractionType.HOLD_POWER
 		MoveResource.InteractionOverride.SUBMISSION_LOCK_IN:
 			return InteractionType.SUBMISSION_LOCK_IN
-	if move.is_submission:
+	if move.is_submission or move.move_type == MoveResource.MoveType.SUBMISSION:
 		return InteractionType.SUBMISSION_LOCK_IN
-	if move.is_strike:
+	if move.is_strike or move.move_type == MoveResource.MoveType.STRIKE:
 		return InteractionType.TIMING_STRIKE
 	if move.move_type in [
+		MoveResource.MoveType.AERIAL,
 		MoveResource.MoveType.SPRINGBOARD,
-		MoveResource.MoveType.DIVING_STANDING,
-		MoveResource.MoveType.DIVING_GROUNDED,
-	] or move.required_attacker_position in [
-		WrestlerResource.Position.TOP_ROPE,
-		WrestlerResource.Position.APRON,
-	]:
+	] or (
+		move.required_attacker_area_mode == MoveResource.AreaRequirementMode.SPECIFIC
+		and move.required_attacker_area in [WrestlerResource.Area.TOP_ROPE, WrestlerResource.Area.APRON]
+	):
 		return InteractionType.TIMING_AERIAL
 	var normalized_name := move.move_name.to_lower()
 	for term in AERIAL_TERMS:
@@ -85,13 +84,7 @@ static func get_interaction_type_for_move(move: MoveResource) -> int:
 
 
 static func get_interaction_type_for_setup_action(action_id: StringName) -> int:
-	if action_id in [
-		SetupActionsMenu.PICK_OPPONENT_UP,
-		SetupActionsMenu.GRAPPLE_OPPONENT,
-		SetupActionsMenu.IRISH_WHIP,
-		SetupActionsMenu.THROW_INTO_CORNER,
-		SetupActionsMenu.TAUNT,
-	]:
+	if MatchSetupStateRules.is_contested(action_id):
 		return InteractionType.HOLD_REPOSITION
 	return -1
 
@@ -140,10 +133,11 @@ static func build_execution_profile(
 	var heavy := move != null and (move.move_impact >= 7 or move.strike_weight == MoveResource.StrikeWeight.STRIKE_HEAVY)
 	var finisher := move != null and move.is_finisher
 	var high_risk := _is_high_risk(move)
-	var running_or_rebound_power := move != null and move.move_type in [
-		MoveResource.MoveType.RUNNING,
-		MoveResource.MoveType.ROPE_REBOUND,
-	]
+	var running_or_rebound_power := move != null and (
+		move.move_type == MoveResource.MoveType.RUNNING
+		or move.required_attacker_motion_state in [WrestlerResource.MotionState.RUNNING, WrestlerResource.MotionState.ROPE_REBOUND]
+		or move.required_target_motion_state == WrestlerResource.MotionState.ROPE_REBOUND
+	)
 	var control_meter := interaction_type in [
 		InteractionType.HOLD_POWER,
 		InteractionType.HOLD_REPOSITION,
@@ -201,11 +195,15 @@ static func build_setup_execution_profile(state: MatchSideState, action_id: Stri
 	var base_window := 22.0
 	var marker_speed := 1.45
 	var time_limit := 1.5
-	if action_id == SetupActionsMenu.PICK_OPPONENT_UP:
+	if action_id == MatchSetupStateRules.PICK_OPPONENT_UP:
 		base_window = 24.0
 		marker_speed = 1.25
 		time_limit = 1.7
-	elif action_id == SetupActionsMenu.THROW_INTO_CORNER:
+	elif action_id in [
+		MatchSetupStateRules.THROW_INTO_CORNER,
+		MatchSetupStateRules.TURN_OPPONENT_IN_CORNER,
+		MatchSetupStateRules.SEAT_OPPONENT_IN_CORNER,
+	]:
 		base_window = 20.0
 	var modifiers := _difficulty_modifiers(state, null, true)
 	var window := clampf(base_window + float(modifiers.window), 6.0, 30.0)
@@ -277,6 +275,7 @@ static func build_reversal_profile(
 		"touch_edge_forgiveness_pixels": 4.0,
 		"binary_only": true,
 		"one_way": true,
+		"minimum_target_travel": 0.24,
 	}
 
 
@@ -320,6 +319,7 @@ static func build_pin_profile(
 		"zone_opacity": 1.0,
 		"binary_only": true,
 		"one_way": true,
+		"minimum_target_travel": 0.24,
 		"time_limit": base_time * 1.20 * time_multiplier,
 		"marker_speed": speed_multiplier,
 		"ai_success_chance": window,
@@ -391,8 +391,8 @@ static func reversal_success_chance(
 	if attacker == null or defender == null or defender.wrestler == null:
 		return 22.0
 	var chance := (
-		_taunt_interruption_base(attacker.current_position, defender.current_position)
-		if setup_action == SetupActionsMenu.TAUNT
+		_taunt_interruption_base(attacker.current_area, defender.current_position)
+		if setup_action == MatchSetupStateRules.TAUNT
 		else _base_reversal_chance(move, setup_action)
 	)
 
@@ -479,11 +479,11 @@ static func reversal_success_chance(
 			chance -= 5.0
 	if WrestlerResource.WrestlerClass.TECHNICIAN in defender.wrestler.wrestler_class:
 		chance += 5.0
-	if defender.current_position in [
-		WrestlerResource.Position.GROUNDED,
-		WrestlerResource.Position.IN_CORNER,
-		WrestlerResource.Position.ROPE_REBOUND,
-	]:
+	if (
+		defender.current_position in [WrestlerResource.Position.GROUNDED, WrestlerResource.Position.SEATED, WrestlerResource.Position.KNEELING]
+		or defender.current_area == WrestlerResource.Area.CORNER
+		or defender.current_motion_state == WrestlerResource.MotionState.ROPE_REBOUND
+	):
 		chance -= 3.0
 	chance -= float(build_late_match_profile(match_time_seconds).recovery_penalty)
 	return clampf(chance, 5.0, 65.0)
@@ -491,9 +491,15 @@ static func reversal_success_chance(
 
 static func _base_reversal_chance(move: MoveResource, setup_action: StringName) -> float:
 	if not setup_action.is_empty():
-		if setup_action == SetupActionsMenu.PICK_OPPONENT_UP:
+		if setup_action == MatchSetupStateRules.PICK_OPPONENT_UP:
 			return 30.0
-		if setup_action in [SetupActionsMenu.IRISH_WHIP, SetupActionsMenu.THROW_INTO_CORNER]:
+		if setup_action in [
+			MatchSetupStateRules.IRISH_WHIP,
+			MatchSetupStateRules.THROW_INTO_CORNER,
+			MatchSetupStateRules.SEND_OPPONENT_OUTSIDE,
+			MatchSetupStateRules.CALL_OPPONENT_OUTSIDE,
+			MatchSetupStateRules.TAKE_FIGHT_OUTSIDE,
+		]:
 			return 28.0
 		return 25.0
 	if move == null:
@@ -505,12 +511,12 @@ static func _base_reversal_chance(move: MoveResource, setup_action: StringName) 
 	return 18.0 if _is_heavy_move(move) else 22.0
 
 
-static func _taunt_interruption_base(attacker_position: int, defender_position: int) -> float:
+static func _taunt_interruption_base(attacker_area: int, defender_position: int) -> float:
 	var defender_grounded := defender_position == WrestlerResource.Position.GROUNDED
-	match attacker_position:
-		WrestlerResource.Position.TOP_ROPE:
+	match attacker_area:
+		WrestlerResource.Area.TOP_ROPE:
 			return 28.0 if defender_grounded else 42.0
-		WrestlerResource.Position.APRON:
+		WrestlerResource.Area.APRON:
 			return 23.0 if defender_grounded else 35.0
 	return 18.0 if defender_grounded else 30.0
 
@@ -838,7 +844,7 @@ static func _inferred_class_compatible(wrestler: WrestlerResource, move: MoveRes
 	if WrestlerResource.WrestlerClass.STRIKER in wrestler.wrestler_class and move.is_strike:
 		return true
 	if WrestlerResource.WrestlerClass.TECHNICIAN in wrestler.wrestler_class and (
-		move.is_submission or move.move_type in [MoveResource.MoveType.STANDING_FRONT, MoveResource.MoveType.STANDING_BEHIND]
+		move.is_submission or move.move_type in [MoveResource.MoveType.SUBMISSION, MoveResource.MoveType.GRAPPLE]
 	):
 		return true
 	if WrestlerResource.WrestlerClass.HIGH_FLYER in wrestler.wrestler_class and _is_high_risk(move):
@@ -912,15 +918,14 @@ static func is_high_risk_move(move: MoveResource) -> bool:
 	if move == null:
 		return false
 	if move.move_type in [
+		MoveResource.MoveType.AERIAL,
 		MoveResource.MoveType.SPRINGBOARD,
-		MoveResource.MoveType.DIVING_STANDING,
-		MoveResource.MoveType.DIVING_GROUNDED,
-	] or move.required_attacker_position in [
-		WrestlerResource.Position.TOP_ROPE,
-		WrestlerResource.Position.APRON,
-	]:
+	] or (
+		move.required_attacker_area_mode == MoveResource.AreaRequirementMode.SPECIFIC
+		and move.required_attacker_area in [WrestlerResource.Area.TOP_ROPE, WrestlerResource.Area.APRON]
+	):
 		return true
-	if move.move_type not in [MoveResource.MoveType.RUNNING, MoveResource.MoveType.ROPE_REBOUND]:
+	if move.move_type != MoveResource.MoveType.RUNNING and move.required_attacker_motion_state not in [WrestlerResource.MotionState.RUNNING, WrestlerResource.MotionState.ROPE_REBOUND]:
 		return false
 	var normalized_name := move.move_name.to_lower()
 	for term in AERIAL_TERMS:
