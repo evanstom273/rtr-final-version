@@ -1,0 +1,29 @@
+[gd_resource load_steps=5 format=3 type="Resource" script_class="WeaponResource"]
+
+[ext_resource type="Script" path="res://Scripts/Data/WeaponData.gd" id="1_weapon"]
+[ext_resource type="Script" path="res://Scripts/Data/WeaponAttackData.gd" id="2_attack"]
+
+[sub_resource type="Resource" id="WeaponAttack_standing"]
+script = ExtResource("2_attack")
+attack_id = &"light_tube_smash"
+display_name = "Light Tube Smash"
+
+[sub_resource type="Resource" id="WeaponAttack_grounded"]
+script = ExtResource("2_attack")
+attack_id = &"grounded_light_tube_smash"
+display_name = "Grounded Light Tube Smash"
+target_posture = 1
+
+[resource]
+resource_name = "Light Tube"
+script = ExtResource("1_weapon")
+weapon_id = &"light_tube"
+display_name = "Light Tube"
+description = "A brittle fluorescent tube that shatters on its first committed attack."
+icon_id = &"light_tube"
+impact = 6
+stamina_cost = 6.0
+maximum_durability = 1
+bleed_rating = 55.0
+can_bleed_any_target = true
+attack_set = Array[ExtResource("2_attack")]([SubResource("WeaponAttack_standing"), SubResource("WeaponAttack_grounded")])

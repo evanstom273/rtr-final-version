@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" path="res://Scenes/Match/match_result_popup.tscn" id="7_result"]
 [ext_resource type="PackedScene" path="res://Scenes/Match/match_setup_popup.tscn" id="8_match_setup"]
 [ext_resource type="PackedScene" path="res://Scenes/Match/UI/match_ring_view.tscn" id="9_ring"]
+[ext_resource type="PackedScene" path="res://Scenes/Match/weapon_radial_menu.tscn" id="10_weapon"]
 
 [sub_resource type="StyleBoxFlat" id="StyleSelectorPanel"]
 bg_color = Color(0.065, 0.085, 0.125, 1)
@@ -484,6 +485,11 @@ visible = false
 layout_mode = 1
 
 [node name="SetupActionsMenu" parent="." unique_id=1385376977 instance=ExtResource("4_setup")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+
+[node name="WeaponRadialMenu" parent="." instance=ExtResource("10_weapon")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 1

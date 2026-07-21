@@ -1,0 +1,31 @@
+[gd_resource load_steps=5 format=3 type="Resource" script_class="WeaponResource"]
+
+[ext_resource type="Script" path="res://Scripts/Data/WeaponData.gd" id="1_weapon"]
+[ext_resource type="Script" path="res://Scripts/Data/WeaponAttackData.gd" id="2_attack"]
+
+[sub_resource type="Resource" id="WeaponAttack_standing"]
+script = ExtResource("2_attack")
+attack_id = &"barbed_wire_bat_swing"
+display_name = "Barbed-Wire Bat Swing"
+
+[sub_resource type="Resource" id="WeaponAttack_grounded"]
+script = ExtResource("2_attack")
+attack_id = &"barbed_wire_bat_grind"
+display_name = "Barbed-Wire Bat Grind"
+target_posture = 1
+is_strike = false
+interaction_override = 2
+stamina_modifier = 1.0
+
+[resource]
+resource_name = "Barbed-Wire Baseball Bat"
+script = ExtResource("1_weapon")
+weapon_id = &"barbed_wire_bat"
+display_name = "Barbed-Wire Baseball Bat"
+description = "A baseball bat wrapped in barbed wire, dangerous against any body part."
+icon_id = &"barbed_wire_bat"
+impact = 8
+stamina_cost = 8.0
+bleed_rating = 65.0
+can_bleed_any_target = true
+attack_set = Array[ExtResource("2_attack")]([SubResource("WeaponAttack_standing"), SubResource("WeaponAttack_grounded")])

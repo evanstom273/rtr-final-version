@@ -1,0 +1,35 @@
+[gd_resource load_steps=5 format=3 type="Resource" script_class="WeaponResource"]
+
+[ext_resource type="Script" path="res://Scripts/Data/WeaponData.gd" id="1_weapon"]
+[ext_resource type="Script" path="res://Scripts/Data/WeaponAttackData.gd" id="2_attack"]
+
+[sub_resource type="Resource" id="WeaponAttack_standing"]
+script = ExtResource("2_attack")
+attack_id = &"table_strike"
+display_name = "Table Strike"
+
+[sub_resource type="Resource" id="WeaponAttack_grounded"]
+script = ExtResource("2_attack")
+attack_id = &"table_drop"
+display_name = "Table Drop"
+target_posture = 1
+impact_modifier = 1
+stamina_modifier = 2.0
+
+[resource]
+resource_name = "Table"
+script = ExtResource("1_weapon")
+weapon_id = &"table"
+display_name = "Table"
+description = "A folding table that can be swung, set flat, placed in a corner, or stacked."
+weapon_kind = 1
+icon_id = &"table"
+impact = 7
+stamina_cost = 10.0
+maximum_durability = 2
+bleed_rating = 8.0
+maximum_live_instances = 2
+can_set_flat = true
+can_set_in_corner = true
+can_stack = true
+attack_set = Array[ExtResource("2_attack")]([SubResource("WeaponAttack_standing"), SubResource("WeaponAttack_grounded")])

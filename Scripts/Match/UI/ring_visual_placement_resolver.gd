@@ -101,6 +101,8 @@ static func resolve(
 			if _is_top_rope_anchor(previous_anchor):
 				return previous_anchor
 			return _top_rope_for_side(preferred_side)
+		WrestlerResource.Area.LADDER:
+			return RingAnchor.RING_CENTER
 	return RingAnchor.RING_CENTER
 
 

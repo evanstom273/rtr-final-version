@@ -1,6 +1,20 @@
-[gd_resource type="Resource" script_class="WeaponResource" format=3 uid="uid://b6r5jb2ip463c"]
+[gd_resource load_steps=5 format=3 type="Resource" script_class="WeaponResource" uid="uid://b6r5jb2ip463c"]
 
 [ext_resource type="Script" uid="uid://b6tiefm22qdb3" path="res://Scripts/Data/WeaponData.gd" id="1_weapon"]
+[ext_resource type="Script" path="res://Scripts/Data/WeaponAttackData.gd" id="2_attack"]
+
+[sub_resource type="Resource" id="WeaponAttack_standing"]
+script = ExtResource("2_attack")
+attack_id = &"chair_shot"
+display_name = "Steel Chair Shot"
+
+[sub_resource type="Resource" id="WeaponAttack_grounded"]
+script = ExtResource("2_attack")
+attack_id = &"grounded_chair_smash"
+display_name = "Grounded Chair Smash"
+target_posture = 1
+impact_modifier = 1
+stamina_modifier = 1.0
 
 [resource]
 resource_name = "Steel Chair"
@@ -8,5 +22,8 @@ script = ExtResource("1_weapon")
 weapon_id = &"steel_chair"
 display_name = "Steel Chair"
 description = "A folding steel chair retrieved from beneath the ring. Illegal in a normal match."
+icon_id = &"steel_chair"
 impact = 8
 stamina_cost = 9.0
+bleed_rating = 5.0
+attack_set = Array[ExtResource("2_attack")]([SubResource("WeaponAttack_standing"), SubResource("WeaponAttack_grounded")])

@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://Scripts/UI/match_interaction_overlay.gd" id="1_overlay"]
 [ext_resource type="PackedScene" path="res://Scenes/Match/timing_circle_interaction.tscn" id="2_circle"]
 [ext_resource type="PackedScene" path="res://Scenes/Match/control_meter_interaction.tscn" id="3_control"]
 [ext_resource type="PackedScene" path="res://Scenes/Match/submission_tug_interaction.tscn" id="4_tug"]
+[ext_resource type="PackedScene" path="res://Scenes/Match/hold_release_interaction.tscn" id="5_hold"]
 
 [sub_resource type="StyleBoxFlat" id="StyleOverlay"]
 bg_color = Color(0.035, 0.05, 0.08, 0.99)
@@ -87,6 +88,16 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
+[node name="HoldReleaseInteraction" parent="InteractionSafeArea/Center/InteractionPanel/Margin/InteractionStack" instance=ExtResource("5_hold")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
 [node name="SubmissionTugInteraction" parent="InteractionSafeArea/Center/InteractionPanel/Margin/InteractionStack" instance=ExtResource("4_tug")]
 unique_name_in_owner = true
 visible = false
@@ -99,4 +110,5 @@ grow_vertical = 2
 
 [editable path="InteractionSafeArea/Center/InteractionPanel/Margin/InteractionStack/TimingCircleInteraction"]
 [editable path="InteractionSafeArea/Center/InteractionPanel/Margin/InteractionStack/ControlMeterInteraction"]
+[editable path="InteractionSafeArea/Center/InteractionPanel/Margin/InteractionStack/HoldReleaseInteraction"]
 [editable path="InteractionSafeArea/Center/InteractionPanel/Margin/InteractionStack/SubmissionTugInteraction"]

@@ -23,7 +23,7 @@ var _active_tween: Tween
 @onready var _wheel_area: Control = %WheelArea
 @onready var _guide: Control = %WheelGuide
 @onready var _category_layer: Control = %CategoryLayer
-@onready var _center_badge: PanelContainer = %CenterBadge
+@onready var _center_badge: Panel = %CenterBadge
 @onready var _context_label: Label = %ContextLabel
 @onready var _close_button: Button = %WheelCloseButton
 
@@ -35,6 +35,8 @@ func _ready() -> void:
 	_close_button.pressed.connect(request_cancel)
 	_wheel_area.resized.connect(_queue_layout)
 	_guide.draw.connect(_draw_wheel_guide)
+	_context_label.clip_text = true
+	_context_label.max_lines_visible = 4
 	visible = false
 
 

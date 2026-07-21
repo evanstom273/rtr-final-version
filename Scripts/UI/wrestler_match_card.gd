@@ -23,6 +23,7 @@ var match_state: Dictionary = {}
 @onready var _signature_moves_value: Label = %SignatureMovesValue
 @onready var _finisher_moves_value: Label = %FinisherMovesValue
 @onready var _held_weapon_value: Label = %HeldWeaponValue
+@onready var _bleeding_value: Label = %BleedingValue
 
 @onready var _margin: MarginContainer = $Margin
 @onready var _content: VBoxContainer = $Margin/Content
@@ -45,6 +46,7 @@ var match_state: Dictionary = {}
 
 @onready var _fatigue_bar: ProgressBar = %FatigueBar
 @onready var _match_stamina_bar: ProgressBar = %MatchStaminaBar
+@onready var _match_stamina_value: Label = %MatchStaminaValue
 @onready var _momentum_bar: ProgressBar = %MomentumBar
 
 
@@ -97,6 +99,7 @@ func _apply_compact_layout(portrait_phone: bool) -> void:
 				(child as Label).custom_minimum_size.x = label_width
 	for bar in _all_bars():
 		bar.custom_minimum_size.y = 17.0 if portrait_phone else 25.0
+	_match_stamina_value.add_theme_font_size_override("font_size", 10 if portrait_phone else 12)
 
 
 func set_wrestler(value: WrestlerResource) -> void:
@@ -158,6 +161,12 @@ func refresh() -> void:
 		"font_color",
 		Color(1.0, 0.58, 0.38, 1.0) if not held_weapon_name.is_empty() else Color(0.56, 0.62, 0.72, 1.0),
 	)
+	var bleeding_label := str(match_state.get("bleeding_label", "None"))
+	_bleeding_value.text = "BLEEDING  %s" % bleeding_label
+	_bleeding_value.add_theme_color_override(
+		"font_color",
+		Color(0.96, 0.34, 0.32, 1.0) if bleeding_label != "None" else Color(0.56, 0.62, 0.72, 1.0),
+	)
 	_position_value.text = _format_match_state()
 	_name_value.tooltip_text = _name_value.text
 	_origin_value.tooltip_text = _origin_value.text
@@ -183,7 +192,20 @@ func refresh() -> void:
 		float(match_state.get("right_leg_hp", wrestler.right_leg_hp))
 	)
 	_fatigue_bar.value = float(match_state.get("fatigue", wrestler.fatigue))
-	_match_stamina_bar.value = float(match_state.get("stamina", 100.0))
+	var current_stamina := float(match_state.get("stamina", wrestler.stamina))
+	var maximum_stamina := float(match_state.get("max_stamina", wrestler.stamina))
+	var stamina_percent := float(match_state.get(
+		"stamina_percent",
+		current_stamina / maximum_stamina * 100.0 if maximum_stamina > 0.0 else 0.0,
+	))
+	_match_stamina_bar.max_value = 100.0
+	_match_stamina_bar.value = stamina_percent
+	_match_stamina_value.text = "%d/%d (%.0f%%)" % [
+		roundi(current_stamina),
+		roundi(maximum_stamina),
+		stamina_percent,
+	]
+	_match_stamina_bar.tooltip_text = "Current stamina: %s" % _match_stamina_value.text
 	_momentum_bar.value = float(match_state.get("momentum", wrestler.momentum))
 
 
@@ -212,8 +234,10 @@ func _show_unassigned() -> void:
 	_signature_moves_value.text = "SIGNATURE [LOCKED]  None assigned"
 	_finisher_moves_value.text = "FINISHERS [ ][ ][ ]  None assigned"
 	_held_weapon_value.text = "HELD WEAPON  None"
+	_bleeding_value.text = "BLEEDING  None"
 	_position_value.text = "Not Set"
 	_body_damage_mannequin.clear_health()
+	_match_stamina_value.text = "0/0 (0%)"
 
 	for bar: ProgressBar in _all_bars():
 		bar.value = 0.0

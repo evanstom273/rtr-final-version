@@ -1,0 +1,29 @@
+[gd_resource load_steps=5 format=3 type="Resource" script_class="WeaponResource"]
+
+[ext_resource type="Script" path="res://Scripts/Data/WeaponData.gd" id="1_weapon"]
+[ext_resource type="Script" path="res://Scripts/Data/WeaponAttackData.gd" id="2_attack"]
+
+[sub_resource type="Resource" id="WeaponAttack_standing"]
+script = ExtResource("2_attack")
+attack_id = &"kendo_strike"
+display_name = "Kendo Stick Strike"
+
+[sub_resource type="Resource" id="WeaponAttack_grounded"]
+script = ExtResource("2_attack")
+attack_id = &"grounded_kendo_barrage"
+display_name = "Grounded Kendo Barrage"
+target_posture = 1
+stamina_modifier = 1.0
+
+[resource]
+resource_name = "Kendo Stick"
+script = ExtResource("1_weapon")
+weapon_id = &"kendo_stick"
+display_name = "Kendo Stick"
+description = "A light bamboo stick built for fast, stinging strikes."
+icon_id = &"kendo_stick"
+impact = 6
+stamina_cost = 6.0
+minimum_durability = 2
+bleed_rating = 5.0
+attack_set = Array[ExtResource("2_attack")]([SubResource("WeaponAttack_standing"), SubResource("WeaponAttack_grounded")])

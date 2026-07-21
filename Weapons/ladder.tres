@@ -1,0 +1,33 @@
+[gd_resource load_steps=5 format=3 type="Resource" script_class="WeaponResource"]
+
+[ext_resource type="Script" path="res://Scripts/Data/WeaponData.gd" id="1_weapon"]
+[ext_resource type="Script" path="res://Scripts/Data/WeaponAttackData.gd" id="2_attack"]
+
+[sub_resource type="Resource" id="WeaponAttack_standing"]
+script = ExtResource("2_attack")
+attack_id = &"ladder_strike"
+display_name = "Ladder Strike"
+
+[sub_resource type="Resource" id="WeaponAttack_grounded"]
+script = ExtResource("2_attack")
+attack_id = &"ladder_drop"
+display_name = "Ladder Drop"
+target_posture = 1
+impact_modifier = 1
+stamina_modifier = 2.0
+
+[resource]
+resource_name = "Ladder"
+script = ExtResource("1_weapon")
+weapon_id = &"ladder"
+display_name = "Ladder"
+description = "A heavy ladder that can be swung, set up, climbed, and used as a diving platform."
+weapon_kind = 2
+icon_id = &"ladder"
+impact = 8
+stamina_cost = 11.0
+minimum_durability = 2
+bleed_rating = 5.0
+can_set_flat = true
+can_be_climbed = true
+attack_set = Array[ExtResource("2_attack")]([SubResource("WeaponAttack_standing"), SubResource("WeaponAttack_grounded")])

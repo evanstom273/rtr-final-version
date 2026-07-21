@@ -1,0 +1,29 @@
+[gd_resource load_steps=5 format=3 type="Resource" script_class="WeaponResource"]
+
+[ext_resource type="Script" path="res://Scripts/Data/WeaponData.gd" id="1_weapon"]
+[ext_resource type="Script" path="res://Scripts/Data/WeaponAttackData.gd" id="2_attack"]
+
+[sub_resource type="Resource" id="WeaponAttack_standing"]
+script = ExtResource("2_attack")
+attack_id = &"shovel_swing"
+display_name = "Shovel Swing"
+
+[sub_resource type="Resource" id="WeaponAttack_grounded"]
+script = ExtResource("2_attack")
+attack_id = &"grounded_shovel_shot"
+display_name = "Grounded Shovel Shot"
+target_posture = 1
+impact_modifier = 1
+stamina_modifier = 1.0
+
+[resource]
+resource_name = "Shovel"
+script = ExtResource("1_weapon")
+weapon_id = &"shovel"
+display_name = "Shovel"
+description = "A heavy steel shovel that demands a committed swing."
+icon_id = &"shovel"
+impact = 8
+stamina_cost = 9.0
+bleed_rating = 12.0
+attack_set = Array[ExtResource("2_attack")]([SubResource("WeaponAttack_standing"), SubResource("WeaponAttack_grounded")])

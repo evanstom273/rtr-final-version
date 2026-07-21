@@ -355,8 +355,8 @@ func _positions_are_valid(move: MoveResource) -> bool:
 		and _orientation_matches(move.required_attacker_orientation, _wrestler.orientation)
 		and _orientation_matches(move.required_target_orientation, _target.orientation)
 		and MatchAreaRules.move_areas_match(move, _wrestler.area, _target.area)
-		and move.required_attacker_motion_state == _wrestler.motion_state
-		and move.required_target_motion_state == _target.motion_state
+		and MatchSetupStateRules.motion_matches(move.required_attacker_motion_state, _wrestler.motion_state)
+		and MatchSetupStateRules.motion_matches(move.required_target_motion_state, _target.motion_state)
 	)
 
 
@@ -466,12 +466,15 @@ func _position_label(position: int) -> String:
 func _state_label(wrestler: WrestlerResource) -> String:
 	if wrestler == null:
 		return "Not Set"
-	return "%s %s · %s · %s" % [
+	var label := "%s %s" % [
 		_position_label(wrestler.position),
 		_enum_label(WrestlerResource.Orientation, wrestler.orientation),
-		_enum_label(WrestlerResource.Area, wrestler.area),
-		_enum_label(WrestlerResource.MotionState, wrestler.motion_state),
 	]
+	if wrestler.area != WrestlerResource.Area.IN_RING:
+		label += " · %s" % _enum_label(WrestlerResource.Area, wrestler.area)
+	if wrestler.motion_state != WrestlerResource.MotionState.STATIONARY:
+		label += " · %s" % _enum_label(WrestlerResource.MotionState, wrestler.motion_state)
+	return label
 
 
 func _resource_state_key(wrestler: WrestlerResource) -> String:

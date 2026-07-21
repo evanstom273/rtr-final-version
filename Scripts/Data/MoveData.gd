@@ -65,6 +65,8 @@ enum AreaResultMode { UNCHANGED, SPECIFIC }
 @export var is_flash_pin: bool = false
 @export var is_pinning_combination: bool = false
 @export var interaction_override: InteractionOverride = InteractionOverride.AUTO
+@export var required_weapon_id: StringName = &""
+@export var additional_valid_target_positions: Array[WrestlerResource.Position] = []
 @export var is_strike: bool = false:
 	set(value):
 		is_strike = value

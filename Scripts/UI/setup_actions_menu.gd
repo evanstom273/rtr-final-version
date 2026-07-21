@@ -19,6 +19,7 @@ const CLIMB_DOWN := MatchSetupStateRules.CLIMB_DOWN
 const RETURN_TO_RING := MatchSetupStateRules.RETURN_TO_RING
 const RESET_STANCE := MatchSetupStateRules.RESET_STANCE
 const TAUNT := MatchSetupStateRules.TAUNT
+const CATCH_BREATH := MatchSetupStateRules.CATCH_BREATH
 const STEP_TO_ROPES := MatchSetupStateRules.STEP_TO_ROPES
 const LEAVE_ROPES := MatchSetupStateRules.LEAVE_ROPES
 const GET_BEHIND_OPPONENT := MatchSetupStateRules.GET_BEHIND_OPPONENT
@@ -45,14 +46,34 @@ const TAKE_FIGHT_OUTSIDE := MatchSetupStateRules.TAKE_FIGHT_OUTSIDE
 const FIGHT_UP_RAMP := MatchSetupStateRules.FIGHT_UP_RAMP
 const RETURN_FROM_RAMP := MatchSetupStateRules.RETURN_FROM_RAMP
 const BRING_MATCH_BACK_TO_RING := MatchSetupStateRules.BRING_MATCH_BACK_TO_RING
+const PULL_OPPONENT_FROM_CORNER := MatchSetupStateRules.PULL_OPPONENT_FROM_CORNER
+const PULL_OPPONENT_FROM_ROPES := MatchSetupStateRules.PULL_OPPONENT_FROM_ROPES
+const BRING_OPPONENT_INTO_RING := MatchSetupStateRules.BRING_OPPONENT_INTO_RING
+const CATCH_OPPONENT_RUNNING := MatchSetupStateRules.CATCH_OPPONENT_RUNNING
 const CALL_OPPONENT_RUNNING := MatchSetupStateRules.CALL_OPPONENT_RUNNING
 const REGAIN_COMPOSURE := MatchSetupStateRules.REGAIN_COMPOSURE
 const PRESS_ADVANTAGE := MatchSetupStateRules.PRESS_ADVANTAGE
 const WAIT_FOR_COUNT := MatchSetupStateRules.WAIT_FOR_COUNT
 const RETRIEVE_STEEL_CHAIR := MatchSetupStateRules.RETRIEVE_STEEL_CHAIR
+const RETRIEVE_WEAPON := MatchSetupStateRules.RETRIEVE_WEAPON
 const PICK_UP_WEAPON := MatchSetupStateRules.PICK_UP_WEAPON
 const DROP_WEAPON := MatchSetupStateRules.DROP_WEAPON
 const CHAIR_SHOT := MatchSetupStateRules.CHAIR_SHOT
+const SET_TABLE_FLAT := MatchSetupStateRules.SET_TABLE_FLAT
+const SET_TABLE_CORNER := MatchSetupStateRules.SET_TABLE_CORNER
+const STACK_TABLE := MatchSetupStateRules.STACK_TABLE
+const POSITION_AT_TABLE := MatchSetupStateRules.POSITION_AT_TABLE
+const LAY_ON_TABLE := MatchSetupStateRules.LAY_ON_TABLE
+const POSITION_AT_CORNER_TABLE := MatchSetupStateRules.POSITION_AT_CORNER_TABLE
+const MOVE_CLEAR_TABLE := MatchSetupStateRules.MOVE_CLEAR_TABLE
+const SET_UP_LADDER := MatchSetupStateRules.SET_UP_LADDER
+const CLIMB_LADDER := MatchSetupStateRules.CLIMB_LADDER
+const CLIMB_LADDER_TOP := MatchSetupStateRules.CLIMB_LADDER_TOP
+const TIP_LADDER := MatchSetupStateRules.TIP_LADDER
+const CLIMB_DOWN_LADDER := MatchSetupStateRules.CLIMB_DOWN_LADDER
+const SPREAD_THUMBTACKS := MatchSetupStateRules.SPREAD_THUMBTACKS
+const POSITION_OVER_THUMBTACKS := MatchSetupStateRules.POSITION_OVER_THUMBTACKS
+const MOVE_CLEAR_THUMBTACKS := MatchSetupStateRules.MOVE_CLEAR_THUMBTACKS
 
 enum ActionGroup { RECOVERY, MOVEMENT, OPPONENT_SETUP, RING_POSITION, SHOWBOAT, WEAPON }
 
@@ -207,7 +228,9 @@ func _clear_sections() -> void:
 func _group_for_action(action_id: StringName) -> int:
 	if action_id == TAUNT:
 		return ActionGroup.SHOWBOAT
-	if action_id in [RETRIEVE_STEEL_CHAIR, PICK_UP_WEAPON, DROP_WEAPON, CHAIR_SHOT]:
+	if action_id == CATCH_BREATH:
+		return ActionGroup.RECOVERY
+	if action_id in [RETRIEVE_STEEL_CHAIR, RETRIEVE_WEAPON, PICK_UP_WEAPON, DROP_WEAPON, CHAIR_SHOT, SET_TABLE_FLAT, SET_TABLE_CORNER, STACK_TABLE, POSITION_AT_TABLE, LAY_ON_TABLE, POSITION_AT_CORNER_TABLE, MOVE_CLEAR_TABLE, SET_UP_LADDER, CLIMB_LADDER, CLIMB_LADDER_TOP, TIP_LADDER, CLIMB_DOWN_LADDER, SPREAD_THUMBTACKS, POSITION_OVER_THUMBTACKS, MOVE_CLEAR_THUMBTACKS]:
 		return ActionGroup.WEAPON
 	if MatchSetupStateRules.is_recovery(action_id) or action_id == RESET_STANCE:
 		return ActionGroup.RECOVERY

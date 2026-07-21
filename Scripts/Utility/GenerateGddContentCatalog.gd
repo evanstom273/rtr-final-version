@@ -9,17 +9,23 @@ const CLASS_NAMES := ["High Flyer", "Powerhouse", "Technician", "Striker", "Hard
 const REGION_NAMES := ["Not Set", "North America", "South America", "Asia", "Africa", "Oceania", "Europe"]
 const GENDER_NAMES := ["Not Set", "Male", "Female"]
 const DISPOSITION_NAMES := ["Not Set", "Face", "Heel"]
-const POSITION_NAMES := ["Not Set", "Standing", "Grounded", "In Corner", "Running", "Rope Rebound", "Top Rope", "Apron"]
-const MOVE_TYPE_NAMES := ["None", "Standing Front", "Standing Behind", "Running", "Rope Rebound", "Grounded", "Springboard", "Corner", "Diving Standing", "Diving Grounded"]
+const POSITION_NAMES := ["Not Set", "Standing", "Grounded", "Seated", "Kneeling", "Perched", "Climbing"]
+const ORIENTATION_NAMES := ["Not Set", "Front", "Back", "Face Up", "Face Down"]
+const AREA_NAMES := ["In Ring", "Corner", "Ropes", "Apron", "Outside", "Ramp", "Top Rope", "Ladder"]
+const MOTION_STATE_NAMES := ["Stationary", "Running", "Rope Rebound", "Rising", "Staggering"]
+const MOVE_TYPE_NAMES := ["None", "Strike", "Grapple", "Submission", "Aerial", "Springboard", "Running", "Reversal", "Pinning Move", "Weapon", "Environmental"]
 const TARGET_NAMES := ["None", "Head", "Body", "Left Arm", "Right Arm", "Left Leg", "Right Leg"]
 const TARGETING_MODE_NAMES := ["Fixed Parts", "Choose Arm", "Choose Leg", "Both Arms", "Both Legs"]
 const STRIKE_WEIGHT_NAMES := ["Weak", "Medium", "Heavy"]
 const INTERACTION_NAMES := ["Auto", "Timing Strike", "Timing Aerial", "Control Meter (legacy HOLD_POWER)", "Submission Lock-In"]
+const AREA_REQUIREMENT_MODE_NAMES := ["Specific", "Any", "Same As Other", "Shared Flat Area"]
+const AREA_RESULT_MODE_NAMES := ["Unchanged", "Specific"]
 
 var _promotions: Array[PromotionResource] = []
 var _wrestlers: Array[WrestlerResource] = []
 var _moves: Array[MoveResource] = []
 var _titles: Array[TitleResource] = []
+var _weapons: Array[WeaponResource] = []
 var _promotion_by_wrestler_path: Dictionary = {}
 var _division_by_wrestler_path: Dictionary = {}
 var _promotion_by_title_path: Dictionary = {}
@@ -42,12 +48,14 @@ func _generate_catalogue() -> String:
 	_load_resources()
 	if _wrestlers.size() != 400:
 		return "Expected 400 wrestlers, found %d." % _wrestlers.size()
-	if _moves.size() != 626:
-		return "Expected 626 moves, found %d." % _moves.size()
+	if _moves.size() != 656:
+		return "Expected 656 moves, found %d." % _moves.size()
 	if _titles.size() != 33:
 		return "Expected 33 titles, found %d." % _titles.size()
 	if _promotions.size() != 11:
 		return "Expected 11 promotions, found %d." % _promotions.size()
+	if _weapons.size() != 11:
+		return "Expected 11 weapons, found %d." % _weapons.size()
 
 	_build_relationship_maps()
 	var existing := FileAccess.get_file_as_string(DOCUMENT_PATH)
@@ -77,6 +85,7 @@ func _generate_catalogue() -> String:
 	sections.append(_generate_title_catalogue())
 	sections.append(_generate_move_catalogue())
 	sections.append(_generate_roster_catalogue())
+	sections.append(_generate_weapon_catalogue())
 	sections.append(END_MARKER)
 	if not suffix.is_empty():
 		sections.append("")
@@ -109,10 +118,17 @@ func _load_resources() -> void:
 		if resource is MoveResource:
 			_moves.append(resource as MoveResource)
 
+	var weapon_catalogue := load("res://Weapons/weapon_catalogue.tres") as WeaponCatalogueResource
+	if weapon_catalogue != null:
+		for weapon in weapon_catalogue.weapons:
+			if weapon != null:
+				_weapons.append(weapon)
+
 	_promotions.sort_custom(_promotion_less)
 	_titles.sort_custom(_title_less)
 	_wrestlers.sort_custom(_wrestler_less)
 	_moves.sort_custom(_move_less)
+	_weapons.sort_custom(func(left: WeaponResource, right: WeaponResource) -> bool: return left.display_name.naturalnocasecmp_to(right.display_name) < 0)
 
 
 func _find_tres(root: String) -> PackedStringArray:
@@ -141,15 +157,9 @@ func _build_relationship_maps() -> void:
 				_promotion_by_title_path[title.resource_path] = promotion
 
 	for wrestler in _wrestlers:
-		var wrestler_label := _wrestler_reference(wrestler)
-		for move in wrestler.move_set:
-			if move == null:
-				continue
-			if not _move_users.has(move.resource_path):
-				_move_users[move.resource_path] = PackedStringArray()
-			var users: PackedStringArray = _move_users[move.resource_path]
-			users.append(wrestler_label)
-			_move_users[move.resource_path] = users
+		_register_move_users(wrestler, wrestler.move_set, "Regular")
+		_register_move_users(wrestler, wrestler.signature_moves, "Signature")
+		_register_move_users(wrestler, wrestler.finisher_moves, "Finisher")
 
 	for title in _titles:
 		if title.current_holder_id <= 0:
@@ -172,6 +182,18 @@ func _register_wrestler_promotion(wrestler: WrestlerResource, promotion: Promoti
 	roster_by_id[wrestler.wrestler_id] = wrestler
 
 
+func _register_move_users(wrestler: WrestlerResource, moves: Array[MoveResource], role: String) -> void:
+	var wrestler_label := "%s [%s]" % [_wrestler_reference(wrestler), role]
+	for move in moves:
+		if move == null:
+			continue
+		if not _move_users.has(move.resource_path):
+			_move_users[move.resource_path] = PackedStringArray()
+		var users: PackedStringArray = _move_users[move.resource_path]
+		users.append(wrestler_label)
+		_move_users[move.resource_path] = users
+
+
 func _generate_catalogue_introduction() -> String:
 	var lines := PackedStringArray()
 	lines.append("## Appendix E - Complete generated content catalogue")
@@ -186,6 +208,7 @@ func _generate_catalogue_introduction() -> String:
 	lines.append("| Titles | %d |" % _titles.size())
 	lines.append("| Wrestlers | %d |" % _wrestlers.size())
 	lines.append("| Moves | %d |" % _moves.size())
+	lines.append("| Referenced weapons/environment objects | %d |" % _weapons.size())
 	lines.append("")
 	lines.append("Catalogue conventions:")
 	lines.append("")
@@ -196,8 +219,70 @@ func _generate_catalogue_introduction() -> String:
 	lines.append("- Wrestler promotion/division and move users are derived from promotion rosters and wrestler movesets.")
 	lines.append("- Title-holder names are resolved within the title's promotion because wrestler IDs are promotion-local in the current content.")
 	lines.append("- Baseline match-condition fields describe resource defaults, not the result of a played match.")
-	lines.append("- Full movesets preserve their authored array order.")
+	lines.append("- Regular, signature, and finisher move sections preserve their authored array order.")
 	lines.append("")
+	return "\n".join(lines)
+
+
+func _generate_weapon_catalogue() -> String:
+	var lines := PackedStringArray()
+	lines.append("## Appendix J - Complete weapon and environmental-object catalogue")
+	lines.append("")
+	lines.append("These resources are referenced through `Weapons/weapon_catalogue.tres`, so export discovery does not depend on runtime filesystem scanning. Embedded attack definitions are runtime Weapon moves and are deliberately excluded from wrestler movesets and the 656 authored-move total.")
+	lines.append("")
+	lines.append("| Weapon | Kind | Impact | Stamina | Durability | Bleed | Any-target bleed | Live limit | Setup capabilities | Attacks | Resource |")
+	lines.append("|---|---|---:|---:|---:|---:|---|---:|---|---:|---|")
+	var kind_names := ["Handheld", "Table", "Ladder", "Thumbtacks"]
+	for weapon in _weapons:
+		var capabilities := PackedStringArray()
+		if weapon.can_set_flat:
+			capabilities.append("Flat")
+		if weapon.can_set_in_corner:
+			capabilities.append("Corner")
+		if weapon.can_stack:
+			capabilities.append("Stack")
+		if weapon.can_be_climbed:
+			capabilities.append("Climb")
+		if weapon.can_be_spread:
+			capabilities.append("Spread")
+		lines.append("| %s | %s | %d | %s | %s | %s | %s | %d | %s | %d | `%s` |" % [
+			_md(weapon.display_name),
+			_enum_name(weapon.weapon_kind, kind_names),
+			weapon.impact,
+			_number(weapon.stamina_cost),
+			weapon.durability_range_text(),
+			_number(weapon.bleed_rating),
+			_yes_no(weapon.can_bleed_any_target),
+			weapon.maximum_live_instances,
+			_md(", ".join(capabilities) if not capabilities.is_empty() else "None"),
+			weapon.attack_set.size(),
+			weapon.resource_path,
+		])
+	lines.append("")
+	for weapon in _weapons:
+		lines.append("### J.%s" % _heading(weapon.display_name))
+		lines.append("")
+		lines.append(weapon.description if not weapon.description.is_empty() else "No authored description.")
+		lines.append("")
+		if weapon.attack_set.is_empty():
+			lines.append("No direct attack definitions; this item is used through environmental actions.")
+			lines.append("")
+			continue
+		lines.append("| Attack ID | Display name | Target posture | Impact modifier | Stamina modifier | Result position | Result orientation |")
+		lines.append("|---|---|---|---:|---:|---|---|")
+		for attack in weapon.attack_set:
+			if attack == null:
+				continue
+			lines.append("| `%s` | %s | %s | %+d | %s | %s | %s |" % [
+				str(attack.attack_id),
+				_md(attack.display_name),
+				"Standing" if attack.target_posture == WeaponAttackResource.TargetPosture.STANDING else "Grounded / seated / kneeling",
+				attack.impact_modifier,
+				_number(attack.stamina_modifier),
+				_enum_name(attack.resulting_target_position, POSITION_NAMES),
+				_enum_name(attack.resulting_target_orientation, ORIENTATION_NAMES),
+			])
+		lines.append("")
 	return "\n".join(lines)
 
 
@@ -285,7 +370,7 @@ func _generate_move_catalogue() -> String:
 	var lines := PackedStringArray()
 	lines.append("## Appendix H - Complete move catalogue")
 	lines.append("")
-	lines.append("All 626 move resources are listed individually. Target arrays are the authored damage candidates; targeting mode and default side determine how selectable/bilateral limbs resolve at runtime.")
+	lines.append("All 656 move resources are listed individually. Target arrays are the authored damage candidates; targeting mode and default side determine how selectable/bilateral limbs resolve at runtime.")
 	lines.append("")
 	var move_number := 0
 	for move_type in range(1, MOVE_TYPE_NAMES.size()):
@@ -312,12 +397,29 @@ func _generate_move_catalogue() -> String:
 			lines.append(_row("Targeting mode", _enum_name(move.targeting_mode, TARGETING_MODE_NAMES)))
 			lines.append(_row("Default side target", _enum_name(move.default_side_target, TARGET_NAMES)))
 			lines.append(_row("Required attacker position", _enum_name(move.required_attacker_position, POSITION_NAMES)))
+			lines.append(_row("Required attacker orientation", _enum_name(move.required_attacker_orientation, ORIENTATION_NAMES)))
+			lines.append(_row("Required attacker area mode", _enum_name(move.required_attacker_area_mode, AREA_REQUIREMENT_MODE_NAMES)))
+			lines.append(_row("Required attacker area", _enum_name(move.required_attacker_area, AREA_NAMES)))
+			lines.append(_row("Required attacker motion", _enum_name(move.required_attacker_motion_state, MOTION_STATE_NAMES)))
 			lines.append(_row("Required target position", _enum_name(move.required_target_position, POSITION_NAMES)))
+			lines.append(_row("Required target orientation", _enum_name(move.required_target_orientation, ORIENTATION_NAMES)))
+			lines.append(_row("Required target area mode", _enum_name(move.required_target_area_mode, AREA_REQUIREMENT_MODE_NAMES)))
+			lines.append(_row("Required target area", _enum_name(move.required_target_area, AREA_NAMES)))
+			lines.append(_row("Required target motion", _enum_name(move.required_target_motion_state, MOTION_STATE_NAMES)))
 			lines.append(_row("Resulting attacker position", _enum_name(move.resulting_attacker_position, POSITION_NAMES)))
+			lines.append(_row("Resulting attacker orientation", _enum_name(move.resulting_attacker_orientation, ORIENTATION_NAMES)))
+			lines.append(_row("Resulting attacker area mode", _enum_name(move.resulting_attacker_area_mode, AREA_RESULT_MODE_NAMES)))
+			lines.append(_row("Resulting attacker area", _enum_name(move.resulting_attacker_area, AREA_NAMES)))
+			lines.append(_row("Resulting attacker motion", _enum_name(move.resulting_attacker_motion_state, MOTION_STATE_NAMES)))
 			lines.append(_row("Resulting target position", _enum_name(move.resulting_target_position, POSITION_NAMES)))
+			lines.append(_row("Resulting target orientation", _enum_name(move.resulting_target_orientation, ORIENTATION_NAMES)))
+			lines.append(_row("Resulting target area mode", _enum_name(move.resulting_target_area_mode, AREA_RESULT_MODE_NAMES)))
+			lines.append(_row("Resulting target area", _enum_name(move.resulting_target_area, AREA_NAMES)))
+			lines.append(_row("Resulting target motion", _enum_name(move.resulting_target_motion_state, MOTION_STATE_NAMES)))
 			lines.append(_row("Finisher", _yes_no(move.is_finisher)))
 			lines.append(_row("Submission", _yes_no(move.is_submission)))
 			lines.append(_row("Flash pin", _yes_no(move.is_flash_pin)))
+			lines.append(_row("Pinning combination", _yes_no(move.is_pinning_combination)))
 			lines.append(_row("Strike", _yes_no(move.is_strike)))
 			lines.append(_row("Strike weight", _enum_name(move.strike_weight, STRIKE_WEIGHT_NAMES) if move.is_strike else "Not applicable"))
 			lines.append(_row("Interaction override", _enum_name(move.interaction_override, INTERACTION_NAMES)))
@@ -334,7 +436,7 @@ func _generate_roster_catalogue() -> String:
 	var lines := PackedStringArray()
 	lines.append("## Appendix I - Complete wrestler roster and movesets")
 	lines.append("")
-	lines.append("Every wrestler is listed with all WrestlerResource fields, derived promotion/title relationships, and the complete authored moveset in its original array order.")
+	lines.append("Every wrestler is listed with all WrestlerResource fields, derived promotion/title relationships, and complete regular, signature, and finisher sections in authored array order.")
 	lines.append("")
 	var wrestler_number := 0
 	for promotion in _promotions:
@@ -426,7 +528,6 @@ func _wrestler_condition_table(wrestler: WrestlerResource) -> String:
 
 
 func _wrestler_relationships(wrestler: WrestlerResource) -> String:
-	var finishers := 0
 	var submissions := 0
 	var strikes := 0
 	var flash_pins := 0
@@ -434,7 +535,6 @@ func _wrestler_relationships(wrestler: WrestlerResource) -> String:
 	for move in wrestler.move_set:
 		if move == null:
 			continue
-		finishers += 1 if move.is_finisher else 0
 		submissions += 1 if move.is_submission else 0
 		strikes += 1 if move.is_strike else 0
 		flash_pins += 1 if move.is_flash_pin else 0
@@ -444,7 +544,7 @@ func _wrestler_relationships(wrestler: WrestlerResource) -> String:
 		if type_counts.has(type_id):
 			breakdown.append("%s %d" % [MOVE_TYPE_NAMES[type_id], type_counts[type_id]])
 	var lines := PackedStringArray()
-	lines.append("**Moveset summary:** %d moves; %d finishers; %d submissions; %d strikes; %d explicit flash pins." % [wrestler.move_set.size(), finishers, submissions, strikes, flash_pins])
+	lines.append("**Moveset summary:** %d regular moves; %d signatures; %d finishers; %d regular submissions; %d regular strikes; %d regular flash pins." % [wrestler.move_set.size(), wrestler.signature_moves.size(), wrestler.finisher_moves.size(), submissions, strikes, flash_pins])
 	lines.append("")
 	lines.append("**Category distribution:** %s" % (", ".join(breakdown) if not breakdown.is_empty() else "No moves"))
 	lines.append("")
@@ -453,12 +553,20 @@ func _wrestler_relationships(wrestler: WrestlerResource) -> String:
 
 func _wrestler_moveset(wrestler: WrestlerResource) -> String:
 	var lines := PackedStringArray()
-	lines.append("**Complete authored moveset**")
+	lines.append(_move_assignment_table("Regular moves", wrestler.move_set))
+	lines.append(_move_assignment_table("Signature moves", wrestler.signature_moves))
+	lines.append(_move_assignment_table("Finisher moves", wrestler.finisher_moves))
+	return "\n".join(lines)
+
+
+func _move_assignment_table(title: String, moves: Array[MoveResource]) -> String:
+	var lines := PackedStringArray()
+	lines.append("**%s**" % title)
 	lines.append("")
 	lines.append("| Slot | Move | Type | Impact | Flags | Targets | Targeting | Resource |")
 	lines.append("|---:|---|---|---:|---|---|---|---|")
-	for index in wrestler.move_set.size():
-		var move := wrestler.move_set[index]
+	for index in moves.size():
+		var move := moves[index]
 		if move == null:
 			lines.append("| %d | Missing/null resource | - | - | - | - | - | - |" % (index + 1))
 			continue
@@ -472,7 +580,7 @@ func _wrestler_moveset(wrestler: WrestlerResource) -> String:
 			_md(_enum_name(move.targeting_mode, TARGETING_MODE_NAMES)),
 			_resource_link(move.resource_path),
 		])
-	if wrestler.move_set.is_empty():
+	if moves.is_empty():
 		lines.append("| - | No authored moves | - | - | - | - | - | - |")
 	lines.append("")
 	return "\n".join(lines)

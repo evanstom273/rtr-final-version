@@ -69,6 +69,7 @@ func set_participants(snapshots: Array) -> void:
 func apply_state_snapshot(snapshots: Array, context: Dictionary = {}) -> void:
 	_generation += 1
 	_last_context = context.duplicate(true)
+	_ring_canvas.set_environment_objects(context.get("environment_objects", []))
 	var active_ids: Array[String] = []
 	for raw_snapshot in snapshots:
 		if not raw_snapshot is Dictionary:
@@ -161,20 +162,29 @@ func present_event(event: Dictionary) -> void:
 			if actor != null:
 				actor.pulse(&"setup")
 		&"weapon_dropped":
-			_special_label.text = "CHAIR DOWN"
+			_special_label.text = "%s DOWN" % str(event.get("weapon", "WEAPON")).to_upper()
 			_flash_event_label()
 			if actor != null:
 				actor.pulse(&"setup")
 		&"weapon_broken":
-			_special_label.text = "CHAIR BROKEN"
+			_special_label.text = "%s BROKEN" % str(event.get("weapon", "WEAPON")).to_upper()
 			_flash_event_label()
 			if actor != null:
 				actor.pulse(&"impact")
 		&"weapon_attack", &"weapon_reversed":
-			_special_label.text = "DQ RISK" if bool(event.get("illegal", false)) else "CHAIR SHOT"
+			_special_label.text = "DQ RISK" if bool(event.get("illegal", false)) else str(event.get("weapon", "WEAPON")).to_upper()
 			_flash_event_label()
 			if actor != null:
 				actor.pulse(&"impact")
+		&"environment_setup":
+			_special_label.text = str(event.get("weapon", "OBJECT")).to_upper() + " SET"
+			_flash_event_label()
+		&"table_broken":
+			_special_label.text = "TABLE BREAK"
+			_flash_event_label()
+		&"thumbtacks_used":
+			_special_label.text = "INTO THE TACKS"
+			_flash_event_label()
 		&"match_ended":
 			set_match_ended(str(event.get("winner_id", actor_id)))
 			var result_label := str(event.get("result", "")).to_upper()

@@ -30,9 +30,9 @@ func _audit_resource_states(moves: Array[MoveResource]) -> void:
 	for move in moves:
 		var valid := (
 			move.required_attacker_position >= WrestlerResource.Position.NONE
-			and move.required_attacker_position <= WrestlerResource.Position.PERCHED
+			and move.required_attacker_position <= WrestlerResource.Position.CLIMBING
 			and move.required_target_position >= WrestlerResource.Position.NONE
-			and move.required_target_position <= WrestlerResource.Position.PERCHED
+			and move.required_target_position <= WrestlerResource.Position.CLIMBING
 			and move.required_attacker_orientation >= WrestlerResource.Orientation.NONE
 			and move.required_attacker_orientation <= WrestlerResource.Orientation.FACE_DOWN
 			and move.required_target_orientation >= WrestlerResource.Orientation.NONE
@@ -42,9 +42,9 @@ func _audit_resource_states(moves: Array[MoveResource]) -> void:
 			and move.required_target_motion_state >= WrestlerResource.MotionState.STATIONARY
 			and move.required_target_motion_state <= WrestlerResource.MotionState.STAGGERING
 			and move.resulting_attacker_position >= WrestlerResource.Position.NONE
-			and move.resulting_attacker_position <= WrestlerResource.Position.PERCHED
+			and move.resulting_attacker_position <= WrestlerResource.Position.CLIMBING
 			and move.resulting_target_position >= WrestlerResource.Position.NONE
-			and move.resulting_target_position <= WrestlerResource.Position.PERCHED
+			and move.resulting_target_position <= WrestlerResource.Position.CLIMBING
 			and move.resulting_attacker_orientation >= WrestlerResource.Orientation.NONE
 			and move.resulting_attacker_orientation <= WrestlerResource.Orientation.FACE_DOWN
 			and move.resulting_target_orientation >= WrestlerResource.Orientation.NONE
@@ -89,6 +89,48 @@ func _audit_setup_projection() -> void:
 	var ring_actor := _state(WrestlerResource.Position.STANDING, WrestlerResource.Orientation.FRONT, WrestlerResource.Area.IN_RING, WrestlerResource.MotionState.STATIONARY)
 	var recovery_actions := MatchSetupStateRules.get_candidate_actions(ring_actor, staggered_target)
 	_check(MatchSetupStateRules.PRESS_ADVANTAGE not in recovery_actions, "staggering target remains a direct authored attack opportunity")
+	_check(MatchSetupStateRules.START_RUNNING in recovery_actions, "staggering target does not suppress ordinary standing setup paths")
+	var staggered_actor_actions := MatchSetupStateRules.get_candidate_actions(staggered_target, ring_actor)
+	_check(MatchSetupStateRules.REGAIN_COMPOSURE not in staggered_actor_actions, "staggering actor is not forced through a recovery action")
+	_check(MatchSetupStateRules.START_RUNNING in staggered_actor_actions, "staggering actor retains ordinary standing setup access")
+	var ordinary_standing_move := MoveResource.new()
+	ordinary_standing_move.required_attacker_position = WrestlerResource.Position.STANDING
+	ordinary_standing_move.required_attacker_orientation = WrestlerResource.Orientation.FRONT
+	ordinary_standing_move.required_attacker_area_mode = MoveResource.AreaRequirementMode.SHARED_FLAT_AREA
+	ordinary_standing_move.required_attacker_motion_state = WrestlerResource.MotionState.STATIONARY
+	ordinary_standing_move.required_target_position = WrestlerResource.Position.STANDING
+	ordinary_standing_move.required_target_orientation = WrestlerResource.Orientation.FRONT
+	ordinary_standing_move.required_target_area_mode = MoveResource.AreaRequirementMode.SHARED_FLAT_AREA
+	ordinary_standing_move.required_target_motion_state = WrestlerResource.MotionState.STATIONARY
+	_check(MatchSetupStateRules.move_matches_snapshots(ordinary_standing_move, ring_actor, staggered_target), "ordinary standing move accepts a staggered target")
+	_check(MatchSetupStateRules.move_matches_snapshots(ordinary_standing_move, staggered_target, ring_actor), "staggering actor retains ordinary standing moves")
+	var running_actor := ring_actor.duplicate(true)
+	running_actor.motion_state = WrestlerResource.MotionState.RUNNING
+	var running_actions := MatchSetupStateRules.get_candidate_actions(running_actor, staggered_target)
+	_check(MatchSetupStateRules.STOP_RUNNING in running_actions, "running actor always retains Stop Running recovery")
+	var running_target := ring_actor.duplicate(true)
+	running_target.motion_state = WrestlerResource.MotionState.RUNNING
+	var running_target_actions := MatchSetupStateRules.get_candidate_actions(ring_actor, running_target)
+	_check(MatchSetupStateRules.CATCH_OPPONENT_RUNNING in running_target_actions, "standing actor can cut off a running target")
+	var stopped_target := MatchSetupStateRules.project_action(MatchSetupStateRules.CATCH_OPPONENT_RUNNING, ring_actor, running_target)
+	_check(int(stopped_target.target.motion_state) == WrestlerResource.MotionState.STATIONARY, "cutting off a run restores only stationary motion")
+	var corner_target := _state(WrestlerResource.Position.STANDING, WrestlerResource.Orientation.FRONT, WrestlerResource.Area.CORNER, WrestlerResource.MotionState.STATIONARY)
+	var corner_actions := MatchSetupStateRules.get_candidate_actions(ring_actor, corner_target)
+	_check(MatchSetupStateRules.PULL_OPPONENT_FROM_CORNER in corner_actions, "in-ring actor can extract a target from the corner")
+	var corner_recovery := MatchSetupStateRules.project_action(MatchSetupStateRules.PULL_OPPONENT_FROM_CORNER, ring_actor, corner_target)
+	_check(int(corner_recovery.target.area) == WrestlerResource.Area.IN_RING, "corner extraction returns the target to the ring")
+	var ropes_target := _state(WrestlerResource.Position.KNEELING, WrestlerResource.Orientation.BACK, WrestlerResource.Area.ROPES, WrestlerResource.MotionState.STATIONARY)
+	var ropes_actions := MatchSetupStateRules.get_candidate_actions(ring_actor, ropes_target)
+	_check(MatchSetupStateRules.PULL_OPPONENT_FROM_ROPES in ropes_actions, "in-ring actor can extract a target from the ropes")
+	var ropes_recovery := MatchSetupStateRules.project_action(MatchSetupStateRules.PULL_OPPONENT_FROM_ROPES, ring_actor, ropes_target)
+	_check(int(ropes_recovery.target.area) == WrestlerResource.Area.IN_RING and int(ropes_recovery.target.position) == WrestlerResource.Position.STANDING, "rope extraction restores a usable standing target")
+	for stranded_area in [WrestlerResource.Area.APRON, WrestlerResource.Area.TOP_ROPE]:
+		var stranded_position := WrestlerResource.Position.PERCHED if stranded_area == WrestlerResource.Area.TOP_ROPE else WrestlerResource.Position.STANDING
+		var stranded_target := _state(stranded_position, WrestlerResource.Orientation.FRONT, stranded_area, WrestlerResource.MotionState.STATIONARY)
+		var stranded_actions := MatchSetupStateRules.get_candidate_actions(ring_actor, stranded_target)
+		_check(MatchSetupStateRules.BRING_OPPONENT_INTO_RING in stranded_actions, "in-ring actor can recover a target from area %d" % stranded_area)
+		var stranded_recovery := MatchSetupStateRules.project_action(MatchSetupStateRules.BRING_OPPONENT_INTO_RING, ring_actor, stranded_target)
+		_check(int(stranded_recovery.target.area) == WrestlerResource.Area.IN_RING and int(stranded_recovery.target.position) == WrestlerResource.Position.STANDING, "special-area target returns to a usable in-ring stance")
 	var rising_target := _state(WrestlerResource.Position.STANDING, WrestlerResource.Orientation.FRONT, WrestlerResource.Area.IN_RING, WrestlerResource.MotionState.RISING)
 	var rising_actions := MatchSetupStateRules.get_candidate_actions(ring_actor, rising_target)
 	_check(MatchSetupStateRules.PRESS_ADVANTAGE in rising_actions, "rising target exposes the explicit close-in recovery action")

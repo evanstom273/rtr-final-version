@@ -2,6 +2,9 @@ extends RefCounted
 class_name MatchSideState
 
 const MAX_FINISHER_STOCK := 3
+const STAMINA_POOL_MULTIPLIER := 2.5
+
+enum BleedingSeverity { NONE, MINOR, MODERATE, HEAVY }
 
 var wrestler: WrestlerResource
 var current_position: int = WrestlerResource.Position.STANDING
@@ -14,6 +17,7 @@ var left_arm_hp: float = 100.0
 var right_arm_hp: float = 100.0
 var left_leg_hp: float = 100.0
 var right_leg_hp: float = 100.0
+var max_stamina: float = 100.0
 var stamina: float = 100.0
 var fatigue: float = 0.0
 var momentum: float = 0.0
@@ -25,6 +29,10 @@ var finisher_stock_earned: int = 0
 var finisher_stock_spent: int = 0
 var held_weapon: WeaponResource
 var held_weapon_uses_remaining: int = 0
+var held_weapon_instance_id: int = 0
+var bleeding_severity: int = BleedingSeverity.NONE
+var bleeding_inflicted: int = 0
+var bleeding_escalations_taken: int = 0
 var outside_seconds: int = 0
 var late_count_returns: int = 0
 var weapons_retrieved: int = 0
@@ -38,6 +46,21 @@ var legal_weapon_attacks: int = 0
 var disqualifications_caused: int = 0
 var weapon_types_used: Array[String] = []
 var weapons_broken: int = 0
+var weapons_dropped: int = 0
+var tables_set: int = 0
+var tables_stacked: int = 0
+var tables_broken: int = 0
+var table_spots_landed: int = 0
+var table_spots_taken: int = 0
+var ladder_setups: int = 0
+var ladder_climb_stages: int = 0
+var ladder_climbs_interrupted: int = 0
+var ladder_dives: int = 0
+var ladder_crashes: int = 0
+var thumbtack_patches_spread: int = 0
+var thumbtack_spots_landed: int = 0
+var thumbtack_spots_taken: int = 0
+var environmental_reversals: int = 0
 var last_position: int = WrestlerResource.Position.STANDING
 var last_orientation: int = WrestlerResource.Orientation.FRONT
 var last_area: int = WrestlerResource.Area.IN_RING
@@ -81,6 +104,9 @@ var contested_setup_attempts: int = 0
 var contested_setup_wins: int = 0
 var contested_setup_losses: int = 0
 var contested_setup_draws: int = 0
+var contested_setup_defensive_interruptions: int = 0
+var tactical_setup_actions: int = 0
+var recovery_setup_actions: int = 0
 var taunts_attempted: int = 0
 var taunts_succeeded: int = 0
 var taunts_interrupted: int = 0
@@ -127,8 +153,30 @@ var setup_intents_abandoned: int = 0
 var setup_loop_penalties: int = 0
 var dead_end_setups_prevented: int = 0
 var forced_fallback_actions: int = 0
+var mandatory_recovery_actions: int = 0
 var late_escalation_total: float = 0.0
 var late_escalation_samples: int = 0
+var catch_breath_cooldown_until_seconds: int = 0
+var catch_breath_uses: int = 0
+var actions_attempted_at_zero_stamina: int = 0
+var successful_actions_at_zero_stamina: int = 0
+var exhausted_high_risk_attempts: int = 0
+var exhausted_demanding_weapon_attempts: int = 0
+var exhaustion_control_losses: int = 0
+var exhaustion_delayed_recoveries: int = 0
+var total_stamina_recovered: float = 0.0
+var stamina_execution_penalty_total: float = 0.0
+var stamina_execution_penalty_samples: int = 0
+var fatigue_amplification_total: float = 0.0
+var fatigue_amplification_samples: int = 0
+var minimum_stamina_reached: float = 100.0
+var maximum_fatigue_reached: float = 0.0
+var exhaustion_low_stamina_announced: bool = false
+var exhaustion_high_fatigue_announced: bool = false
+var exhaustion_spent_announced: bool = false
+var exhaustion_heroic_success_announced: bool = false
+var exhaustion_last_control_loss_log_time: int = -100000
+var recovery_delay_protected: bool = false
 var target_focus_body_part: int = MoveResource.MoveTargetParts.NONE
 var target_focus_reason: String = "Auto"
 var target_focus_age: int = 0
@@ -140,6 +188,9 @@ var target_focus_usage_counts: Dictionary = {}
 var body_part_thresholds_crossed: Dictionary = {}
 var repeated_target_milestones: Dictionary = {}
 var last_submission_target: int = MoveResource.MoveTargetParts.NONE
+var last_submission_target_hp_at_lock_in: float = -1.0
+var last_submission_target_hp_at_resolution: float = -1.0
+var submission_commentary_states_seen: Dictionary = {}
 var last_finisher_target: int = MoveResource.MoveTargetParts.NONE
 var last_body_commentary_time: int = -100000
 var pending_body_commentary: Dictionary = {}
@@ -162,7 +213,9 @@ func initialize(value: WrestlerResource) -> void:
 	right_arm_hp = 100.0
 	left_leg_hp = 100.0
 	right_leg_hp = 100.0
-	stamina = 100.0
+	var stamina_rating := clampf(value.stamina, 0.0, 100.0) if value != null else 100.0
+	max_stamina = ceilf(stamina_rating * STAMINA_POOL_MULTIPLIER)
+	stamina = max_stamina
 	fatigue = 0.0
 	momentum = 0.0
 	signature_ready = false
@@ -173,6 +226,10 @@ func initialize(value: WrestlerResource) -> void:
 	finisher_stock_spent = 0
 	held_weapon = null
 	held_weapon_uses_remaining = 0
+	held_weapon_instance_id = 0
+	bleeding_severity = BleedingSeverity.NONE
+	bleeding_inflicted = 0
+	bleeding_escalations_taken = 0
 	outside_seconds = 0
 	late_count_returns = 0
 	weapons_retrieved = 0
@@ -186,6 +243,21 @@ func initialize(value: WrestlerResource) -> void:
 	disqualifications_caused = 0
 	weapon_types_used.clear()
 	weapons_broken = 0
+	weapons_dropped = 0
+	tables_set = 0
+	tables_stacked = 0
+	tables_broken = 0
+	table_spots_landed = 0
+	table_spots_taken = 0
+	ladder_setups = 0
+	ladder_climb_stages = 0
+	ladder_climbs_interrupted = 0
+	ladder_dives = 0
+	ladder_crashes = 0
+	thumbtack_patches_spread = 0
+	thumbtack_spots_landed = 0
+	thumbtack_spots_taken = 0
+	environmental_reversals = 0
 	last_action_result = 0
 	recent_moves_used.clear()
 	recent_move_types.clear()
@@ -225,6 +297,9 @@ func initialize(value: WrestlerResource) -> void:
 	contested_setup_wins = 0
 	contested_setup_losses = 0
 	contested_setup_draws = 0
+	contested_setup_defensive_interruptions = 0
+	tactical_setup_actions = 0
+	recovery_setup_actions = 0
 	taunts_attempted = 0
 	taunts_succeeded = 0
 	taunts_interrupted = 0
@@ -271,8 +346,30 @@ func initialize(value: WrestlerResource) -> void:
 	setup_loop_penalties = 0
 	dead_end_setups_prevented = 0
 	forced_fallback_actions = 0
+	mandatory_recovery_actions = 0
 	late_escalation_total = 0.0
 	late_escalation_samples = 0
+	catch_breath_cooldown_until_seconds = 0
+	catch_breath_uses = 0
+	actions_attempted_at_zero_stamina = 0
+	successful_actions_at_zero_stamina = 0
+	exhausted_high_risk_attempts = 0
+	exhausted_demanding_weapon_attempts = 0
+	exhaustion_control_losses = 0
+	exhaustion_delayed_recoveries = 0
+	total_stamina_recovered = 0.0
+	stamina_execution_penalty_total = 0.0
+	stamina_execution_penalty_samples = 0
+	fatigue_amplification_total = 0.0
+	fatigue_amplification_samples = 0
+	minimum_stamina_reached = max_stamina
+	maximum_fatigue_reached = 0.0
+	exhaustion_low_stamina_announced = false
+	exhaustion_high_fatigue_announced = false
+	exhaustion_spent_announced = false
+	exhaustion_heroic_success_announced = false
+	exhaustion_last_control_loss_log_time = -100000
+	recovery_delay_protected = false
 	target_focus_body_part = MoveResource.MoveTargetParts.NONE
 	target_focus_reason = "Auto"
 	target_focus_age = 0
@@ -284,6 +381,9 @@ func initialize(value: WrestlerResource) -> void:
 	body_part_thresholds_crossed.clear()
 	repeated_target_milestones.clear()
 	last_submission_target = MoveResource.MoveTargetParts.NONE
+	last_submission_target_hp_at_lock_in = -1.0
+	last_submission_target_hp_at_resolution = -1.0
+	submission_commentary_states_seen.clear()
 	last_finisher_target = MoveResource.MoveTargetParts.NONE
 	last_body_commentary_time = -100000
 	pending_body_commentary.clear()
@@ -491,8 +591,23 @@ func get_body_damage_summary() -> Dictionary:
 		"parts_reaching_zero": _parts_reaching_zero(),
 		"target_attack_counts": target_attack_counts.duplicate(true),
 		"last_submission_target": last_submission_target,
+		"last_submission_target_hp_at_lock_in": last_submission_target_hp_at_lock_in,
+		"last_submission_target_hp_at_resolution": last_submission_target_hp_at_resolution,
 		"last_finisher_target": last_finisher_target,
 	}
+
+
+func begin_submission_tracking(target_hp: float) -> void:
+	submission_commentary_states_seen.clear()
+	last_submission_target_hp_at_lock_in = clampf(target_hp, 0.0, 100.0)
+	last_submission_target_hp_at_resolution = -1.0
+
+
+func note_submission_commentary_state(state: StringName) -> bool:
+	if submission_commentary_states_seen.has(state):
+		return false
+	submission_commentary_states_seen[state] = true
+	return true
 
 
 func _highest_dictionary_part(values: Dictionary) -> int:
@@ -524,17 +639,31 @@ func _parts_reaching_zero() -> Array[int]:
 
 
 func spend_stamina(amount: float) -> void:
-	stamina = clampf(stamina - maxf(0.0, amount), 0.0, 100.0)
+	stamina = clampf(stamina - maxf(0.0, amount), 0.0, max_stamina)
+	minimum_stamina_reached = minf(minimum_stamina_reached, stamina)
 
 
 func recover_stamina(amount: float) -> float:
 	var before := stamina
-	stamina = clampf(stamina + maxf(0.0, amount), 0.0, 100.0)
-	return stamina - before
+	stamina = clampf(stamina + maxf(0.0, amount), 0.0, max_stamina)
+	var recovered := stamina - before
+	total_stamina_recovered += recovered
+	return recovered
+
+
+func stamina_ratio() -> float:
+	if max_stamina <= 0.0:
+		return 0.0
+	return clampf(stamina / max_stamina, 0.0, 1.0)
+
+
+func stamina_percent() -> float:
+	return stamina_ratio() * 100.0
 
 
 func add_fatigue(amount: float) -> void:
 	fatigue = clampf(fatigue + amount, 0.0, 100.0)
+	maximum_fatigue_reached = maxf(maximum_fatigue_reached, fatigue)
 	sync_to_resource()
 
 
@@ -587,11 +716,19 @@ func convert_landed_signature() -> bool:
 	signature_ready = false
 	momentum = 0.0
 	signatures_landed += 1
-	if finisher_stock < MAX_FINISHER_STOCK:
-		finisher_stock += 1
-		finisher_stock_earned += 1
+	grant_finisher_stock()
 	sync_to_resource()
 	return true
+
+
+func grant_finisher_stock(amount: int = 1) -> int:
+	var previous_stock := finisher_stock
+	finisher_stock = mini(MAX_FINISHER_STOCK, finisher_stock + maxi(0, amount))
+	var granted := finisher_stock - previous_stock
+	finisher_stock_earned += granted
+	if granted > 0:
+		sync_to_resource()
+	return granted
 
 
 func spend_finisher() -> bool:
@@ -708,6 +845,21 @@ func average_late_escalation() -> float:
 	return late_escalation_total / float(maxi(1, late_escalation_samples))
 
 
+func average_stamina_execution_penalty() -> float:
+	return stamina_execution_penalty_total / float(maxi(1, stamina_execution_penalty_samples))
+
+
+func average_fatigue_amplification() -> float:
+	return fatigue_amplification_total / float(maxi(1, fatigue_amplification_samples))
+
+
+func note_exhaustion_profile(profile: Dictionary) -> void:
+	stamina_execution_penalty_total += float(profile.get("execution_penalty", 0.0))
+	stamina_execution_penalty_samples += 1
+	fatigue_amplification_total += float(profile.get("fatigue_amplification", 1.0))
+	fatigue_amplification_samples += 1
+
+
 func note_neutral_reset() -> void:
 	neutral_resets += 1
 	consecutive_neutral_resets += 1
@@ -772,6 +924,47 @@ func total_hp() -> float:
 	return head_hp + body_hp + left_arm_hp + right_arm_hp + left_leg_hp + right_leg_hp
 
 
+func bleeding_fatigue_per_action() -> float:
+	match bleeding_severity:
+		BleedingSeverity.MINOR:
+			return 0.25
+		BleedingSeverity.MODERATE:
+			return 0.50
+		BleedingSeverity.HEAVY:
+			return 1.0
+	return 0.0
+
+
+func bleeding_resistance_penalty() -> float:
+	match bleeding_severity:
+		BleedingSeverity.MINOR:
+			return 1.0
+		BleedingSeverity.MODERATE:
+			return 3.0
+		BleedingSeverity.HEAVY:
+			return 6.0
+	return 0.0
+
+
+func advance_bleeding() -> bool:
+	if bleeding_severity >= BleedingSeverity.HEAVY:
+		return false
+	bleeding_severity += 1
+	bleeding_escalations_taken += 1
+	return true
+
+
+func bleeding_label() -> String:
+	match bleeding_severity:
+		BleedingSeverity.MINOR:
+			return "Minor"
+		BleedingSeverity.MODERATE:
+			return "Moderate"
+		BleedingSeverity.HEAVY:
+			return "Heavy"
+	return "None"
+
+
 func snapshot() -> Dictionary:
 	return {
 		"position": current_position,
@@ -785,6 +978,8 @@ func snapshot() -> Dictionary:
 		"left_leg_hp": left_leg_hp,
 		"right_leg_hp": right_leg_hp,
 		"stamina": stamina,
+		"max_stamina": max_stamina,
+		"stamina_percent": stamina_percent(),
 		"fatigue": fatigue,
 		"momentum": momentum,
 		"signature_ready": signature_ready,
@@ -793,6 +988,9 @@ func snapshot() -> Dictionary:
 		"held_weapon_name": held_weapon.display_name if held_weapon != null else "",
 		"held_weapon_id": String(held_weapon.weapon_id) if held_weapon != null else "",
 		"held_weapon_uses_remaining": held_weapon_uses_remaining if held_weapon != null else 0,
+		"held_weapon_instance_id": held_weapon_instance_id,
+		"bleeding_severity": bleeding_severity,
+		"bleeding_label": bleeding_label(),
 	}
 
 

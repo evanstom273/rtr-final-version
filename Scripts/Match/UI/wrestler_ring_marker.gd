@@ -33,7 +33,13 @@ func apply_snapshot(value: Dictionary) -> void:
 	_side_badge.text = "P1" if bool(snapshot.get("is_player", false)) else str(snapshot.get("side_label", "AI"))
 	_control_badge.visible = bool(snapshot.get("has_control", false))
 	var weapon_name := str(snapshot.get("held_weapon_name", "")).strip_edges()
-	_state_badge.text = "%s • CHAIR" % _state_abbreviation() if not weapon_name.is_empty() else _state_abbreviation()
+	var badges: Array[String] = [_state_abbreviation()]
+	if not weapon_name.is_empty():
+		badges.append(_weapon_abbreviation(weapon_name))
+	var bleeding := str(snapshot.get("bleeding_label", "None"))
+	if bleeding != "None":
+		badges.append("BLEED %s" % bleeding.left(3).to_upper())
+	_state_badge.text = " / ".join(badges)
 	_debug_label.visible = bool(snapshot.get("debug_visible", false))
 	_debug_label.text = str(snapshot.get("debug_text", ""))
 	_facing_vector = snapshot.get("facing_vector", _facing_vector) as Vector2
@@ -106,6 +112,12 @@ func _draw() -> void:
 			draw_circle(centre, 17.0, fill)
 			draw_arc(centre, 20.0, -PI, 0.0, 18, Color(0.95, 0.78, 0.22, 1.0), 3.0, true)
 			draw_line(centre + Vector2(-18, 19), centre + Vector2(18, 19), accent, 3.0)
+		WrestlerResource.Position.CLIMBING:
+			var climbing_shape := PackedVector2Array([centre + Vector2(0, -20), centre + Vector2(17, 16), centre + Vector2(-17, 16)])
+			draw_colored_polygon(climbing_shape, fill)
+			draw_polyline(PackedVector2Array([climbing_shape[0], climbing_shape[1], climbing_shape[2], climbing_shape[0]]), accent, 2.5, true)
+			for y in [-10.0, 0.0, 10.0]:
+				draw_line(centre + Vector2(-8, y), centre + Vector2(8, y), Color(0.95, 0.78, 0.22), 2.0, true)
 		_:
 			if bool(snapshot.get("is_player", false)):
 				draw_circle(centre, 18.0, fill)
@@ -116,6 +128,8 @@ func _draw() -> void:
 				draw_polyline(PackedVector2Array([points[0], points[1], points[2], points[3], points[0]]), accent, 2.5, true)
 	_draw_orientation(centre, accent)
 	_draw_motion(centre, accent)
+	if int(snapshot.get("bleeding_severity", 0)) > 0:
+		draw_colored_polygon(PackedVector2Array([centre + Vector2(25, -18), centre + Vector2(20, -7), centre + Vector2(30, -7)]), Color(0.86, 0.16, 0.18, 0.92))
 
 
 func _draw_orientation(centre: Vector2, accent: Color) -> void:
@@ -173,7 +187,19 @@ func _state_abbreviation() -> String:
 			return "KNEEL"
 		WrestlerResource.Position.PERCHED:
 			return "TOP"
+		WrestlerResource.Position.CLIMBING:
+			return "CLIMB"
 	return "UP"
+
+
+func _weapon_abbreviation(value: String) -> String:
+	var words := value.to_upper().split(" ", false)
+	if words.size() == 1:
+		return str(words[0]).left(6)
+	var result := ""
+	for word in words:
+		result += str(word).left(1)
+	return result.left(5)
 
 
 func _accessible_description() -> String:

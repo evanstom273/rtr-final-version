@@ -126,6 +126,7 @@ static func build_execution_profile(
 	state: MatchSideState,
 	move: MoveResource,
 	interaction_type: int,
+	environmental_followup: bool = false,
 ) -> Dictionary:
 	var base_window := 22.0
 	var time_limit := 1.6
@@ -166,28 +167,49 @@ static func build_execution_profile(
 				base_window = 16.0
 				marker_speed = 1.7
 				time_limit = 1.4
-	var modifiers := _difficulty_modifiers(state, move, control_meter)
-	var window := base_window + float(modifiers.window)
+	var modifiers := _difficulty_modifiers(state, move, control_meter, environmental_followup)
+	var authored_window := (base_window + float(modifiers.window)) * float(modifiers.execution_multiplier)
 	var speed_multiplier := float(modifiers.speed)
 	if control_meter:
-		window = clampf(window, 6.0, 30.0)
+		authored_window = clampf(authored_window, 6.0, 30.0)
 		marker_speed *= speed_multiplier
 	else:
-		window = clampf(window, 3.0, 30.0)
+		authored_window = clampf(authored_window, 3.0, 30.0)
 		speed_multiplier *= 1.20
 		if high_risk:
 			speed_multiplier *= 1.20
 		if finisher:
 			speed_multiplier *= 1.20
+		marker_speed *= speed_multiplier
+	# Every offensive move now uses the same horizontal, one-shot execution
+	# meter. The calculated chance remains the AI roll probability; the player's
+	# timing target deliberately presents a quarter-scale skill window.
+	var effective_chance := clampf(
+		execution_success_chance(state, move, interaction_type, environmental_followup),
+		6.0,
+		70.0,
+	)
 	return {
 		"interaction_type": interaction_type,
-		"success_window": window,
-		"gold_zone_scale": 1.0 / 7.0 if interaction_type == InteractionType.SUBMISSION_LOCK_IN else 0.25,
+		"success_window": effective_chance,
+		"authored_window": authored_window,
+		# Player execution is a timing-skill check. Keep its visible target compact;
+		# AI offence no longer rolls against this value.
+		"gold_zone_scale": 1.0 / 7.0,
+		"raw_zone_min": 6.0,
+		"raw_zone_max": 70.0,
+		"binary_only": true,
+		"one_way": true,
+		"minimum_target_travel": 0.24,
 		"time_limit": time_limit,
 		"marker_speed": marker_speed,
 		"speed_multiplier": speed_multiplier,
-		"ai_success_chance": execution_success_chance(state, move, interaction_type),
+		"ai_success_chance": effective_chance,
 		"low_stamina_penalty": bool(modifiers.low_stamina),
+		"exhaustion_band": int(modifiers.exhaustion_band),
+		"exhaustion_combined": float(modifiers.exhaustion_combined),
+		"execution_penalty": float(modifiers.execution_penalty),
+		"fatigue_amplification": float(modifiers.fatigue_amplification),
 	}
 
 
@@ -206,7 +228,11 @@ static func build_setup_execution_profile(state: MatchSideState, action_id: Stri
 	]:
 		base_window = 20.0
 	var modifiers := _difficulty_modifiers(state, null, true)
-	var window := clampf(base_window + float(modifiers.window), 6.0, 30.0)
+	var window := clampf(
+		(base_window + float(modifiers.window)) * float(modifiers.execution_multiplier),
+		6.0,
+		30.0,
+	)
 	return {
 		"interaction_type": InteractionType.HOLD_REPOSITION,
 		"success_window": window,
@@ -215,6 +241,10 @@ static func build_setup_execution_profile(state: MatchSideState, action_id: Stri
 		"marker_speed": marker_speed * float(modifiers.speed),
 		"ai_success_chance": setup_execution_success_chance(state),
 		"low_stamina_penalty": bool(modifiers.low_stamina),
+		"exhaustion_band": int(modifiers.exhaustion_band),
+		"exhaustion_combined": float(modifiers.exhaustion_combined),
+		"execution_penalty": float(modifiers.execution_penalty),
+		"fatigue_amplification": float(modifiers.fatigue_amplification),
 	}
 
 
@@ -261,18 +291,30 @@ static func build_reversal_profile(
 		time_limit = 1.8
 	return {
 		"interaction_type": InteractionType.HOLD_REPOSITION,
-		"success_window": clampf(visible_window, 4.25, 65.0),
+		# With the one-eighth visual scale, a raw minimum of 24 produces an exact
+		# three-percent rendered target instead of a near-hairline reversal zone.
+		"success_window": clampf(visible_window, 24.0, 65.0),
 		"gold_zone_scale": 1.0 / 8.0,
-		"raw_zone_min": 4.25,
+		"raw_zone_min": 24.0,
 		"raw_zone_max": 65.0,
 		"time_limit": time_limit,
 		"marker_speed": 1.25,
 		"ai_success_chance": chance,
 		"reversal_chance": chance,
-		# The visible rectangle is authoritative. These tiny logical-pixel margins
-		# only absorb edge rounding and touch imprecision.
-		"edge_forgiveness_pixels": 2.0,
-		"touch_edge_forgiveness_pixels": 4.0,
+		"reversal_exhaustion_penalty": MatchExhaustionModel.reversal_penalty(defender),
+		"attacker_execution_penalty": MatchExhaustionModel.execution_penalty(
+			attacker,
+			MatchExhaustionModel.move_demand(
+				move,
+				attacker != null and attacker.is_signature_move(move),
+				attacker != null and attacker.current_area == WrestlerResource.Area.LADDER,
+			),
+		),
+		# Reversal success uses the exact rendered gold rectangle on every device.
+		"edge_forgiveness": 0.0,
+		"edge_forgiveness_pixels": 0.0,
+		"touch_edge_forgiveness": 0.0,
+		"touch_edge_forgiveness_pixels": 0.0,
 		"binary_only": true,
 		"one_way": true,
 		"minimum_target_travel": 0.24,
@@ -285,6 +327,7 @@ static func build_pin_profile(
 	pressure: float,
 	resistance: float,
 	count: int = 0,
+	defender: MatchSideState = null,
 ) -> Dictionary:
 	var difference := resistance - pressure
 	# Calculate the normal pressure-sensitive window first, then shrink that
@@ -303,7 +346,19 @@ static func build_pin_profile(
 			divisor = 5.0
 		3:
 			divisor = 6.0
+	var exhaustion_penalty := MatchExhaustionModel.kickout_penalty(defender)
 	var window := maxf(0.75, calculated_window / divisor)
+	window = maxf(0.75, window * (1.0 - exhaustion_penalty / 100.0))
+	# The count divisors are a player-facing timing challenge. They must not also
+	# turn a fresh AI defender's survival roll into a single-digit chance. AI uses
+	# the unshrunk pressure/resistance result, with resistance deliberately given
+	# enough leverage for ordinary under-five-minute covers to remain rare.
+	var ai_calculated_window := clampf(base_window + difference * 0.55, 6.0, 80.0)
+	var ai_window := clampf(
+		ai_calculated_window * (1.0 - exhaustion_penalty / 100.0),
+		1.0,
+		80.0,
+	)
 	var time_multiplier := clampf(1.0 + difference / 500.0, 0.82, 1.20)
 	var count_speed := 1.30 if count == 3 else 1.20
 	var speed_multiplier := clampf(1.0 - difference / 400.0, 0.80, 1.25) * count_speed
@@ -322,11 +377,19 @@ static func build_pin_profile(
 		"minimum_target_travel": 0.24,
 		"time_limit": base_time * 1.20 * time_multiplier,
 		"marker_speed": speed_multiplier,
-		"ai_success_chance": window,
+		"ai_success_chance": ai_window,
+		"calculated_window": calculated_window,
+		"ai_calculated_window": ai_calculated_window,
+		"exhaustion_penalty": exhaustion_penalty,
 	}
 
 
-static func execution_success_chance(state: MatchSideState, move: MoveResource, interaction_type: int) -> float:
+static func execution_success_chance(
+	state: MatchSideState,
+	move: MoveResource,
+	interaction_type: int,
+	environmental_followup: bool = false,
+) -> float:
 	if state == null or state.wrestler == null:
 		return 50.0
 	var relevant := _relevant_attribute(state, interaction_type)
@@ -339,9 +402,7 @@ static func execution_success_chance(state: MatchSideState, move: MoveResource, 
 	var chance := (
 		(70.0 if control_meter else 72.0)
 		+ (relevant - 70.0) * 0.35
-		+ (state.stamina - 50.0) * 0.15
 		+ (state.momentum - 50.0) * 0.12
-		- state.fatigue * 0.22
 		- float(maxi(0, impact - 5)) * 1.5
 	)
 	if move != null and move.is_finisher:
@@ -349,7 +410,13 @@ static func execution_success_chance(state: MatchSideState, move: MoveResource, 
 	if move != null and _is_high_risk(move):
 		chance -= 6.0
 	chance += _compatibility_bonus(state.wrestler, move)
-	chance += _condition_chance_penalty(state, move)
+	var demand := MatchExhaustionModel.effective_move_demand(
+		move,
+		state.is_signature_move(move),
+		state.current_area == WrestlerResource.Area.LADDER,
+		environmental_followup,
+	)
+	chance *= MatchExhaustionModel.execution_multiplier(state, demand)
 	return clampf(chance, 18.0, 92.0)
 
 
@@ -357,16 +424,13 @@ static func setup_execution_success_chance(state: MatchSideState) -> float:
 	if state == null or state.wrestler == null:
 		return 50.0
 	var relevant := _setup_attribute(state)
-	return clampf(
+	var chance := (
 		70.0
 		+ (relevant - 70.0) * 0.35
-		+ (state.stamina - 50.0) * 0.15
 		+ (state.momentum - 50.0) * 0.12
-		- state.fatigue * 0.22
-		+ _condition_chance_penalty(state, null),
-		18.0,
-		92.0,
 	)
+	chance *= MatchExhaustionModel.execution_multiplier(state, MatchExhaustionModel.Demand.BASIC)
+	return clampf(chance, 18.0, 92.0)
 
 
 static func response_success_chance(
@@ -396,23 +460,6 @@ static func reversal_success_chance(
 		else _base_reversal_chance(move, setup_action)
 	)
 
-	# Defender condition: only the strongest tier in each group applies.
-	if defender.stamina >= 80.0:
-		chance += 8.0
-	elif defender.stamina >= 50.0:
-		chance += 3.0
-	elif defender.stamina >= 25.0:
-		chance -= 5.0
-	elif defender.stamina > 0.0:
-		chance -= 12.0
-	else:
-		chance -= 18.0
-	if defender.fatigue <= 30.0:
-		chance += 5.0
-	elif defender.fatigue >= 80.0:
-		chance -= 15.0
-	elif defender.fatigue >= 60.0:
-		chance -= 8.0
 	if defender.momentum >= 70.0:
 		chance += 10.0
 	elif defender.momentum >= 40.0:
@@ -426,12 +473,8 @@ static func reversal_success_chance(
 		chance -= 4.0
 	elif attacker.momentum < 20.0:
 		chance += 4.0
-	if attacker.stamina <= 0.0:
-		chance += 15.0
-	elif attacker.stamina < 30.0:
-		chance += 8.0
-	if attacker.fatigue > 70.0:
-		chance += 8.0
+	# Attacker execution now resolves separately. Do not fold its exhaustion
+	# penalty into the defender's reversal chance as well.
 
 	if move != null:
 		if move.move_impact <= 3:
@@ -442,8 +485,6 @@ static func reversal_success_chance(
 			chance -= 4.0
 		if move.is_finisher:
 			chance -= 10.0
-			if attacker.stamina <= 0.0:
-				chance += 6.0
 		if _is_high_risk(move):
 			chance += 10.0
 		if attacker.last_attempted_move_matches(move):
@@ -485,7 +526,11 @@ static func reversal_success_chance(
 		or defender.current_motion_state == WrestlerResource.MotionState.ROPE_REBOUND
 	):
 		chance -= 3.0
-	chance -= float(build_late_match_profile(match_time_seconds).recovery_penalty)
+	# Late-match recovery strength belongs to neutral recovery and finish
+	# pressure, not reversal odds. Exhaustion still affects the defender through
+	# the shared reversal penalty below.
+	chance -= defender.bleeding_resistance_penalty()
+	chance *= 1.0 - MatchExhaustionModel.reversal_penalty(defender) / 100.0
 	return clampf(chance, 5.0, 65.0)
 
 
@@ -603,6 +648,9 @@ static func build_submission_context(
 	var body_resistance := 0.0
 	if target_hp >= 80.0:
 		body_resistance = 30.0
+		if not move.is_finisher:
+			body_resistance = 35.0
+			tap_out_threshold = minf(98.0, tap_out_threshold + 2.0)
 	elif target_hp >= 60.0:
 		body_resistance = 15.0
 	elif target_hp >= 40.0 and not move.is_finisher:
@@ -613,7 +661,6 @@ static func build_submission_context(
 		attacker_pressure_bonus += 30.0
 	elif target_hp < 40.0:
 		attacker_pressure_bonus += 15.0
-	var fresh_resistance := 25.0 if defender.stamina >= 80.0 and defender.fatigue <= 20.0 else 0.0
 	var story_part := int(target_resolution.get("story_part", MoveResource.MoveTargetParts.BODY))
 	var targeted_attacks := int(attacker.target_attack_counts.get(story_part, 0))
 	if targeted_attacks >= 5:
@@ -624,25 +671,17 @@ static func build_submission_context(
 		attacker_pressure_bonus += 4.0
 	if attacker.momentum >= 65.0:
 		attacker_pressure_bonus += 4.0
-	if defender.fatigue >= 55.0 or defender.stamina <= 45.0:
-		attacker_pressure_bonus += 4.0
-	var super_fresh_resistance := 0.0
-	if match_time_seconds < 300 and defender.stamina >= 90.0 and defender.fatigue <= 10.0:
-		super_fresh_resistance = 15.0
-		tap_out_threshold = 98.0
 	if move.is_finisher:
 		time_resistance *= 0.5
-		fresh_resistance *= 0.5
-		super_fresh_resistance *= 0.5
 		tap_out_threshold = minf(tap_out_threshold, 92.0)
 	if squash_context:
 		time_resistance = 0.0
-		super_fresh_resistance = 0.0
-	var resistance_bonus := time_resistance + body_resistance + fresh_resistance + super_fresh_resistance
+	var resistance_bonus := time_resistance + body_resistance
 	var contextual_start_marker := submission_start_marker(attacker, defender, move, contested_lock, target_resolution)
 	contextual_start_marker += (attacker_pressure_bonus - resistance_bonus) * 0.18
 	var attacker_score := submission_pressure_score(attacker, defender, move, true, target_resolution) + attacker_pressure_bonus
-	var defender_score := submission_pressure_score(defender, defender, move, false, target_resolution) + resistance_bonus
+	var defender_score := submission_pressure_score(defender, defender, move, false, target_resolution) + resistance_bonus - defender.bleeding_resistance_penalty()
+	var escape_penalty := MatchExhaustionModel.submission_escape_penalty(defender)
 	return {
 		# Every struggle begins from a visibly neutral centre. Damage, condition,
 		# time, finishers, and contested lock-ins affect pressure and thresholds,
@@ -656,7 +695,9 @@ static func build_submission_context(
 		"target_hp": target_hp,
 		"pressure_bonus": attacker_pressure_bonus,
 		"resistance_bonus": resistance_bonus,
+		"healthy_target_resistance_bonus": 5.0 if target_hp >= 80.0 and not move.is_finisher else 0.0,
 		"squash_context": squash_context,
+		"submission_escape_penalty": escape_penalty,
 	}
 
 
@@ -681,10 +722,6 @@ static func submission_start_marker(
 		marker += 12.0
 	if move.is_finisher:
 		marker += 20.0
-	if defender.stamina < 30.0:
-		marker += 12.0
-	if defender.fatigue > 70.0:
-		marker += 12.0
 	if defender.momentum > 70.0:
 		marker -= 12.0
 	if attacker.momentum > 70.0:
@@ -707,72 +744,49 @@ static func submission_pressure_score(
 		target_resolution = MoveTargetResolver.resolve(move, MoveResource.MoveTargetParts.NONE, opponent)
 	var target_hp := MoveTargetResolver.target_hp(opponent, target_resolution)
 	if attacking:
-		return clampf(
+		var attacking_score := (
 			20.0
 			+ state.wrestler.skill * 0.35
 			+ state.momentum * 0.20
 			+ (100.0 - target_hp) * 0.25
 			+ float(move.move_impact) * 2.0
 			+ (15.0 if move.is_finisher else 0.0)
-			+ state.stamina * 0.10
-			- state.fatigue * 0.20,
-			5.0,
-			100.0,
 		)
-	return clampf(
+		var demand := MatchExhaustionModel.Demand.EXPLOSIVE if move.is_finisher else MatchExhaustionModel.Demand.STANDARD
+		attacking_score *= MatchExhaustionModel.execution_multiplier(state, demand)
+		return clampf(attacking_score, 5.0, 100.0)
+	var defender_score := (
 		20.0
 		+ state.wrestler.skill * 0.30
-		+ state.stamina * 0.25
 		+ state.momentum * 0.20
 		+ target_hp * 0.15
-		- state.fatigue * 0.25,
-		5.0,
-		100.0,
 	)
+	defender_score *= 1.0 - MatchExhaustionModel.submission_escape_penalty(state) / 100.0
+	return clampf(defender_score, 5.0, 100.0)
 
 
 static func _difficulty_modifiers(
 	state: MatchSideState,
 	move: MoveResource,
 	control_meter: bool,
+	environmental_followup: bool = false,
 ) -> Dictionary:
 	if state == null:
-		return {"window": 0.0, "speed": 1.0, "low_stamina": false}
+		return {
+			"window": 0.0,
+			"speed": 1.0,
+			"low_stamina": false,
+			"execution_multiplier": 1.0,
+			"execution_penalty": 0.0,
+			"fatigue_amplification": 1.0,
+			"exhaustion_combined": 0.0,
+			"exhaustion_band": MatchExhaustionModel.ExhaustionBand.FRESH,
+		}
 	var window := 0.0
 	var speed_add := 0.0
-	var low_stamina := state.stamina < 50.0
+	var low_stamina := state.stamina_percent() < 50.0
 	var high_risk := _is_high_risk(move)
 	var finisher := move != null and move.is_finisher
-	if state.stamina < 1.0:
-		window -= 30.0
-		speed_add += 0.25
-		if high_risk:
-			window -= 15.0
-		if finisher:
-			window -= 10.0
-	elif state.stamina < 25.0:
-		window -= 22.0
-		speed_add += 0.18
-		if high_risk:
-			window -= 10.0
-	elif state.stamina < 50.0:
-		window -= 12.0
-		speed_add += 0.10
-		if high_risk:
-			window -= 5.0
-	elif state.stamina < 75.0:
-		window -= 5.0
-		speed_add += 0.05
-	if state.fatigue >= 80.0:
-		window -= 20.0
-		speed_add += 0.18
-		if high_risk:
-			window -= 10.0
-	elif state.fatigue >= 60.0:
-		window -= 12.0
-		speed_add += 0.10
-	elif state.fatigue >= 40.0:
-		window -= 5.0
 	if state.momentum >= 90.0:
 		window += 10.0
 		speed_add -= 0.08
@@ -796,40 +810,34 @@ static func _difficulty_modifiers(
 	else:
 		var relevant := _setup_attribute(state)
 		window += clampf((relevant - 70.0) * 0.10, -5.0, 5.0)
-	return {"window": window, "speed": clampf(1.0 + speed_add, 0.65, 2.0), "low_stamina": low_stamina}
+	var demand := MatchExhaustionModel.effective_move_demand(
+		move,
+		state.is_signature_move(move),
+		state.current_area == WrestlerResource.Area.LADDER,
+		environmental_followup,
+	)
+	var execution_penalty := MatchExhaustionModel.execution_penalty(state, demand)
+	return {
+		"window": window,
+		"speed": clampf(1.0 + speed_add, 0.65, 2.0),
+		"low_stamina": low_stamina,
+		"execution_multiplier": 1.0 - execution_penalty / 100.0,
+		"execution_penalty": execution_penalty,
+		"fatigue_amplification": MatchExhaustionModel.fatigue_amplification(state),
+		"exhaustion_combined": MatchExhaustionModel.combined_exhaustion(state),
+		"exhaustion_band": MatchExhaustionModel.exhaustion_band(state),
+	}
 
 
 static func _condition_chance_penalty(state: MatchSideState, move: MoveResource) -> float:
 	if state == null:
 		return 0.0
-	var penalty := 0.0
-	var high_risk := _is_high_risk(move)
-	var finisher := move != null and move.is_finisher
-	if state.stamina < 1.0:
-		penalty -= 30.0
-		if high_risk:
-			penalty -= 15.0
-		if finisher:
-			penalty -= 10.0
-	elif state.stamina < 25.0:
-		penalty -= 22.0
-		if high_risk:
-			penalty -= 10.0
-	elif state.stamina < 50.0:
-		penalty -= 12.0
-		if high_risk:
-			penalty -= 5.0
-	elif state.stamina < 75.0:
-		penalty -= 5.0
-	if state.fatigue >= 80.0:
-		penalty -= 20.0
-		if high_risk:
-			penalty -= 10.0
-	elif state.fatigue >= 60.0:
-		penalty -= 12.0
-	elif state.fatigue >= 40.0:
-		penalty -= 5.0
-	return penalty
+	var demand := MatchExhaustionModel.move_demand(
+		move,
+		state.is_signature_move(move),
+		state.current_area == WrestlerResource.Area.LADDER,
+	)
+	return -MatchExhaustionModel.execution_penalty(state, demand)
 
 
 static func _compatibility_bonus(wrestler: WrestlerResource, move: MoveResource) -> float:
@@ -874,9 +882,7 @@ static func _condition_window_modifier(
 ) -> float:
 	return (
 		(relevant - 70.0) * 0.10
-		+ (state.stamina - 50.0) * 0.05
 		+ (state.momentum - 50.0) * 0.04
-		- state.fatigue * 0.05
 		- float(maxi(0, impact - 5)) * 0.70
 		+ (2.0 if compatible else 0.0)
 	)

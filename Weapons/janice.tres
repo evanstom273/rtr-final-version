@@ -1,0 +1,32 @@
+[gd_resource load_steps=5 format=3 type="Resource" script_class="WeaponResource"]
+
+[ext_resource type="Script" path="res://Scripts/Data/WeaponData.gd" id="1_weapon"]
+[ext_resource type="Script" path="res://Scripts/Data/WeaponAttackData.gd" id="2_attack"]
+
+[sub_resource type="Resource" id="WeaponAttack_standing"]
+script = ExtResource("2_attack")
+attack_id = &"janice_swing"
+display_name = "Janice Swing"
+
+[sub_resource type="Resource" id="WeaponAttack_grounded"]
+script = ExtResource("2_attack")
+attack_id = &"janice_press"
+display_name = "Janice Press"
+target_posture = 1
+is_strike = false
+interaction_override = 2
+stamina_modifier = 1.0
+
+[resource]
+resource_name = "Janice"
+script = ExtResource("1_weapon")
+weapon_id = &"janice"
+display_name = "Janice"
+description = "A brutal nail-covered board inspired by Abyss's infamous weapon."
+icon_id = &"janice"
+impact = 8
+stamina_cost = 10.0
+maximum_durability = 3
+bleed_rating = 80.0
+can_bleed_any_target = true
+attack_set = Array[ExtResource("2_attack")]([SubResource("WeaponAttack_standing"), SubResource("WeaponAttack_grounded")])

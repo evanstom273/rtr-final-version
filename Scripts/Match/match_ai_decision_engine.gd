@@ -21,6 +21,8 @@ var planned_followup_move_key: String = ""
 var setup_cooldown_turns: int = 0
 var recent_setup_actions: Array[StringName] = []
 var target_focus_unavailable_turns: int = 0
+var last_decision_diagnostics: Dictionary = {}
+var _decision_rejections: Array[Dictionary] = []
 
 var total_turns: int = 0
 var move_actions_chosen: int = 0
@@ -55,6 +57,8 @@ func reset() -> void:
 	setup_cooldown_turns = 0
 	recent_setup_actions.clear()
 	target_focus_unavailable_turns = 0
+	last_decision_diagnostics.clear()
+	_decision_rejections.clear()
 	total_turns = 0
 	move_actions_chosen = 0
 	setup_actions_chosen = 0
@@ -93,6 +97,7 @@ func choose_action(
 	match_time_seconds: int,
 ) -> Dictionary:
 	total_turns += 1
+	_decision_rejections.clear()
 	if setup_cooldown_turns > 0:
 		setup_cooldown_turns -= 1
 	if valid_moves.is_empty():
@@ -121,6 +126,11 @@ func choose_action(
 		ai_state.ai_taunts_rejected_cooldown += 1
 		_debug_setup_rejection(MatchSetupStateRules.TAUNT, "shared two-minute cooldown")
 	for action_id in valid_setups:
+		# Once a setup has produced legal offence, use that offence instead of
+		# immediately undoing the state through climb-down/return/reset recovery.
+		# Recovery remains available whenever the position has no legal move.
+		if not valid_moves.is_empty() and MatchSetupStateRules.is_recovery(action_id):
+			continue
 		if action_id == MatchSetupStateRules.TAUNT and _reject_ai_taunt(
 			ai_state,
 			target_state,
@@ -145,6 +155,12 @@ func choose_action(
 	if candidates.is_empty():
 		fallback_actions += 1
 		_abandon_setup_intent(ai_state)
+		last_decision_diagnostics = {
+			"turn": total_turns,
+			"selected": {},
+			"top_candidates": [],
+			"rejections": _decision_rejections.duplicate(true),
+		}
 		return {}
 	var matching_intent_moves := _matching_intent_moves(valid_moves)
 	if not last_setup_intent.is_empty() and matching_intent_moves.is_empty():
@@ -153,7 +169,22 @@ func choose_action(
 			ai_state.setup_actions_without_followup += 1
 			_abandon_setup_intent(ai_state)
 	var selected: Dictionary
-	if not planned_setup_actions.is_empty():
+	var ready_special_move := _best_ready_special_move_candidate(candidates, ai_state)
+	var ready_special_setup: Dictionary = {}
+	if ready_special_move.is_empty():
+		ready_special_setup = _best_ready_special_setup_candidate(candidates, ai_state)
+	if not ready_special_move.is_empty():
+		# A ready special is a state transition, not an ordinary weighted option.
+		# If it is legal now, commit to it before pins, recovery, or routine offence.
+		selected = ready_special_move
+		selected["special_priority"] = true
+	elif not ready_special_setup.is_empty():
+		# No special is legal in the current state, so begin the shortest authored
+		# setup route whose projected follow-up is the ready signature/finisher.
+		_clear_setup_intent()
+		selected = ready_special_setup
+		selected["special_priority"] = true
+	elif not planned_setup_actions.is_empty():
 		selected = _candidate_for_setup_action(candidates, planned_setup_actions[0])
 		if selected.is_empty():
 			_abandon_setup_intent(ai_state)
@@ -181,6 +212,12 @@ func choose_action(
 	if selected.is_empty():
 		fallback_actions += 1
 		return {}
+	if (
+		StringName(selected.get("kind", &"")) == KIND_SETUP
+		and StringName(selected.get("setup_action", &"")) != MatchSetupStateRules.CATCH_BREATH
+		and _selected_setup_had_loop_penalty(ai_state, StringName(selected.get("setup_action", &"")))
+	):
+		ai_state.setup_loop_penalties += 1
 	if StringName(selected.get("kind", &"")) == KIND_SETUP:
 		var selected_path: Array = selected.get("setup_path", [])
 		var selected_action := StringName(selected.get("setup_action", &""))
@@ -199,6 +236,12 @@ func choose_action(
 		else:
 			_abandon_setup_intent(ai_state)
 	_record_choice(selected, ai_state)
+	last_decision_diagnostics = {
+		"turn": total_turns,
+		"selected": _candidate_diagnostic(selected),
+		"top_candidates": _top_candidate_diagnostics(candidates),
+		"rejections": _decision_rejections.duplicate(true),
+	}
 	player_crash_opportunity = false
 	reversal_pin_opportunity = false
 	big_move_followup_opportunity = false
@@ -274,6 +317,114 @@ func note_forced_fallback(ai_state: MatchSideState) -> void:
 		_clear_setup_intent()
 
 
+func note_mandatory_recovery(ai_state: MatchSideState) -> void:
+	if ai_state != null:
+		ai_state.mandatory_recovery_actions += 1
+		ai_state.clear_setup_streak()
+	_abandon_setup_intent(ai_state)
+
+
+func has_credible_finish(
+	ai_state: MatchSideState,
+	target_state: MatchSideState,
+	valid_moves: Array[MoveResource],
+	can_pin: bool,
+	match_time_seconds: int,
+) -> bool:
+	if ai_state == null or target_state == null:
+		return false
+	# Readiness must prevent urgent Catch Breath and optional object branches from
+	# pre-empting the setup search for an earned signature or stocked finisher.
+	if ai_state.signature_ready or ai_state.finisher_stock > 0:
+		return true
+	for move in valid_moves:
+		if move == null:
+			continue
+		if move.is_finisher:
+			return true
+		if move.is_submission:
+			var resolution := MoveTargetResolver.resolve(move, target_focus_body_part, target_state)
+			var target_hp := MoveTargetResolver.target_hp(target_state, resolution)
+			if (
+				target_hp < 45.0
+				or target_state.stamina_percent() < 30.0
+				or target_state.fatigue >= 70.0
+				or match_time_seconds >= 900
+			):
+				return true
+	if not can_pin:
+		return false
+	return (
+		ai_state.last_move_was_finisher
+		or target_state.total_hp() <= 390.0
+		or target_state.stamina_percent() < 30.0
+		or target_state.fatigue >= 70.0
+		or match_time_seconds >= 900
+	)
+
+
+func has_ready_special_continuation(
+	ai_state: MatchSideState,
+	target_state: MatchSideState,
+	valid_moves: Array[MoveResource],
+	valid_setups: Array[StringName],
+	max_setup_steps: int = 2,
+) -> bool:
+	if ai_state == null or target_state == null:
+		return false
+	for move in valid_moves:
+		if _ready_special_rank(ai_state, move) > 0:
+			return true
+	if valid_setups.is_empty():
+		return false
+	for path_data in MatchSetupStateRules.find_followup_paths(
+		ai_state.all_assigned_moves(),
+		ai_state.snapshot(),
+		target_state.snapshot(),
+		max_setup_steps,
+	):
+		var move := path_data.get("move") as MoveResource
+		var path: Array = path_data.get("actions", [])
+		if (
+			move == null
+			or path.is_empty()
+			or not ai_state.can_use_move(move)
+			or _ready_special_rank(ai_state, move) <= 0
+		):
+			continue
+		if StringName(path[0]) in valid_setups:
+			return true
+	return false
+
+
+func has_reachable_offensive_setup(
+	ai_state: MatchSideState,
+	target_state: MatchSideState,
+	valid_setups: Array[StringName],
+	max_setup_steps: int = 2,
+) -> bool:
+	if ai_state == null or target_state == null or valid_setups.is_empty():
+		return false
+	for path_data in MatchSetupStateRules.find_followup_paths(
+		ai_state.all_assigned_moves(),
+		ai_state.snapshot(),
+		target_state.snapshot(),
+		max_setup_steps,
+	):
+		var move := path_data.get("move") as MoveResource
+		var path: Array = path_data.get("actions", [])
+		if move == null or path.is_empty() or not ai_state.can_use_move(move):
+			continue
+		var first_action := StringName(path[0])
+		if (
+			first_action in valid_setups
+			and not MatchSetupStateRules.is_recovery(first_action)
+			and first_action not in [MatchSetupStateRules.TAUNT, MatchSetupStateRules.CATCH_BREATH]
+		):
+			return true
+	return false
+
+
 func note_player_high_risk_crash() -> void:
 	player_crash_opportunity = true
 
@@ -327,36 +478,33 @@ func _score_move(
 		target_resolution,
 	)
 	score -= response_chance * 0.08
+	var exhaustion_profile := MatchExhaustionModel.profile(
+		ai_state,
+		move,
+		ai_state.is_signature_move(move),
+		ai_state.current_area == WrestlerResource.Area.LADDER,
+	)
+	var demand := int(exhaustion_profile.get("demand", MatchExhaustionModel.Demand.STANDARD))
+	var execution_profile := MatchInteractionModel.build_execution_profile(
+		ai_state,
+		move,
+		MatchInteractionModel.get_interaction_type_for_move(move),
+	)
+	var execution_chance := float(execution_profile.get("ai_success_chance", 50.0))
+	score += (execution_chance - 70.0) * 0.22
+	score -= float(exhaustion_profile.get("execution_penalty", 0.0)) * 0.65
+	score -= (float(exhaustion_profile.get("stamina_cost_multiplier", 1.0)) - 1.0) * 24.0
+	var exhaustion := float(exhaustion_profile.get("combined_exhaustion", 0.0))
+	if demand == MatchExhaustionModel.Demand.BASIC:
+		score += exhaustion * 12.0
+	elif demand == MatchExhaustionModel.Demand.EXPLOSIVE:
+		score -= exhaustion * 30.0
 	if move.move_impact >= 9:
 		score += 20.0
 	elif move.move_impact >= 7:
 		score += 14.0
 	elif move.move_impact >= 4:
 		score += 8.0
-
-	if ai_state.stamina < 30.0:
-		if move.move_impact >= 7 or high_risk:
-			score -= 18.0
-		else:
-			score += 8.0
-	elif ai_state.stamina < 60.0:
-		if move.move_impact >= 7 or high_risk:
-			score -= 8.0
-		else:
-			score += 4.0
-	if ai_state.stamina <= 0.0:
-		if high_risk:
-			score -= 25.0
-		elif move.move_impact <= 6:
-			score += 20.0
-
-	if ai_state.fatigue >= 70.0:
-		if high_risk:
-			score -= 18.0
-		if move.is_finisher:
-			score -= 8.0
-	elif ai_state.fatigue >= 40.0 and high_risk:
-		score -= 8.0
 
 	if target_resolution.is_empty():
 		target_resolution = MoveTargetResolver.resolve(move, target_focus_body_part, target_state)
@@ -384,10 +532,10 @@ func _score_move(
 			score += 10.0
 		if move.is_submission:
 			score += 8.0
-	if target_state.stamina < 20.0:
+	if target_state.stamina_percent() < 20.0:
 		if move.is_submission or move.is_finisher:
 			score += 18.0
-	elif target_state.stamina < 40.0 and (move.is_submission or move.is_finisher):
+	elif target_state.stamina_percent() < 40.0 and (move.is_submission or move.is_finisher):
 		score += 10.0
 
 	if ai_state.momentum >= 70.0:
@@ -461,7 +609,10 @@ func _score_move(
 		elif move.move_impact >= 6:
 			score += 10.0
 	var escalation := MatchInteractionModel.build_late_match_profile(match_time_seconds)
-	if move.is_finisher or move.is_submission or (ai_state.stamina <= 0.0 and move.move_impact <= 6):
+	if move.is_finisher or move.is_submission or (
+		MatchExhaustionModel.exhaustion_band(ai_state) == MatchExhaustionModel.ExhaustionBand.SPENT
+		and MatchExhaustionModel.move_demand(move) == MatchExhaustionModel.Demand.BASIC
+	):
 		score += float(escalation.get("ai_finish_bonus", 0.0))
 	return score
 
@@ -476,7 +627,7 @@ func _finisher_bonus(
 	var bonus := 70.0
 	if target_state.fatigue >= 60.0:
 		bonus += 20.0
-	if target_state.stamina < 40.0:
+	if target_state.stamina_percent() < 40.0:
 		bonus += 20.0
 	if target_state.body_hp < 50.0 or target_state.head_hp < 50.0:
 		bonus += 20.0
@@ -488,10 +639,6 @@ func _finisher_bonus(
 		target_resolution = MoveTargetResolver.resolve(move, target_focus_body_part, target_state)
 	if MoveTargetResolver.target_hp(target_state, target_resolution) < 70.0:
 		bonus += 20.0
-	if ai_state.stamina < 15.0:
-		bonus -= 25.0
-	if ai_state.fatigue > 80.0:
-		bonus -= 15.0
 	if ai_state.recent_move_count(move, 3) > 0:
 		bonus -= 20.0
 	return bonus
@@ -510,7 +657,7 @@ func _submission_bonus(
 	var bonus := 0.0
 	var has_context := (
 		target_hp < 70.0
-		or target_state.stamina < 40.0
+		or target_state.stamina_percent() < 40.0
 		or target_state.fatigue > 60.0
 		or ai_state.momentum > 50.0
 		or move.is_finisher
@@ -535,11 +682,11 @@ func _submission_bonus(
 		bonus += 45.0
 		if target_hp < 60.0:
 			bonus += 20.0
-		if target_state.stamina < 40.0:
+		if target_state.stamina_percent() < 40.0:
 			bonus += 20.0
 		if target_state.fatigue > 60.0:
 			bonus += 20.0
-	var fresh_target := target_state.stamina >= 80.0 and target_state.fatigue <= 20.0
+	var fresh_target := target_state.stamina_percent() >= 80.0 and target_state.fatigue <= 20.0
 	if fresh_target:
 		bonus -= 30.0 if not move.is_finisher else 12.0
 	if not move.is_finisher and target_hp > 25.0:
@@ -582,7 +729,7 @@ func _score_setup(
 		future_moves.append(planned_move)
 	var future_finishers := _count_finishers(future_moves)
 	var mandatory_recovery := _is_mandatory_recovery(action_id, valid_moves)
-	if future_moves.is_empty() and not mandatory_recovery:
+	if future_moves.is_empty() and not mandatory_recovery and action_id not in [MatchSetupStateRules.TAUNT, MatchSetupStateRules.CATCH_BREATH]:
 		score -= 70.0
 		ai_state.dead_end_setups_prevented += 1
 		_debug_setup_rejection(action_id, "no valid move after projected positions")
@@ -595,7 +742,7 @@ func _score_setup(
 				score += 20.0
 			if future_finishers > 0:
 				score += 20.0
-			if target_state.stamina < 40.0:
+			if target_state.stamina_percent() < 40.0:
 				score += 15.0
 			if target_state.fatigue > 60.0:
 				score += 15.0
@@ -613,8 +760,6 @@ func _score_setup(
 				score += 15.0
 			if _has_any_class(ai_state.wrestler, [WrestlerResource.WrestlerClass.POWERHOUSE, WrestlerResource.WrestlerClass.STRIKER]):
 				score += 10.0
-			if ai_state.stamina < 30.0:
-				score -= 10.0
 		MatchSetupStateRules.THROW_INTO_CORNER:
 			score += 45.0
 			if not future_moves.is_empty():
@@ -623,28 +768,18 @@ func _score_setup(
 				score += 20.0
 			if target_state.fatigue > 60.0:
 				score += 10.0
-			if ai_state.stamina < 30.0:
-				score -= 10.0
 		MatchSetupStateRules.START_RUNNING:
 			score += 35.0
 			if not future_moves.is_empty():
 				score += 25.0
 			if future_finishers > 0:
 				score += 15.0
-			if ai_state.stamina < 30.0:
-				score -= 15.0
-			if ai_state.fatigue > 70.0:
-				score -= 20.0
 		MatchSetupStateRules.CLIMB_TOP_ROPE:
 			score += 35.0
 			if not future_moves.is_empty():
 				score += 30.0
 			if future_finishers > 0:
 				score += 25.0
-			if ai_state.stamina < 30.0:
-				score -= 20.0
-			if ai_state.fatigue > 70.0:
-				score -= 25.0
 			if target_state.momentum > 70.0:
 				score -= 15.0
 		MatchSetupStateRules.PREPARE_SPRINGBOARD:
@@ -653,10 +788,6 @@ func _score_setup(
 				score += 30.0
 			if future_finishers > 0:
 				score += 20.0
-			if ai_state.stamina < 30.0:
-				score -= 20.0
-			if ai_state.fatigue > 70.0:
-				score -= 20.0
 		MatchSetupStateRules.WAKE_OPPONENT:
 			score += 50.0
 			if not future_moves.is_empty():
@@ -669,10 +800,8 @@ func _score_setup(
 			score += 20.0
 			if valid_moves.is_empty():
 				score += 60.0
-			if ai_state.stamina < 20.0:
+			if MatchExhaustionModel.combined_exhaustion(ai_state) >= 0.70:
 				score += 40.0
-			if ai_state.fatigue > 75.0:
-				score += 30.0
 			if not valid_moves.is_empty():
 				score -= 30.0
 		MatchSetupStateRules.STOP_RUNNING, MatchSetupStateRules.LEAVE_CORNER, MatchSetupStateRules.REGAIN_FOOTING:
@@ -690,11 +819,11 @@ func _score_setup(
 				score += 30.0
 			else:
 				score -= 20.0
-			if ai_state.stamina < 35.0:
+			if ai_state.stamina_percent() < 35.0:
 				score += 15.0
-			elif ai_state.stamina < 60.0:
+			elif ai_state.stamina_percent() < 60.0:
 				score += 8.0
-			elif ai_state.stamina > 80.0:
+			elif ai_state.stamina_percent() > 80.0:
 				score -= 10.0
 			if ai_state.momentum < 30.0:
 				score += 8.0
@@ -715,6 +844,19 @@ func _score_setup(
 					and _has_class(ai_state.wrestler, WrestlerResource.WrestlerClass.HIGH_FLYER)
 				):
 					score += 5.0
+		MatchSetupStateRules.CATCH_BREATH:
+			score -= 20.0
+			if ai_state.stamina_percent() < 20.0:
+				score += 65.0
+			elif ai_state.stamina_percent() < 40.0:
+				score += 42.0
+			else:
+				score += 12.0
+			score += (1.0 - MatchExhaustionModel.stamina_recovery_multiplier(ai_state)) * -10.0
+			if target_state.current_position == WrestlerResource.Position.GROUNDED:
+				score += 12.0
+			if future_finishers > 0 or _score_pin(ai_state, target_state, match_time_seconds, 0.0) >= 70.0:
+				score -= 90.0
 	var movement_setup := action_id in [
 		MatchSetupStateRules.START_RUNNING,
 		MatchSetupStateRules.CLIMB_TOP_ROPE,
@@ -726,32 +868,30 @@ func _score_setup(
 		MatchSetupStateRules.FIGHT_UP_RAMP,
 	]
 	var high_value_followup := _has_high_value_followup(future_moves, target_state)
-	if movement_setup and ai_state.stamina < 20.0:
-		var movement_penalty := -45.0
-		if ai_state.stamina <= 0.0:
+	var setup_exhaustion := MatchExhaustionModel.combined_exhaustion(ai_state)
+	if movement_setup and setup_exhaustion >= 0.70:
+		var movement_penalty := -45.0 * setup_exhaustion
+		if setup_exhaustion >= 0.90:
 			movement_penalty = -80.0
 		if high_value_followup:
 			movement_penalty *= 0.25
 		score += movement_penalty
 		_debug_setup_rejection(action_id, "movement while exhausted")
-	elif mandatory_recovery and ai_state.stamina < 20.0:
+	elif mandatory_recovery and setup_exhaustion >= 0.80:
 		score += 15.0
-	elif mandatory_recovery and ai_state.stamina < 30.0:
+	elif mandatory_recovery and setup_exhaustion >= 0.60:
 		score += 10.0
-	if ai_state.fatigue >= 70.0:
-		score += 8.0
+	if setup_exhaustion >= 0.70:
+		score += 8.0 if mandatory_recovery else 0.0
 	if ai_state.momentum < 20.0:
 		score += 8.0
-	if ai_state.consecutive_setup_actions >= 1:
+	if action_id != MatchSetupStateRules.CATCH_BREATH and ai_state.consecutive_setup_actions >= 1:
 		score -= 40.0
-		ai_state.setup_loop_penalties += 1
-	if action_id in recent_setup_actions:
+	if action_id != MatchSetupStateRules.CATCH_BREATH and action_id in recent_setup_actions:
 		score -= 60.0
-		ai_state.setup_loop_penalties += 1
-	if ai_state.consecutive_setup_actions >= 2 and not mandatory_recovery:
+	if action_id != MatchSetupStateRules.CATCH_BREATH and ai_state.consecutive_setup_actions >= 2 and not mandatory_recovery:
 		score -= 75.0
-		ai_state.setup_loop_penalties += 1
-	if setup_cooldown_turns > 0 and not mandatory_recovery:
+	if action_id != MatchSetupStateRules.CATCH_BREATH and setup_cooldown_turns > 0 and not mandatory_recovery:
 		score -= 100.0
 	var escalation := MatchInteractionModel.build_late_match_profile(match_time_seconds)
 	if movement_setup and not mandatory_recovery:
@@ -824,9 +964,9 @@ func _score_pin(
 		score += 25.0
 	elif target_state.fatigue >= 60.0:
 		score += 15.0
-	if target_state.stamina < 20.0:
+	if target_state.stamina_percent() < 20.0:
 		score += 25.0
-	elif target_state.stamina < 40.0:
+	elif target_state.stamina_percent() < 40.0:
 		score += 15.0
 	if match_time_seconds >= 900:
 		score += 20.0
@@ -852,7 +992,7 @@ func _score_pin(
 		score += 45.0
 	if big_move_followup_opportunity:
 		score += 25.0
-	if ai_state.stamina < 20.0 and (target_state.body_hp < 70.0 or target_state.head_hp < 70.0):
+	if MatchExhaustionModel.combined_exhaustion(ai_state) >= 0.70 and (target_state.body_hp < 70.0 or target_state.head_hp < 70.0):
 		score += 10.0
 	var escalation := MatchInteractionModel.build_late_match_profile(match_time_seconds)
 	score += float(escalation.get("ai_finish_bonus", 0.0))
@@ -897,7 +1037,7 @@ func _is_squash_finish(ai_state: MatchSideState, target_state: MatchSideState) -
 	var defender_worn_down := (
 		target_state.fatigue >= 55.0
 		or target_state.fatigue >= ai_state.fatigue + 20.0
-		or target_state.stamina <= 30.0
+		or target_state.stamina_percent() <= 30.0
 	)
 	return (
 		dominant_momentum
@@ -928,6 +1068,74 @@ func _best_move_candidate(candidates: Array[Dictionary]) -> Dictionary:
 	return best
 
 
+func _ready_special_rank(ai_state: MatchSideState, move: MoveResource) -> int:
+	if ai_state == null or move == null:
+		return 0
+	if ai_state.finisher_stock > 0 and ai_state.is_finisher_move(move):
+		return 2
+	if ai_state.signature_ready and ai_state.is_signature_move(move):
+		return 1
+	return 0
+
+
+func _best_ready_special_move_candidate(
+	candidates: Array[Dictionary],
+	ai_state: MatchSideState,
+) -> Dictionary:
+	var best: Dictionary = {}
+	var best_rank := 0
+	for candidate in candidates:
+		if StringName(candidate.get("kind", &"")) != KIND_MOVE:
+			continue
+		var move := candidate.get("move") as MoveResource
+		var rank := _ready_special_rank(ai_state, move)
+		if rank <= 0:
+			continue
+		if (
+			best.is_empty()
+			or rank > best_rank
+			or (
+				rank == best_rank
+				and float(candidate.get("score", -INF)) > float(best.get("score", -INF))
+			)
+		):
+			best = candidate
+			best_rank = rank
+	return best
+
+
+func _best_ready_special_setup_candidate(
+	candidates: Array[Dictionary],
+	ai_state: MatchSideState,
+) -> Dictionary:
+	var best: Dictionary = {}
+	var best_rank := 0
+	var best_steps := 999
+	for candidate in candidates:
+		if StringName(candidate.get("kind", &"")) != KIND_SETUP:
+			continue
+		var planned_move := candidate.get("planned_move") as MoveResource
+		var rank := _ready_special_rank(ai_state, planned_move)
+		if rank <= 0:
+			continue
+		var path: Array = candidate.get("setup_path", [])
+		var steps := path.size()
+		if (
+			best.is_empty()
+			or rank > best_rank
+			or (rank == best_rank and steps < best_steps)
+			or (
+				rank == best_rank
+				and steps == best_steps
+				and float(candidate.get("score", -INF)) > float(best.get("score", -INF))
+			)
+		):
+			best = candidate
+			best_rank = rank
+			best_steps = steps
+	return best
+
+
 func _best_recovery_candidate(candidates: Array[Dictionary]) -> Dictionary:
 	var priority := [
 		MatchSetupStateRules.STAND_UP,
@@ -938,6 +1146,10 @@ func _best_recovery_candidate(candidates: Array[Dictionary]) -> Dictionary:
 		MatchSetupStateRules.LEAVE_ROPES,
 		MatchSetupStateRules.RETURN_TO_RING,
 		MatchSetupStateRules.RETURN_FROM_RAMP,
+		MatchSetupStateRules.PULL_OPPONENT_FROM_CORNER,
+		MatchSetupStateRules.PULL_OPPONENT_FROM_ROPES,
+		MatchSetupStateRules.BRING_OPPONENT_INTO_RING,
+		MatchSetupStateRules.CATCH_OPPONENT_RUNNING,
 		MatchSetupStateRules.BRING_MATCH_BACK_TO_RING,
 		MatchSetupStateRules.CLIMB_DOWN,
 		MatchSetupStateRules.STOP_RUNNING,
@@ -1020,8 +1232,12 @@ func _record_choice(candidate: Dictionary, ai_state: MatchSideState) -> void:
 		KIND_SETUP:
 			setup_actions_chosen += 1
 			var action_id: StringName = candidate.get("setup_action", &"")
-			recent_setup_actions.append(action_id)
-			ai_state.note_setup_streak()
+			if action_id == MatchSetupStateRules.CATCH_BREATH:
+				recent_setup_actions.append(&"")
+				ai_state.clear_setup_streak()
+			else:
+				recent_setup_actions.append(action_id)
+				ai_state.note_setup_streak()
 		KIND_PIN:
 			pin_actions_chosen += 1
 			last_landed_finisher = false
@@ -1060,7 +1276,11 @@ func _best_setup_plan(
 		if not ai_state.can_use_move(move):
 			continue
 		var score := float(move.move_impact) * 10.0 - float(path.size() - 1) * 12.0
-		if move.is_finisher:
+		if ai_state.finisher_stock > 0 and ai_state.is_finisher_move(move):
+			score += 160.0
+		elif ai_state.signature_ready and ai_state.is_signature_move(move):
+			score += 140.0
+		elif move.is_finisher:
 			score += 35.0
 		if move.is_submission:
 			score += 8.0
@@ -1158,9 +1378,39 @@ func _abandon_setup_intent(ai_state: MatchSideState) -> void:
 	_clear_setup_intent()
 
 
+func _selected_setup_had_loop_penalty(ai_state: MatchSideState, action_id: StringName) -> bool:
+	if ai_state == null or action_id.is_empty() or action_id == MatchSetupStateRules.CATCH_BREATH:
+		return false
+	var mandatory := MatchSetupStateRules.is_recovery(action_id)
+	return (
+		ai_state.consecutive_setup_actions >= 1
+		or action_id in recent_setup_actions
+		or (ai_state.consecutive_setup_actions >= 2 and not mandatory)
+		or (setup_cooldown_turns > 0 and not mandatory)
+	)
+
+
+func _candidate_diagnostic(candidate: Dictionary) -> Dictionary:
+	var move := candidate.get("move") as MoveResource
+	return {
+		"kind": String(candidate.get("kind", &"")),
+		"score": float(candidate.get("score", 0.0)),
+		"move": move.move_name if move != null else "",
+		"setup_action": String(candidate.get("setup_action", &"")),
+	}
+
+
+func _top_candidate_diagnostics(candidates: Array[Dictionary]) -> Array[Dictionary]:
+	var ordered := candidates.duplicate(true)
+	ordered.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return float(a.get("score", 0.0)) > float(b.get("score", 0.0)))
+	var result: Array[Dictionary] = []
+	for index in range(mini(5, ordered.size())):
+		result.append(_candidate_diagnostic(ordered[index]))
+	return result
+
+
 func _debug_setup_rejection(action_id: StringName, reason: String) -> void:
-	if OS.is_debug_build():
-		print("AI setup rejected/penalized: %s (%s)" % [String(action_id), reason])
+	_decision_rejections.append({"setup_action": String(action_id), "reason": reason})
 
 
 func _moves_for_states(
@@ -1189,7 +1439,10 @@ func _moves_for_states(
 			int(target_state.get("area", WrestlerResource.Area.IN_RING)),
 		):
 			continue
-		if move.required_attacker_motion_state != int(attacker_state.get("motion_state", WrestlerResource.MotionState.STATIONARY)) or move.required_target_motion_state != int(target_state.get("motion_state", WrestlerResource.MotionState.STATIONARY)):
+		if (
+			not MatchSetupStateRules.motion_matches(move.required_attacker_motion_state, int(attacker_state.get("motion_state", WrestlerResource.MotionState.STATIONARY)))
+			or not MatchSetupStateRules.motion_matches(move.required_target_motion_state, int(target_state.get("motion_state", WrestlerResource.MotionState.STATIONARY)))
+		):
 			continue
 		if not ai_state.can_use_move(move):
 			continue

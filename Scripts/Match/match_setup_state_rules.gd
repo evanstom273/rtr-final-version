@@ -18,6 +18,7 @@ const CLIMB_DOWN := &"climb_down"
 const RETURN_TO_RING := &"return_to_ring"
 const RESET_STANCE := &"reset_stance"
 const TAUNT := &"taunt"
+const CATCH_BREATH := &"catch_breath"
 
 const STEP_TO_ROPES := &"step_to_ropes"
 const LEAVE_ROPES := &"leave_ropes"
@@ -45,18 +46,37 @@ const TAKE_FIGHT_OUTSIDE := &"take_fight_outside"
 const FIGHT_UP_RAMP := &"fight_up_ramp"
 const RETURN_FROM_RAMP := &"return_from_ramp"
 const BRING_MATCH_BACK_TO_RING := &"bring_match_back_to_ring"
+const PULL_OPPONENT_FROM_CORNER := &"pull_opponent_from_corner"
+const PULL_OPPONENT_FROM_ROPES := &"pull_opponent_from_ropes"
+const BRING_OPPONENT_INTO_RING := &"bring_opponent_into_ring"
+const CATCH_OPPONENT_RUNNING := &"catch_opponent_running"
 const CALL_OPPONENT_RUNNING := &"call_opponent_running"
 const REGAIN_COMPOSURE := &"regain_composure"
 const PRESS_ADVANTAGE := &"press_advantage"
 const WAIT_FOR_COUNT := &"wait_for_count"
 const RETRIEVE_STEEL_CHAIR := &"retrieve_steel_chair"
+const RETRIEVE_WEAPON := &"retrieve_weapon"
 const PICK_UP_WEAPON := &"pick_up_weapon"
 const DROP_WEAPON := &"drop_weapon"
 const CHAIR_SHOT := &"chair_shot"
+const SET_TABLE_FLAT := &"set_table_flat"
+const SET_TABLE_CORNER := &"set_table_corner"
+const STACK_TABLE := &"stack_table"
+const POSITION_AT_TABLE := &"position_at_table"
+const LAY_ON_TABLE := &"lay_on_table"
+const POSITION_AT_CORNER_TABLE := &"position_at_corner_table"
+const MOVE_CLEAR_TABLE := &"move_clear_table"
+const SET_UP_LADDER := &"set_up_ladder"
+const CLIMB_LADDER := &"climb_ladder"
+const CLIMB_LADDER_TOP := &"climb_ladder_top"
+const TIP_LADDER := &"tip_ladder"
+const CLIMB_DOWN_LADDER := &"climb_down_ladder"
+const SPREAD_THUMBTACKS := &"spread_thumbtacks"
+const POSITION_OVER_THUMBTACKS := &"position_over_thumbtacks"
+const MOVE_CLEAR_THUMBTACKS := &"move_clear_thumbtacks"
 
 const _TRANSIENT_MOTIONS := [
 	WrestlerResource.MotionState.RISING,
-	WrestlerResource.MotionState.STAGGERING,
 ]
 const _GROUNDED_POSTURES := [
 	WrestlerResource.Position.GROUNDED,
@@ -106,12 +126,12 @@ static func get_candidate_actions(attacker: Variant, target: Variant) -> Array[S
 	var actor_flat_ready := (
 		actor_position == WrestlerResource.Position.STANDING
 		and actor_orientation == WrestlerResource.Orientation.FRONT
-		and actor_motion == WrestlerResource.MotionState.STATIONARY
+		and motion_matches(WrestlerResource.MotionState.STATIONARY, actor_motion)
 		and MatchAreaRules.is_shared_flat_area(actor_area)
 	)
 	var same_flat_ready := (
 		actor_flat_ready
-		and target_motion == WrestlerResource.MotionState.STATIONARY
+		and motion_matches(WrestlerResource.MotionState.STATIONARY, target_motion)
 		and actor_area == target_area
 		and MatchAreaRules.is_shared_flat_area(target_area)
 	)
@@ -155,9 +175,26 @@ static func get_candidate_actions(attacker: Variant, target: Variant) -> Array[S
 		actions.append(SEND_OPPONENT_OUTSIDE)
 		actions.append(TAKE_FIGHT_OUTSIDE)
 	if actor_area == WrestlerResource.Area.IN_RING and target_area == WrestlerResource.Area.CORNER and actor_flat_ready:
+		actions.append(PULL_OPPONENT_FROM_CORNER)
 		if target_position == WrestlerResource.Position.STANDING:
 			actions.append(TURN_OPPONENT_IN_CORNER)
 			actions.append(SEAT_OPPONENT_IN_CORNER)
+	if actor_area == WrestlerResource.Area.IN_RING and target_area == WrestlerResource.Area.ROPES and actor_flat_ready:
+		actions.append(PULL_OPPONENT_FROM_ROPES)
+	if (
+		actor_area == WrestlerResource.Area.IN_RING
+		and target_area in [WrestlerResource.Area.APRON, WrestlerResource.Area.TOP_ROPE]
+		and actor_flat_ready
+	):
+		actions.append(BRING_OPPONENT_INTO_RING)
+	if (
+		actor_flat_ready
+		and actor_area == target_area
+		and MatchAreaRules.is_shared_flat_area(target_area)
+		and target_position == WrestlerResource.Position.STANDING
+		and target_motion in [WrestlerResource.MotionState.RUNNING, WrestlerResource.MotionState.ROPE_REBOUND]
+	):
+		actions.append(CATCH_OPPONENT_RUNNING)
 	if actor_area == WrestlerResource.Area.TOP_ROPE and target_position in _GROUNDED_POSTURES:
 		actions.append(WAKE_OPPONENT)
 	if (
@@ -180,10 +217,12 @@ static func get_candidate_actions(attacker: Variant, target: Variant) -> Array[S
 		actions.append(CALL_OPPONENT_OUTSIDE)
 	if actor_area == WrestlerResource.Area.RAMP and target_area == WrestlerResource.Area.RAMP:
 		actions.append(RETURN_FROM_RAMP)
-	if _needs_ring_recovery(actor_area, target_area):
+	if _needs_ring_recovery(actor_area, target_area) and BRING_OPPONENT_INTO_RING not in actions:
 		actions.append(BRING_MATCH_BACK_TO_RING)
 	if _taunt_is_positionally_valid(actor, defender):
 		actions.append(TAUNT)
+	if actor_flat_ready and actor_area in [WrestlerResource.Area.IN_RING, WrestlerResource.Area.OUTSIDE, WrestlerResource.Area.RAMP]:
+		actions.append(CATCH_BREATH)
 	return _unique_actions(actions)
 
 
@@ -275,12 +314,18 @@ static func project_action(action_id: StringName, attacker_snapshot: Dictionary,
 		RETURN_FROM_RAMP:
 			_set_neutral_flat(actor, WrestlerResource.Area.OUTSIDE)
 			_set_neutral_flat(target, WrestlerResource.Area.OUTSIDE)
+		PULL_OPPONENT_FROM_CORNER, PULL_OPPONENT_FROM_ROPES, BRING_OPPONENT_INTO_RING:
+			_set_neutral_flat(target, WrestlerResource.Area.IN_RING)
+		CATCH_OPPONENT_RUNNING:
+			target.motion_state = WrestlerResource.MotionState.STATIONARY
 		BRING_MATCH_BACK_TO_RING, RESET_STANCE, GRAPPLE_OPPONENT:
 			_set_neutral_flat(actor, WrestlerResource.Area.IN_RING)
 			_set_neutral_flat(target, WrestlerResource.Area.IN_RING)
 		CALL_OPPONENT_RUNNING:
 			_set_state(target, WrestlerResource.Position.STANDING, WrestlerResource.Orientation.FRONT, WrestlerResource.Area.IN_RING, WrestlerResource.MotionState.RUNNING)
 		TAUNT:
+			pass
+		CATCH_BREATH:
 			pass
 	return {
 		"valid": true,
@@ -348,8 +393,21 @@ static func move_matches_snapshots(move: MoveResource, attacker: Dictionary, tar
 		and _orientation_matches(move.required_attacker_orientation, int(attacker.get("orientation", WrestlerResource.Orientation.NONE)))
 		and _orientation_matches(move.required_target_orientation, int(target.get("orientation", WrestlerResource.Orientation.NONE)))
 		and MatchAreaRules.move_areas_match(move, int(attacker.get("area", WrestlerResource.Area.IN_RING)), int(target.get("area", WrestlerResource.Area.IN_RING)))
-		and move.required_attacker_motion_state == int(attacker.get("motion_state", WrestlerResource.MotionState.STATIONARY))
-		and move.required_target_motion_state == int(target.get("motion_state", WrestlerResource.MotionState.STATIONARY))
+		and motion_matches(move.required_attacker_motion_state, int(attacker.get("motion_state", WrestlerResource.MotionState.STATIONARY)))
+		and motion_matches(move.required_target_motion_state, int(target.get("motion_state", WrestlerResource.MotionState.STATIONARY)))
+	)
+
+
+static func motion_matches(required: int, actual: int) -> bool:
+	# STAGGERING is a descriptive vulnerability/presentation state, not a
+	# mechanical lockout. It satisfies ordinary stationary requirements while
+	# remaining available to moves that explicitly require STAGGERING.
+	return (
+		required == actual
+		or (
+			required == WrestlerResource.MotionState.STATIONARY
+			and actual == WrestlerResource.MotionState.STAGGERING
+		)
 	)
 
 
@@ -381,7 +439,18 @@ static func is_contested(action_id: StringName) -> bool:
 		FIGHT_UP_RAMP,
 		RETURN_FROM_RAMP,
 		BRING_MATCH_BACK_TO_RING,
+		PULL_OPPONENT_FROM_CORNER,
+		PULL_OPPONENT_FROM_ROPES,
+		BRING_OPPONENT_INTO_RING,
+		CATCH_OPPONENT_RUNNING,
 		CALL_OPPONENT_RUNNING,
+		POSITION_AT_TABLE,
+		LAY_ON_TABLE,
+		POSITION_AT_CORNER_TABLE,
+		CLIMB_LADDER,
+		CLIMB_LADDER_TOP,
+		TIP_LADDER,
+		POSITION_OVER_THUMBTACKS,
 		TAUNT,
 	]
 
@@ -399,6 +468,14 @@ static func is_recovery(action_id: StringName) -> bool:
 		LEAVE_ROPES,
 		RETURN_FROM_RAMP,
 		BRING_MATCH_BACK_TO_RING,
+		PULL_OPPONENT_FROM_CORNER,
+		PULL_OPPONENT_FROM_ROPES,
+		BRING_OPPONENT_INTO_RING,
+		CATCH_OPPONENT_RUNNING,
+		MOVE_CLEAR_TABLE,
+		MOVE_CLEAR_THUMBTACKS,
+		CLIMB_DOWN_LADDER,
+		TIP_LADDER,
 		RESET_STANCE,
 	]
 
@@ -447,12 +524,32 @@ static func action_details(action_id: StringName, attacker: Variant = {}) -> Dic
 		FIGHT_UP_RAMP: return {"title": "FIGHT UP THE RAMP", "description": "Move the outside fight onto the ramp."}
 		RETURN_FROM_RAMP: return {"title": "RETURN FROM RAMP", "description": "Bring both wrestlers back to ringside."}
 		BRING_MATCH_BACK_TO_RING: return {"title": "BRING MATCH BACK TO RING", "description": "Recover a stranded match state inside the ring."}
+		PULL_OPPONENT_FROM_CORNER: return {"title": "PULL OPPONENT FROM CORNER", "description": "Bring the opponent out of the corner and back to a usable in-ring stance."}
+		PULL_OPPONENT_FROM_ROPES: return {"title": "PULL OPPONENT FROM ROPES", "description": "Pull the opponent away from the ropes and back into the ring."}
+		BRING_OPPONENT_INTO_RING: return {"title": "BRING OPPONENT INTO RING", "description": "Bring an opponent down from the apron or top rope into a standing in-ring stance."}
+		CATCH_OPPONENT_RUNNING: return {"title": "CUT OFF OPPONENT", "description": "Intercept the opponent's run and force them back to a stationary stance."}
 		CALL_OPPONENT_RUNNING: return {"title": "CALL OPPONENT FORWARD", "description": "Draw the opponent into a run beneath the top rope."}
 		WAIT_FOR_COUNT: return {"title": "STAY INSIDE / LET REFEREE COUNT", "description": "Remain safely inside while the referee continues counting."}
 		RETRIEVE_STEEL_CHAIR: return {"title": "RETRIEVE STEEL CHAIR", "description": "Reach beneath the ring for a steel chair."}
-		PICK_UP_WEAPON: return {"title": "PICK UP STEEL CHAIR", "description": "Recover the steel chair from the current area."}
+		RETRIEVE_WEAPON: return {"title": "RETRIEVE WEAPON", "description": "Choose an available weapon from beneath the ring."}
+		PICK_UP_WEAPON: return {"title": "PICK UP WEAPON", "description": "Choose a dropped object from the current area."}
 		DROP_WEAPON: return {"title": "DROP WEAPON", "description": "Leave the held weapon in the current area so it can be recovered."}
 		CHAIR_SHOT: return {"title": "CHAIR SHOT", "description": "Swing the held steel chair at the opponent."}
+		SET_TABLE_FLAT: return {"title": "SET TABLE FLAT", "description": "Unfold the held table in the current area."}
+		SET_TABLE_CORNER: return {"title": "SET TABLE IN CORNER", "description": "Prop the held table against an in-ring corner."}
+		STACK_TABLE: return {"title": "STACK SECOND TABLE", "description": "Add the held table to a flat table in the current area."}
+		POSITION_AT_TABLE: return {"title": "POSITION OPPONENT AT TABLE", "description": "Set the standing opponent for an immediate table move."}
+		LAY_ON_TABLE: return {"title": "LAY OPPONENT ON TABLE", "description": "Place the grounded opponent across the table for an aerial attack."}
+		POSITION_AT_CORNER_TABLE: return {"title": "POSITION AT CORNER TABLE", "description": "Set the opponent against the table in the corner."}
+		MOVE_CLEAR_TABLE: return {"title": "MOVE CLEAR OF TABLE", "description": "Escape the armed table position without moving the table."}
+		SET_UP_LADDER: return {"title": "SET UP LADDER", "description": "Open the held ladder in the current area."}
+		CLIMB_LADDER: return {"title": "CLIMB LADDER", "description": "Begin the first reversible stage of the climb."}
+		CLIMB_LADDER_TOP: return {"title": "CLIMB TO THE TOP", "description": "Complete the reversible climb and prepare to dive."}
+		TIP_LADDER: return {"title": "TIP LADDER", "description": "Try to knock the climbing opponent from the ladder."}
+		CLIMB_DOWN_LADDER: return {"title": "CLIMB DOWN", "description": "Safely return from the ladder to the current area."}
+		SPREAD_THUMBTACKS: return {"title": "SPREAD THUMBTACKS", "description": "Empty the held bag into a persistent patch."}
+		POSITION_OVER_THUMBTACKS: return {"title": "POSITION OVER THUMBTACKS", "description": "Set the opponent for a grounding move onto the tacks."}
+		MOVE_CLEAR_THUMBTACKS: return {"title": "MOVE CLEAR OF THUMBTACKS", "description": "Escape the armed tack position without removing the patch."}
 		RESET_STANCE: return {"title": "RESET STANCE", "description": "Use the safe match fallback and return both wrestlers inside."}
 		TAUNT:
 			match int(actor.get("area", WrestlerResource.Area.IN_RING)):
@@ -460,6 +557,7 @@ static func action_details(action_id: StringName, attacker: Variant = {}) -> Dic
 				WrestlerResource.Area.APRON: return {"title": "APRON TAUNT", "description": "Play to the crowd from the apron."}
 				WrestlerResource.Area.OUTSIDE, WrestlerResource.Area.RAMP: return {"title": "RINGSIDE TAUNT", "description": "Play to the crowd outside while the count remains a threat."}
 			return {"title": "TAUNT / PLAY TO CROWD", "description": "Showboat for stamina and momentum."}
+		CATCH_BREATH: return {"title": "CATCH BREATH", "description": "Recover short-term stamina, then return the match to neutral."}
 	return {"title": "SETUP ACTION", "description": "Change the current match state."}
 
 
@@ -506,7 +604,7 @@ static func _taunt_is_positionally_valid(actor: Dictionary, target: Dictionary) 
 	return (
 		int(actor.position) in [WrestlerResource.Position.STANDING, WrestlerResource.Position.PERCHED]
 		and int(actor.area) in [WrestlerResource.Area.IN_RING, WrestlerResource.Area.APRON, WrestlerResource.Area.TOP_ROPE, WrestlerResource.Area.OUTSIDE, WrestlerResource.Area.RAMP]
-		and int(actor.motion_state) == WrestlerResource.MotionState.STATIONARY
+		and motion_matches(WrestlerResource.MotionState.STATIONARY, int(actor.motion_state))
 		and int(target.position) in [WrestlerResource.Position.STANDING, WrestlerResource.Position.GROUNDED, WrestlerResource.Position.SEATED, WrestlerResource.Position.KNEELING]
 	)
 
@@ -520,7 +618,7 @@ static func _needs_ring_recovery(actor_area: int, target_area: int) -> bool:
 
 
 static func _is_planning_action(action_id: StringName) -> bool:
-	return not is_recovery(action_id) and action_id != TAUNT
+	return not is_recovery(action_id) and action_id not in [TAUNT, CATCH_BREATH]
 
 
 static func _state_pair_key(attacker: Dictionary, target: Dictionary) -> String:

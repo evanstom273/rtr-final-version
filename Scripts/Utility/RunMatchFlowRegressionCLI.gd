@@ -134,10 +134,353 @@ func _run() -> void:
 		"player_randomly_selected": true,
 		"ai_randomly_selected": true,
 	}
+	match_ui.player_side_state.tactical_setup_actions = 2
+	match_ui.player_side_state.recovery_setup_actions = 1
+	match_ui.player_side_state.contested_setup_attempts = 1
+	match_ui.player_side_state.contested_setup_losses = 1
+	match_ui.ai_side_state.contested_setup_defensive_interruptions = 1
+	match_ui.player_side_state.last_submission_target = MoveResource.MoveTargetParts.LEFT_LEG
+	match_ui.player_side_state.last_submission_target_hp_at_lock_in = 82.0
+	match_ui.player_side_state.last_submission_target_hp_at_resolution = 71.0
+	match_ui.ai_side_state.left_leg_hp = 42.0
+	match_ui.player_side_state.head_hp = 55.0
 	var report := match_ui._build_match_report()
 	_check(str(report.get("match_setup", "")) == "Random Both", "report contains setup method")
 	_check(bool(report.get("player_randomly_selected", false)), "report contains Player random flag")
 	_check(str(report.get("export_text", "")).contains("Match setup: Random Both"), "text export contains setup metadata")
+	_check(str(report.get("export_text", "")).contains("MATCH SUMMARY"), "text export contains Match Summary section")
+	_check(str(report.get("export_text", "")).contains("KEY STATS"), "text export contains Key Stats section")
+	_check(str(report.get("export_text", "")).contains("DEBUG METRICS"), "text export contains Debug Metrics section")
+	var player_report: Dictionary = report.get("player", {})
+	var ai_report: Dictionary = report.get("ai", {})
+	_check(str(player_report.get("execution_mode", "")) == "automatic_reversal_only", "Player offence has no execution check")
+	_check(str(ai_report.get("execution_mode", "")) == "automatic_reversal_only", "AI offence has no execution check")
+	_check(int(player_report.get("contested_setup_wins", -1)) == 0, "initiating setup wins are not credited to a defender")
+	_check(int(ai_report.get("contested_setup_defensive_interruptions", 0)) == 1, "defensive setup interruption is reported separately")
+	_check(str(player_report.get("target_most_damaged_part", "")) == "Left Leg", "report reads target damage from the opponent")
+	_check(str(player_report.get("own_most_damaged_part", "")) == "Head", "report labels the wrestler's own damage separately")
+	_check(float(player_report.get("last_submission_target_hp_at_lock_in", -1.0)) == 82.0, "report records submission lock-in HP")
+	_check(float(player_report.get("last_submission_target_hp_at_resolution", -1.0)) == 71.0, "report records submission resolution HP")
+	_check(str(report.get("export_text", "")).contains("Execution: Automatic"), "AI execution mode is explicit in text export")
+	_check(str(report.get("export_text", "")).contains("2 tactical | 1 recoveries"), "text export contains setup-action breakdown")
+
+	match_ui.player_side_state.momentum = 0.0
+	match_ui.ai_side_state.momentum = 0.0
+	match_ui._apply_successful_move_momentum(match_ui.player_side_state)
+	_check(match_ui.player_side_state.momentum == 10.0, "Player landed move gains exactly ten momentum")
+	_check(match_ui.ai_side_state.momentum == 0.0, "landed move does not drain defender momentum")
+	match_ui._apply_successful_move_momentum(match_ui.ai_side_state)
+	_check(match_ui.ai_side_state.momentum == 10.0, "AI landed move gains exactly ten momentum")
+	match_ui.player_side_state.momentum = 50.0
+	match_ui.ai_side_state.momentum = 50.0
+	match_ui._apply_reversal_momentum(match_ui.player_side_state, match_ui.ai_side_state)
+	_check(match_ui.player_side_state.momentum == 45.0, "Player attacker loses five momentum when reversed")
+	_check(match_ui.ai_side_state.momentum == 55.0, "AI defender gains five momentum for a reversal")
+	match_ui._apply_reversal_momentum(match_ui.ai_side_state, match_ui.player_side_state)
+	_check(match_ui.ai_side_state.momentum == 50.0, "AI attacker loses five momentum when reversed")
+	_check(match_ui.player_side_state.momentum == 50.0, "Player defender gains five momentum for a reversal")
+	match_ui.player_side_state.momentum = 40.0
+	match_ui.ai_side_state.momentum = 40.0
+	match_ui._apply_setup_interruption_momentum(match_ui.ai_side_state)
+	_check(match_ui.player_side_state.momentum == 40.0, "interrupted Player setup does not lose move momentum")
+	_check(match_ui.ai_side_state.momentum == 45.0, "AI gains five momentum for interrupting a Player setup")
+	match_ui.player_side_state.momentum = 40.0
+	match_ui.ai_side_state.momentum = 40.0
+	match_ui._apply_setup_interruption_momentum(match_ui.player_side_state)
+	_check(match_ui.ai_side_state.momentum == 40.0, "interrupted AI setup does not lose move momentum")
+	_check(match_ui.player_side_state.momentum == 45.0, "Player gains five momentum for interrupting an AI setup")
+	match_ui.player_side_state.momentum = 20.0
+	match_ui.player_side_state.pending_taunt_momentum_bonus = 0.0
+	match_ui._apply_successful_taunt(match_ui.player_side_state)
+	_check(match_ui.player_side_state.momentum == 30.0, "successful taunt uses the standard ten-momentum gain")
+	_check(match_ui.player_side_state.pending_taunt_momentum_bonus == 0.0, "taunts do not grant delayed bonus momentum")
+	if (
+		not match_ui.ai_side_state.wrestler.signature_moves.is_empty()
+		and not match_ui.ai_side_state.wrestler.finisher_moves.is_empty()
+		and not match_ui.ai_side_state.wrestler.move_set.is_empty()
+	):
+		var priority_engine := MatchAIDecisionEngine.new()
+		priority_engine.set_seed(7719)
+		var regular_move := match_ui.ai_side_state.wrestler.move_set[0]
+		var signature_move := match_ui.ai_side_state.wrestler.signature_moves[0]
+		var finisher_move := match_ui.ai_side_state.wrestler.finisher_moves[0]
+		match_ui.ai_side_state.signature_ready = true
+		match_ui.ai_side_state.finisher_stock = 0
+		var signature_choices: Array[MoveResource] = []
+		signature_choices.append(regular_move)
+		signature_choices.append(signature_move)
+		var signature_decision := priority_engine.choose_action(
+			match_ui.ai_side_state,
+			match_ui.player_side_state,
+			signature_choices,
+			[],
+			1200,
+		)
+		_check(
+			signature_decision.get("move") == signature_move
+			and bool(signature_decision.get("special_priority", false)),
+			"AI always selects an immediately valid ready signature",
+		)
+		match_ui.ai_side_state.finisher_stock = 1
+		var finisher_choices: Array[MoveResource] = []
+		finisher_choices.append(signature_move)
+		finisher_choices.append(finisher_move)
+		var finisher_decision := priority_engine.choose_action(
+			match_ui.ai_side_state,
+			match_ui.player_side_state,
+			finisher_choices,
+			[],
+			1200,
+		)
+		_check(
+			finisher_decision.get("move") == finisher_move
+			and bool(finisher_decision.get("special_priority", false)),
+			"AI prioritizes an immediately valid stocked finisher over a signature",
+		)
+		var short_setup := {
+			"kind": MatchAIDecisionEngine.KIND_SETUP,
+			"score": 80.0,
+			"setup_action": SetupActionsMenu.CLIMB_TOP_ROPE,
+			"setup_path": [SetupActionsMenu.CLIMB_TOP_ROPE],
+			"planned_move": signature_move,
+		}
+		var long_setup := {
+			"kind": MatchAIDecisionEngine.KIND_SETUP,
+			"score": 120.0,
+			"setup_action": SetupActionsMenu.PICK_OPPONENT_UP,
+			"setup_path": [SetupActionsMenu.PICK_OPPONENT_UP, SetupActionsMenu.CLIMB_TOP_ROPE],
+			"planned_move": signature_move,
+		}
+		match_ui.ai_side_state.finisher_stock = 0
+		var setup_priority := priority_engine._best_ready_special_setup_candidate(
+			[long_setup, short_setup],
+			match_ui.ai_side_state,
+		)
+		_check(
+			StringName(setup_priority.get("setup_action", &"")) == SetupActionsMenu.CLIMB_TOP_ROPE,
+			"AI uses the shortest valid setup path toward a ready signature",
+		)
+		_check(
+			priority_engine.has_credible_finish(
+				match_ui.ai_side_state,
+				match_ui.player_side_state,
+				[],
+				false,
+				1200,
+			),
+			"ready signature prevents Catch Breath from pre-empting its setup search",
+		)
+		match_ui.ai_side_state.signature_ready = false
+		match_ui.ai_side_state.finisher_stock = 0
+	var hemi_resource := load("res://Wrestlers/ufc/Oceania/Heel/Male/hemi_koro.tres") as WrestlerResource
+	if hemi_resource != null and not hemi_resource.signature_moves.is_empty():
+		var hemi_state := MatchSideState.new()
+		hemi_state.initialize(hemi_resource)
+		hemi_state.signature_ready = true
+		hemi_state.current_position = WrestlerResource.Position.PERCHED
+		hemi_state.current_orientation = WrestlerResource.Orientation.FRONT
+		hemi_state.current_area = WrestlerResource.Area.TOP_ROPE
+		hemi_state.current_motion_state = WrestlerResource.MotionState.STATIONARY
+		var grounded_target := MatchSideState.new()
+		grounded_target.initialize(match_ui.player_side_state.wrestler)
+		grounded_target.current_position = WrestlerResource.Position.GROUNDED
+		grounded_target.current_orientation = WrestlerResource.Orientation.FACE_DOWN
+		grounded_target.current_area = WrestlerResource.Area.IN_RING
+		grounded_target.current_motion_state = WrestlerResource.MotionState.STATIONARY
+		var top_rope_actions: Array[StringName] = [
+			SetupActionsMenu.WAKE_OPPONENT,
+			SetupActionsMenu.CLIMB_DOWN,
+		]
+		var loop_engine := MatchAIDecisionEngine.new()
+		loop_engine.set_seed(7720)
+		_check(
+			loop_engine.has_ready_special_continuation(
+				hemi_state,
+				grounded_target,
+				[],
+				top_rope_actions,
+			),
+			"grounded target retains Hemi Koro's wake-opponent signature continuation",
+		)
+		_check(
+			loop_engine.has_reachable_offensive_setup(
+				hemi_state,
+				grounded_target,
+				top_rope_actions,
+			),
+			"top-rope offence is not mistaken for mandatory climb-down recovery",
+		)
+		var loop_decision := loop_engine.choose_action(
+			hemi_state,
+			grounded_target,
+			[],
+			top_rope_actions,
+			920,
+		)
+		_check(
+			StringName(loop_decision.get("setup_action", &"")) == SetupActionsMenu.WAKE_OPPONENT,
+			"ready diving signature wakes the grounded opponent instead of looping climb-down",
+		)
+	var neutral_momentum_move := MoveResource.new()
+	neutral_momentum_move.move_impact = 4
+	match_ui.player_side_state.momentum = 30.0
+	match_ui.ai_side_state.momentum = 40.0
+	match_ui.apply_stamina_fatigue_momentum(
+		SimpleMatchUI.Side.PLAYER,
+		SimpleMatchUI.Side.AI,
+		neutral_momentum_move,
+		SimpleMatchUI.ActionResult.CONTESTED_STRUGGLE,
+	)
+	_check(match_ui.player_side_state.momentum == 30.0, "contested exchanges grant no extra attacker momentum")
+	_check(match_ui.ai_side_state.momentum == 40.0, "contested exchanges grant no extra defender momentum")
+	var reversal_fixture := MoveResource.new()
+	reversal_fixture.move_name = "Regression Reversal"
+	var light_ai_reversal := match_ui._build_ai_reversal_breakthrough_request(
+		{
+			"ai_success_chance": 10.0,
+			"one_way": true,
+			"marker_speed": 1.25,
+			"time_limit": 2.0,
+		},
+		reversal_fixture,
+	)
+	var strong_ai_reversal := match_ui._build_ai_reversal_breakthrough_request(
+		{
+			"ai_success_chance": 60.0,
+			"one_way": true,
+			"marker_speed": 1.25,
+			"time_limit": 2.0,
+		},
+		reversal_fixture,
+	)
+	_check(
+		is_equal_approx(float(light_ai_reversal.get("gold_zone_scale", 0.0)), 1.0 / 8.0),
+		"AI reversal breakthrough uses the same one-eighth bar scale as Player reversals",
+	)
+	_check(
+		float(light_ai_reversal.get("player_breakthrough_window", 0.0))
+		> float(strong_ai_reversal.get("player_breakthrough_window", 0.0)),
+		"stronger AI reversal pressure visibly narrows the Player breakthrough target",
+	)
+	_check(
+		float(light_ai_reversal.get("player_breakthrough_window", 100.0)) <= 4.0
+		and float(strong_ai_reversal.get("player_breakthrough_window", 0.0)) >= 3.0,
+		"Player-offence breakthrough targets remain inside the tuned 3-to-4-percent range",
+	)
+	_check(
+		bool(light_ai_reversal.get("one_way", false))
+		and bool(light_ai_reversal.get("binary_only", false)),
+		"AI reversal breakthrough remains a binary one-shot meter",
+	)
+	_check(
+		is_equal_approx(float(light_ai_reversal.get("marker_speed", 0.0)), 1.6),
+		"Player-offence reversal sweeper uses the quicker speed",
+	)
+	_check(
+		is_zero_approx(float(light_ai_reversal.get("edge_forgiveness_pixels", -1.0)))
+		and is_zero_approx(float(light_ai_reversal.get("touch_edge_forgiveness_pixels", -1.0))),
+		"Player-offence reversal target has no desktop or touch edge forgiveness",
+	)
+	var defensive_reversal_profile := MatchInteractionModel.build_reversal_profile(
+		match_ui.ai_side_state,
+		match_ui.player_side_state,
+		reversal_fixture,
+		&"",
+		true,
+	)
+	_check(
+		is_zero_approx(float(defensive_reversal_profile.get("edge_forgiveness_pixels", -1.0)))
+		and is_zero_approx(float(defensive_reversal_profile.get("touch_edge_forgiveness_pixels", -1.0))),
+		"Player-defence reversal target has no desktop or touch edge forgiveness",
+	)
+	_check(
+		float(defensive_reversal_profile.get("success_window", 0.0))
+		* float(defensive_reversal_profile.get("gold_zone_scale", 0.0)) >= 3.0,
+		"Player-defence reversal target never renders below three percent",
+	)
+	var setup_breakthrough := match_ui._build_ai_setup_reversal_breakthrough_request(
+		{"ai_success_chance": 35.0, "one_way": true},
+		SetupActionsMenu.IRISH_WHIP,
+	)
+	_check(
+		str(setup_breakthrough.get("title", "")).to_upper().contains("IRISH WHIP")
+		and str(setup_breakthrough.get("button_text", "")) == "COMPLETE SETUP",
+		"Player contested setups use the visible AI-reversal breakthrough presentation",
+	)
+	_check(
+		is_zero_approx(float(setup_breakthrough.get("edge_forgiveness_pixels", -1.0)))
+		and float(setup_breakthrough.get("player_breakthrough_window", 0.0)) >= 3.0,
+		"setup breakthrough uses the same exact visible target bounds as Player offence",
+	)
+	var hold_scene := load("res://Scenes/Match/hold_release_interaction.tscn") as PackedScene
+	var hold_meter := hold_scene.instantiate() as HoldReleaseInteraction
+	get_tree().root.add_child(hold_meter)
+	await get_tree().process_frame
+	var hold_results: Array[Array] = []
+	hold_meter.result_selected.connect(func(
+		request_id: int,
+		result: int,
+		timed_out: bool,
+		release_value: float,
+	) -> void:
+		hold_results.append([request_id, result, timed_out, release_value])
+	)
+	hold_meter.open_interaction({
+		"request_id": 701,
+		"success_window": 12.0,
+		"zone_center": 0.5,
+		"fill_duration": 2.7,
+		"time_limit": 3.0,
+		"pin_count_mode": true,
+	})
+	hold_meter._holding = true
+	hold_meter._value = 0.5
+	hold_meter._release_hold()
+	_check(
+		not hold_results.is_empty()
+		and int(hold_results[-1][1]) == MatchInteractionModel.InputResult.SUCCESS,
+		"hold-release kickout succeeds when released inside the rendered gold zone",
+	)
+	hold_meter.open_interaction({
+		"request_id": 702,
+		"success_window": 12.0,
+		"zone_center": 0.5,
+		"fill_duration": 2.7,
+		"time_limit": 3.0,
+		"pin_count_mode": true,
+	})
+	hold_meter._holding = true
+	hold_meter._value = 0.1
+	hold_meter._release_hold()
+	_check(
+		not hold_meter._resolved
+		and not hold_meter._hold_button.disabled
+		and is_zero_approx(hold_meter._value),
+		"release outside gold resets the fill and permits another attempt before three",
+	)
+	hold_meter._holding = true
+	hold_meter._value = 0.5
+	hold_meter._release_hold()
+	_check(
+		int(hold_results[-1][1]) == MatchInteractionModel.InputResult.SUCCESS,
+		"a retry inside gold still kicks out during the same referee count",
+	)
+	hold_meter.open_interaction({
+		"request_id": 703,
+		"success_window": 12.0,
+		"zone_center": 0.5,
+		"fill_duration": 2.7,
+		"time_limit": 3.0,
+		"pin_count_mode": true,
+	})
+	hold_meter._elapsed = 2.99
+	hold_meter._process(0.02)
+	_check(
+		hold_meter.last_count_reached == 3
+		and int(hold_results[-1][1]) == MatchInteractionModel.InputResult.FAIL,
+		"hold-release pin fails when the three-real-second count completes",
+	)
+	hold_meter.queue_free()
 
 	var recovery_matrix: Array[Dictionary] = [
 		{"position": WrestlerResource.Position.GROUNDED, "area": WrestlerResource.Area.IN_RING, "motion": WrestlerResource.MotionState.STATIONARY, "action": SetupActionsMenu.STAND_UP},

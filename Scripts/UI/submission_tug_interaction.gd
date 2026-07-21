@@ -9,6 +9,7 @@ const MAX_TAPS_PER_SECOND := 8
 const MIN_TAP_IMPULSE := 0.65
 const MAX_TAP_IMPULSE := 1.15
 const AI_PULSE_SECONDS := 0.2
+const AI_FORCE_RATE_NORMALIZER := float(MAX_TAPS_PER_SECOND) * AI_PULSE_SECONDS
 const DAMAGE_TICK_SECONDS := 1.0
 const DEFAULT_STALL_FAILSAFE_SECONDS := 30.0
 const STALL_WINDOW_SECONDS := 10.0
@@ -220,9 +221,9 @@ func _register_tap() -> void:
 func _apply_ai_drift() -> void:
 	var ai_objective_direction := -_player_direction
 	var score_advantage := _ai_score - _player_score
-	# At equal scores, one AI pulse now has the same force as one player press.
-	# The AI pulses five times per second while the player may reach eight presses,
-	# so active input can win an even struggle without each press overpowering AI.
+	# The player may register eight effective presses per second while the AI
+	# pulses five times. Scale each AI pulse by 8/5 so equal scores have equal
+	# maximum force per second rather than a built-in human-side advantage.
 	var impulse := lerpf(MIN_TAP_IMPULSE, MAX_TAP_IMPULSE, _ai_score / 100.0)
 	if score_advantage > 5.0:
 		impulse = clampf(
@@ -235,7 +236,12 @@ func _apply_ai_drift() -> void:
 		# creates free movement toward the player's objective. A player must press
 		# at least once—and keep fighting—to earn either a tap-out or an escape.
 		impulse = clampf(impulse - absf(score_advantage) * 0.012, 0.15, 1.2)
-	_marker += ai_objective_direction * impulse * _active_resolution_speed_multiplier
+	_marker += (
+		ai_objective_direction
+		* impulse
+		* AI_FORCE_RATE_NORMALIZER
+		* _active_resolution_speed_multiplier
+	)
 
 
 func _update_struggle_state() -> void:

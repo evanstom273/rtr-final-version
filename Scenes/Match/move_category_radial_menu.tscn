@@ -122,7 +122,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="CenterBadge" type="PanelContainer" parent="CategorySafeArea/WheelCenter/WheelPanel/WheelArea"]
+[node name="CenterBadge" type="Panel" parent="CategorySafeArea/WheelCenter/WheelPanel/WheelArea"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(230, 120)
 layout_mode = 0
@@ -130,11 +130,17 @@ offset_left = 375.0
 offset_top = 330.0
 offset_right = 605.0
 offset_bottom = 450.0
+clip_contents = true
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleCenterBadge")
 
 [node name="BadgeMargin" type="MarginContainer" parent="CategorySafeArea/WheelCenter/WheelPanel/WheelArea/CenterBadge"]
-layout_mode = 2
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 theme_override_constants/margin_left = 14
 theme_override_constants/margin_top = 12
@@ -160,6 +166,7 @@ mouse_filter = 2
 
 [node name="ContextLabel" type="Label" parent="CategorySafeArea/WheelCenter/WheelPanel/WheelArea/CenterBadge/BadgeMargin/BadgeText"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.91, 0.92, 0.89, 1)
@@ -168,6 +175,8 @@ text = "Standing vs Standing"
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
+clip_text = true
+max_lines_visible = 4
 
 [node name="WheelCloseButton" type="Button" parent="CategorySafeArea/WheelCenter/WheelPanel/WheelArea"]
 unique_name_in_owner = true

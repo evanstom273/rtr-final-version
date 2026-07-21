@@ -23,6 +23,8 @@ static func is_supported_directional_pair(attacker_area: int, target_area: int) 
 		Vector2i(WrestlerResource.Area.ROPES, WrestlerResource.Area.OUTSIDE),
 		Vector2i(WrestlerResource.Area.TOP_ROPE, WrestlerResource.Area.IN_RING),
 		Vector2i(WrestlerResource.Area.TOP_ROPE, WrestlerResource.Area.OUTSIDE),
+		Vector2i(WrestlerResource.Area.LADDER, WrestlerResource.Area.IN_RING),
+		Vector2i(WrestlerResource.Area.LADDER, WrestlerResource.Area.OUTSIDE),
 	]
 
 

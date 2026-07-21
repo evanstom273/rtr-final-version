@@ -278,7 +278,22 @@ func _format_side_stats(stats: Dictionary) -> String:
 			int(stats.get("legal_weapon_attacks", 0)),
 			int(stats.get("disqualifications_caused", 0)),
 		],
-		"Setup actions: %d" % int(stats.get("setup_actions", 0)),
+		"Weapon aftermath: %d dropped | %d broken | Bleeding caused %d | Final bleeding %s" % [
+			int(stats.get("weapons_dropped", 0)),
+			int(stats.get("weapons_broken", 0)),
+			int(stats.get("bleeding_caused", 0)),
+			str(stats.get("final_bleeding", "None")),
+		],
+		"Tables: %d set | %d stacked | %d broken | %d delivered / %d taken" % [int(stats.get("tables_set", 0)), int(stats.get("tables_stacked", 0)), int(stats.get("tables_broken", 0)), int(stats.get("table_spots_landed", 0)), int(stats.get("table_spots_taken", 0))],
+		"Ladders: %d set | %d stages | %d interrupted | %d dives | %d crashes" % [int(stats.get("ladder_setups", 0)), int(stats.get("ladder_climb_stages", 0)), int(stats.get("ladder_climbs_interrupted", 0)), int(stats.get("ladder_dives", 0)), int(stats.get("ladder_crashes", 0))],
+		"Thumbtacks: %d spread | %d delivered / %d taken | Environmental reversals %d" % [int(stats.get("thumbtack_patches_spread", 0)), int(stats.get("thumbtack_spots_landed", 0)), int(stats.get("thumbtack_spots_taken", 0)), int(stats.get("environmental_reversals", 0))],
+		"Setup actions: %d total | %d tactical | %d recoveries | %d Catch Breath | %d taunts" % [
+			int(stats.get("setup_actions", 0)),
+			int(stats.get("tactical_setup_actions", 0)),
+			int(stats.get("recovery_setup_actions", 0)),
+			int(stats.get("catch_breath_uses", 0)),
+			int(stats.get("taunts_attempted", 0)),
+		],
 		"Pins / Kickouts: %d / %d" % [int(stats.get("pin_attempts", 0)), int(stats.get("kickouts", 0))],
 		"Kickout meter: %d attempts | %d successes | %d near misses | %d timeouts" % [
 			int(stats.get("kickout_meter_attempts", 0)),
@@ -293,6 +308,7 @@ func _format_side_stats(stats: Dictionary) -> String:
 			float(stats.get("move_landing_rate", 0.0)),
 			float(stats.get("reversal_success_rate", 0.0)),
 		],
+		_execution_report_line(stats),
 		"Reversal checks: %d attempted / %d successful" % [int(stats.get("response_attempts", 0)), int(stats.get("response_successes", 0))],
 		"Avg reversal chance: %.1f%%    Finish pressure: %+.1f" % [
 			float(stats.get("average_response_profile", 0.0)),
@@ -318,9 +334,10 @@ func _format_side_stats(stats: Dictionary) -> String:
 			int(stats.get("setup_intents_completed", 0)),
 			int(stats.get("setup_intents_abandoned", 0)),
 		],
-		"Flow guards: %d dead ends | %d forced fallbacks | late pressure %.1f" % [
+		"Flow guards: %d dead ends | %d forced fallbacks | %d mandatory recoveries | late pressure %.1f" % [
 			int(stats.get("dead_end_setups_prevented", 0)),
 			int(stats.get("forced_fallbacks", 0)),
+			int(stats.get("mandatory_recoveries", 0)),
 			float(stats.get("average_late_escalation", 0.0)),
 		],
 		"Target focus: %s (%s)    Most used: %s" % [
@@ -328,9 +345,10 @@ func _format_side_stats(stats: Dictionary) -> String:
 			str(stats.get("target_focus_reason", "Auto")),
 			str(stats.get("most_used_focus", "Auto")),
 		],
-		"Body targeting: most attacked %s    Most damaged %s" % [
+		"Body targeting: most attacked target %s | target's most damaged %s | own most damaged %s" % [
 			str(stats.get("most_targeted_part", "None")),
-			str(stats.get("most_damaged_part", "None")),
+			str(stats.get("target_most_damaged_part", stats.get("most_damaged_part", "None"))),
+			str(stats.get("own_most_damaged_part", stats.get("most_damaged_part", "None"))),
 		],
 		"Per-part attacks: %s" % str(stats.get("per_part_attacks", "None")),
 		"Per-part damage dealt: %s" % str(stats.get("per_part_damage", "None")),
@@ -338,15 +356,18 @@ func _format_side_stats(stats: Dictionary) -> String:
 			str(stats.get("thresholds_crossed", "None")),
 			str(stats.get("parts_reaching_zero", "None")),
 		],
-		"Submission target: %s    Finisher target: %s" % [
+		"Submission target: %s (HP %s at lock-in / %s at resolution) | Finisher target: %s" % [
 			str(stats.get("last_submission_target", "None")),
+			_submission_hp_label(stats.get("last_submission_target_hp_at_lock_in", -1.0)),
+			_submission_hp_label(stats.get("last_submission_target_hp_at_resolution", -1.0)),
 			str(stats.get("last_finisher_target", "None")),
 		],
 		"Repeated targeting: %s" % str(stats.get("targeting_milestones", "None")),
-		"Reversible setups: %d attempts | %d succeeded | %d reversed" % [
+		"Reversible setups: %d initiated | %d completed | %d reversed | %d defensive interruptions" % [
 			int(stats.get("contested_setup_attempts", 0)),
 			int(stats.get("contested_setup_wins", 0)),
 			int(stats.get("contested_setup_losses", 0)),
+			int(stats.get("contested_setup_defensive_interruptions", 0)),
 		],
 		"Taunts: %d attempted | %d succeeded | %d interrupted" % [
 			int(stats.get("taunts_attempted", 0)),
@@ -369,13 +390,55 @@ func _format_side_stats(stats: Dictionary) -> String:
 			int(stats.get("submission_struggle_losses", 0)),
 			float(stats.get("submission_struggle_seconds", 0.0)),
 		],
+		"Exhaustion: %s | minimum stamina %.1f / %.1f (%.0f%%) | maximum fatigue %.0f%%" % [
+			str(stats.get("final_exhaustion_band", "Fresh")),
+			float(stats.get("minimum_stamina", 100.0)),
+			float(stats.get("max_stamina", 100.0)),
+			float(stats.get("minimum_stamina_percent", stats.get("minimum_stamina", 100.0))),
+			float(stats.get("maximum_fatigue", 0.0)),
+		],
+		"Exhaustion actions: %d at zero stamina / %d successful | %d high-risk | %d demanding weapons" % [
+			int(stats.get("zero_stamina_attempts", 0)),
+			int(stats.get("zero_stamina_successes", 0)),
+			int(stats.get("exhausted_high_risk_attempts", 0)),
+			int(stats.get("exhausted_demanding_weapon_attempts", 0)),
+		],
+		"Recovery: %d Catch Breath | %.1f stamina restored | %d delayed recoveries | %d control losses" % [
+			int(stats.get("catch_breath_uses", 0)),
+			float(stats.get("total_stamina_recovered", 0.0)),
+			int(stats.get("delayed_recoveries", 0)),
+			int(stats.get("exhaustion_control_losses", 0)),
+		],
+		"Average exhaustion tuning: %.1f%% execution penalty | %.2fx fatigue amplification" % [
+			float(stats.get("average_stamina_execution_penalty", 0.0)),
+			float(stats.get("average_fatigue_amplification", 1.0)),
+		],
 		"Damage dealt / taken: %.1f / %.1f" % [float(stats.get("damage_dealt", 0.0)), float(stats.get("damage_taken", 0.0))],
-		"Stamina: %.0f%%    Fatigue: %.0f%%" % [float(stats.get("stamina", 0.0)), float(stats.get("fatigue", 0.0))],
+		"Stamina: %.1f / %.1f (%.0f%%)    Fatigue: %.0f%%" % [
+			float(stats.get("stamina", 0.0)),
+			float(stats.get("max_stamina", 100.0)),
+			float(stats.get("stamina_percent", 0.0)),
+			float(stats.get("fatigue", 0.0)),
+		],
 		"Momentum: %.0f%%    Position: %s" % [float(stats.get("momentum", 0.0)), str(stats.get("position", "Not Set"))],
 		"HP — Head %.0f | Body %.0f" % [float(stats.get("head_hp", 0.0)), float(stats.get("body_hp", 0.0))],
 		"Arms — L %.0f | R %.0f" % [float(stats.get("left_arm_hp", 0.0)), float(stats.get("right_arm_hp", 0.0))],
 		"Legs — L %.0f | R %.0f" % [float(stats.get("left_leg_hp", 0.0)), float(stats.get("right_leg_hp", 0.0))],
 	])
+
+
+func _execution_report_line(stats: Dictionary) -> String:
+	if str(stats.get("execution_mode", "meter")) == "automatic_reversal_only":
+		return "Execution: Automatic — defender reversal only"
+	return "Execution meter: %d attempted / %d successful" % [
+		int(stats.get("execution_attempts", 0)),
+		int(stats.get("execution_successes", 0)),
+	]
+
+
+func _submission_hp_label(value: Variant) -> String:
+	var hp := float(value)
+	return "N/A" if hp < 0.0 else "%d%%" % int(roundf(hp))
 
 
 func _safe_filename(value: String) -> String:

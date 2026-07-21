@@ -1,0 +1,18 @@
+[gd_resource format=3 type="Resource" script_class="WeaponResource"]
+
+[ext_resource type="Script" path="res://Scripts/Data/WeaponData.gd" id="1_weapon"]
+
+[resource]
+resource_name = "Thumbtacks"
+script = ExtResource("1_weapon")
+weapon_id = &"thumbtacks"
+display_name = "Thumbtacks"
+description = "A bag of thumbtacks that can be spread into a persistent hazard."
+weapon_kind = 3
+icon_id = &"thumbtacks"
+impact = 6
+stamina_cost = 4.0
+maximum_durability = 1
+bleed_rating = 50.0
+can_bleed_any_target = true
+can_be_spread = true

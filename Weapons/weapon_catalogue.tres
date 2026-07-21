@@ -1,0 +1,19 @@
+[gd_resource load_steps=13 format=3 type="Resource" script_class="WeaponCatalogueResource"]
+
+[ext_resource type="Script" path="res://Scripts/Data/WeaponCatalogueData.gd" id="1_catalogue"]
+[ext_resource type="Resource" path="res://Weapons/steel_chair.tres" id="2_chair"]
+[ext_resource type="Resource" path="res://Weapons/kendo_stick.tres" id="3_kendo"]
+[ext_resource type="Resource" path="res://Weapons/baseball_bat.tres" id="4_baseball"]
+[ext_resource type="Resource" path="res://Weapons/hockey_stick.tres" id="5_hockey"]
+[ext_resource type="Resource" path="res://Weapons/shovel.tres" id="6_shovel"]
+[ext_resource type="Resource" path="res://Weapons/light_tube.tres" id="7_tube"]
+[ext_resource type="Resource" path="res://Weapons/barbed_wire_bat.tres" id="8_barbed"]
+[ext_resource type="Resource" path="res://Weapons/janice.tres" id="9_janice"]
+[ext_resource type="Resource" path="res://Weapons/table.tres" id="10_table"]
+[ext_resource type="Resource" path="res://Weapons/ladder.tres" id="11_ladder"]
+[ext_resource type="Resource" path="res://Weapons/thumbtacks.tres" id="12_tacks"]
+
+[resource]
+resource_name = "Weapon Catalogue"
+script = ExtResource("1_catalogue")
+weapons = Array[ExtResource("2_chair")]([ExtResource("2_chair"), ExtResource("3_kendo"), ExtResource("4_baseball"), ExtResource("5_hockey"), ExtResource("6_shovel"), ExtResource("7_tube"), ExtResource("8_barbed"), ExtResource("9_janice"), ExtResource("10_table"), ExtResource("11_ladder"), ExtResource("12_tacks")])

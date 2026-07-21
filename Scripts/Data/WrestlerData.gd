@@ -16,7 +16,8 @@ enum Position {
 	GROUNDED,
 	SEATED,
 	KNEELING,
-	PERCHED
+	PERCHED,
+	CLIMBING
 }
 
 enum Orientation {
@@ -34,7 +35,8 @@ enum Area {
 	APRON,
 	OUTSIDE,
 	RAMP,
-	TOP_ROPE
+	TOP_ROPE,
+	LADDER
 }
 
 enum MotionState {

@@ -1,0 +1,29 @@
+[gd_resource load_steps=5 format=3 type="Resource" script_class="WeaponResource"]
+
+[ext_resource type="Script" path="res://Scripts/Data/WeaponData.gd" id="1_weapon"]
+[ext_resource type="Script" path="res://Scripts/Data/WeaponAttackData.gd" id="2_attack"]
+
+[sub_resource type="Resource" id="WeaponAttack_standing"]
+script = ExtResource("2_attack")
+attack_id = &"baseball_bat_swing"
+display_name = "Baseball Bat Swing"
+
+[sub_resource type="Resource" id="WeaponAttack_grounded"]
+script = ExtResource("2_attack")
+attack_id = &"grounded_bat_shot"
+display_name = "Grounded Bat Shot"
+target_posture = 1
+stamina_modifier = 1.0
+
+[resource]
+resource_name = "Baseball Bat"
+script = ExtResource("1_weapon")
+weapon_id = &"baseball_bat"
+display_name = "Baseball Bat"
+description = "A solid wooden bat with balanced reach and impact."
+icon_id = &"baseball_bat"
+impact = 7
+stamina_cost = 7.0
+minimum_durability = 2
+bleed_rating = 8.0
+attack_set = Array[ExtResource("2_attack")]([SubResource("WeaponAttack_standing"), SubResource("WeaponAttack_grounded")])
