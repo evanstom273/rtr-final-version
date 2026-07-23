@@ -15,7 +15,7 @@ general/accessibility_support=2
 [application]
 
 config/name="RiseToRelevance - Text Based Wrestling Sim"
-run/main_scene="res://Scenes/Match/simple_match_ui.tscn"
+run/main_scene="res://Scenes/App/app_flow.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 
@@ -24,6 +24,7 @@ config/icon="res://icon.svg"
 autoload="*uid://btjxpm4prjayw"
 ResponsiveUi="*uid://nnw48xyufjo1"
 ResponsiveUI="*uid://nnw48xyufjo1"
+MatchReportArchive="*res://Scripts/Match/match_report_archive.gd"
 
 [display]
 
@@ -33,6 +34,10 @@ window/size/window_width_override=1280
 window/size/window_height_override=720
 window/stretch/mode="canvas_items"
 window/handheld/orientation=6
+
+[gui]
+
+theme/custom="res://Themes/application_theme.tres"
 
 [input]
 

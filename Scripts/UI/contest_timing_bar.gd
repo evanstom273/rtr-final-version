@@ -140,7 +140,7 @@ func _update_timer_display() -> void:
 	var remaining := maxf(0.0, _time_limit - _elapsed)
 	_countdown.value = remaining
 	_timer_label.text = "%.1fs" % remaining
-	_timer_label.modulate = Color(1.0, 0.35, 0.35, 1.0) if remaining <= 0.5 else Color.WHITE
+	_timer_label.modulate = AppThemePalette.ERROR if remaining <= 0.5 else Color.WHITE
 
 
 func _on_track_gui_input(event: InputEvent) -> void:

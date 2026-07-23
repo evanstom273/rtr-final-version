@@ -3,12 +3,12 @@
 [ext_resource type="Script" path="res://Scripts/UI/match_result_popup.gd" id="1_result"]
 
 [sub_resource type="StyleBoxFlat" id="StyleResultPanel"]
-bg_color = Color(0.025, 0.035, 0.055, 0.99)
+bg_color = Color(0.0784314, 0.0784314, 0.0784314, 0.99)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.78, 0.64, 0.2, 0.95)
+border_color = Color(0.203922, 0.203922, 0.203922, 0.95)
 corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
@@ -17,48 +17,48 @@ shadow_color = Color(0, 0, 0, 0.65)
 shadow_size = 14
 
 [sub_resource type="StyleBoxFlat" id="StyleDetails"]
-bg_color = Color(0.055, 0.07, 0.105, 1)
+bg_color = Color(0.105882, 0.105882, 0.105882, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.2, 0.25, 0.34, 1)
+border_color = Color(0.203922, 0.203922, 0.203922, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="StyleReportButton"]
-bg_color = Color(0.12, 0.18, 0.28, 1)
+bg_color = Color(0.105882, 0.105882, 0.105882, 1)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.78, 0.64, 0.2, 0.95)
+border_color = Color(0.486275, 0.360784, 1, 0.95)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="StyleReportButtonHover"]
-bg_color = Color(0.18, 0.25, 0.35, 1)
+bg_color = Color(0.137255, 0.137255, 0.137255, 1)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.96, 0.8, 0.28, 1)
+border_color = Color(0.486275, 0.360784, 1, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="StyleCloseButton"]
-bg_color = Color(0.34, 0.08, 0.11, 1)
+bg_color = Color(0.105882, 0.105882, 0.105882, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.75, 0.24, 0.28, 1)
+border_color = Color(0.203922, 0.203922, 0.203922, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
@@ -82,7 +82,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 0
-color = Color(0.005, 0.008, 0.015, 0.76)
+color = Color(0.0352941, 0.0352941, 0.0352941, 0.76)
 
 [node name="ResultSafeArea" type="MarginContainer" parent="."]
 unique_name_in_owner = true
@@ -108,7 +108,7 @@ theme_override_constants/margin_bottom = 24
 unique_name_in_owner = true
 custom_minimum_size = Vector2(600, 430)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleResultPanel")
+theme_type_variation = &"ModalPanel"
 
 [node name="PanelMargin" type="MarginContainer" parent="ResultSafeArea/Center/ResultOuterMargin/ResultPanel"]
 layout_mode = 2
@@ -123,7 +123,7 @@ theme_override_constants/separation = 14
 
 [node name="Title" type="Label" parent="ResultSafeArea/Center/ResultOuterMargin/ResultPanel/PanelMargin/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.96, 0.8, 0.28, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_font_sizes/font_size = 29
 text = "MATCH RESULT"
 horizontal_alignment = 1
@@ -132,7 +132,7 @@ horizontal_alignment = 1
 custom_minimum_size = Vector2(0, 2)
 layout_mode = 2
 mouse_filter = 2
-color = Color(0.78, 0.64, 0.2, 0.8)
+color = Color(0.203922, 0.203922, 0.203922, 0.8)
 
 [node name="WinnerLine" type="HBoxContainer" parent="ResultSafeArea/Center/ResultOuterMargin/ResultPanel/PanelMargin/Content"]
 layout_mode = 2
@@ -141,7 +141,7 @@ theme_override_constants/separation = 8
 
 [node name="WinnerLabel" type="Label" parent="ResultSafeArea/Center/ResultOuterMargin/ResultPanel/PanelMargin/Content/WinnerLine"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.68, 0.72, 0.8, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 theme_override_font_sizes/font_size = 22
 text = "Winner:"
 
@@ -149,7 +149,7 @@ text = "Winner:"
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.96, 0.8, 0.28, 1)
+theme_override_colors/font_color = Color(0.831373, 0.686275, 0.215686, 1)
 theme_override_font_sizes/font_size = 22
 text = "Not Set"
 autowrap_mode = 2
@@ -157,7 +157,7 @@ autowrap_mode = 2
 [node name="DetailsPanel" type="PanelContainer" parent="ResultSafeArea/Center/ResultOuterMargin/ResultPanel/PanelMargin/Content"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleDetails")
+theme_type_variation = &"RaisedPanel"
 
 [node name="DetailsMargin" type="MarginContainer" parent="ResultSafeArea/Center/ResultOuterMargin/ResultPanel/PanelMargin/Content/DetailsPanel"]
 layout_mode = 2
@@ -174,7 +174,7 @@ columns = 2
 
 [node name="ResultLabel" type="Label" parent="ResultSafeArea/Center/ResultOuterMargin/ResultPanel/PanelMargin/Content/DetailsPanel/DetailsMargin/DetailsGrid"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 text = "Result"
 
 [node name="ResultValue" type="Label" parent="ResultSafeArea/Center/ResultOuterMargin/ResultPanel/PanelMargin/Content/DetailsPanel/DetailsMargin/DetailsGrid"]
@@ -185,7 +185,7 @@ text = "Not Set"
 
 [node name="FinalTimeLabel" type="Label" parent="ResultSafeArea/Center/ResultOuterMargin/ResultPanel/PanelMargin/Content/DetailsPanel/DetailsMargin/DetailsGrid"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 text = "Final Time"
 
 [node name="FinalTimeValue" type="Label" parent="ResultSafeArea/Center/ResultOuterMargin/ResultPanel/PanelMargin/Content/DetailsPanel/DetailsMargin/DetailsGrid"]
@@ -195,7 +195,7 @@ text = "00:00"
 
 [node name="FinishLabel" type="Label" parent="ResultSafeArea/Center/ResultOuterMargin/ResultPanel/PanelMargin/Content/DetailsPanel/DetailsMargin/DetailsGrid"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 text = "Finish"
 
 [node name="FinishValue" type="Label" parent="ResultSafeArea/Center/ResultOuterMargin/ResultPanel/PanelMargin/Content/DetailsPanel/DetailsMargin/DetailsGrid"]
@@ -208,7 +208,7 @@ autowrap_mode = 2
 [node name="WinnerStats" type="Label" parent="ResultSafeArea/Center/ResultOuterMargin/ResultPanel/PanelMargin/Content"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.58, 0.76, 0.94, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 text = "Damage dealt: 0.0    Reversals: 0"
 horizontal_alignment = 1
 autowrap_mode = 2
@@ -224,7 +224,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(220, 54)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.96, 0.8, 0.28, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_styles/normal = SubResource("StyleReportButton")
 theme_override_styles/hover = SubResource("StyleReportButtonHover")
 theme_override_styles/pressed = SubResource("StyleReportButtonHover")
@@ -236,7 +236,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(170, 54)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.96, 0.8, 0.28, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_styles/normal = SubResource("StyleReportButton")
 theme_override_styles/hover = SubResource("StyleReportButtonHover")
 theme_override_styles/pressed = SubResource("StyleReportButtonHover")

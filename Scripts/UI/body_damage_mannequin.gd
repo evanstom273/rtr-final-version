@@ -3,12 +3,12 @@ class_name BodyDamageMannequin
 
 signal target_focus_requested(part: int)
 
-const HEALTHY_COLOR := Color("3f91d8")
-const WARNING_COLOR := Color("c9a227")
-const DAMAGED_COLOR := Color("e07a2d")
-const CRITICAL_COLOR := Color("c83f4a")
-const UNASSIGNED_COLOR := Color("566173")
-const VALUE_TEXT_COLOR := Color("edf1f7")
+const HEALTHY_COLOR := AppThemePalette.SUCCESS
+const WARNING_COLOR := AppThemePalette.WARNING
+const DAMAGED_COLOR := AppThemePalette.WARNING
+const CRITICAL_COLOR := AppThemePalette.ERROR
+const UNASSIGNED_COLOR := AppThemePalette.DISABLED_TEXT
+const VALUE_TEXT_COLOR := AppThemePalette.PRIMARY_TEXT
 
 @onready var _head_piece: TextureRect = %HeadPiece
 @onready var _body_piece: TextureRect = %BodyPiece
@@ -123,7 +123,7 @@ func _health_color(value: float) -> Color:
 
 func _apply_responsive_size(effective_size: Vector2, compact: bool) -> void:
 	var height_ratio := 0.26 if compact else 0.31
-	custom_minimum_size.y = clampf(effective_size.y * height_ratio, 175.0, 340.0)
+	custom_minimum_size.y = clampf(effective_size.y * height_ratio, 170.0, 220.0)
 	var label_size := 12 if compact or effective_size.y < 800.0 else 14
 	for label: Label in [
 		_head_label,
@@ -147,8 +147,8 @@ func _configure_value_labels() -> void:
 		_right_leg_label,
 	]:
 		var backing := StyleBoxFlat.new()
-		backing.bg_color = Color(0.015, 0.02, 0.035, 0.9)
-		backing.border_color = Color(0.28, 0.34, 0.44, 0.75)
+		backing.bg_color = AppThemePalette.with_alpha(AppThemePalette.MAIN_BACKGROUND, 0.9)
+		backing.border_color = AppThemePalette.with_alpha(AppThemePalette.BORDER, 0.75)
 		backing.set_border_width_all(1)
 		backing.set_corner_radius_all(5)
 		backing.content_margin_left = 6.0
@@ -183,8 +183,8 @@ func _update_target_focus_display() -> void:
 		button.remove_theme_stylebox_override("normal")
 		if int(part) == _target_focus:
 			var selected_style := StyleBoxFlat.new()
-			selected_style.bg_color = Color(0.95, 0.78, 0.22, 0.08)
-			selected_style.border_color = Color(0.95, 0.78, 0.22, 0.95)
+			selected_style.bg_color = AppThemePalette.with_alpha(AppThemePalette.ACTIVE, 0.08)
+			selected_style.border_color = AppThemePalette.with_alpha(AppThemePalette.ACTIVE, 0.95)
 			selected_style.set_border_width_all(2)
 			selected_style.set_corner_radius_all(8)
 			button.add_theme_stylebox_override("normal", selected_style)

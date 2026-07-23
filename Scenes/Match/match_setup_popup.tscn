@@ -1,14 +1,15 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://Scripts/UI/match_setup_popup.gd" id="1_setup"]
+[ext_resource type="Material" path="res://Themes/smoked_background_material.tres" id="2_background"]
 
 [sub_resource type="StyleBoxFlat" id="StyleSetupPanel"]
-bg_color = Color(0.025, 0.035, 0.055, 0.995)
+bg_color = Color(0.0784314, 0.0784314, 0.0784314, 0.995)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.78, 0.64, 0.2, 0.95)
+border_color = Color(0.203922, 0.203922, 0.203922, 0.95)
 corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
@@ -17,24 +18,24 @@ shadow_color = Color(0, 0, 0, 0.7)
 shadow_size = 16
 
 [sub_resource type="StyleBoxFlat" id="StyleSidePanel"]
-bg_color = Color(0.05, 0.065, 0.095, 1)
+bg_color = Color(0.105882, 0.105882, 0.105882, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.22, 0.28, 0.38, 1)
+border_color = Color(0.203922, 0.203922, 0.203922, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="StyleInput"]
-bg_color = Color(0.025, 0.035, 0.055, 1)
+bg_color = Color(0.105882, 0.105882, 0.105882, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.28, 0.35, 0.48, 1)
+border_color = Color(0.203922, 0.203922, 0.203922, 1)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
@@ -43,48 +44,48 @@ content_margin_left = 10.0
 content_margin_right = 10.0
 
 [sub_resource type="StyleBoxFlat" id="StyleList"]
-bg_color = Color(0.02, 0.03, 0.048, 1)
+bg_color = Color(0.0352941, 0.0352941, 0.0352941, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.17, 0.22, 0.31, 1)
+border_color = Color(0.203922, 0.203922, 0.203922, 1)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
 [sub_resource type="StyleBoxFlat" id="StyleStart"]
-bg_color = Color(0.48, 0.1, 0.12, 1)
+bg_color = Color(0.105882, 0.105882, 0.105882, 1)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.9, 0.3, 0.3, 1)
+border_color = Color(0.301961, 0.686275, 0.313726, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="StyleStartHover"]
-bg_color = Color(0.62, 0.13, 0.15, 1)
+bg_color = Color(0.137255, 0.137255, 0.137255, 1)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(1, 0.46, 0.46, 1)
+border_color = Color(0.301961, 0.686275, 0.313726, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="StyleCancel"]
-bg_color = Color(0.1, 0.14, 0.21, 1)
+bg_color = Color(0.105882, 0.105882, 0.105882, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.32, 0.42, 0.57, 1)
+border_color = Color(0.203922, 0.203922, 0.203922, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
@@ -101,6 +102,7 @@ mouse_filter = 0
 script = ExtResource("1_setup")
 
 [node name="Dimmer" type="ColorRect" parent="."]
+material = ExtResource("2_background")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -108,7 +110,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 0
-color = Color(0.005, 0.008, 0.015, 0.9)
+color = Color(0.0352941, 0.0352941, 0.0352941, 0.9)
 
 [node name="SetupSafeArea" type="MarginContainer" parent="."]
 unique_name_in_owner = true
@@ -123,13 +125,13 @@ grow_vertical = 2
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/margin_left = 34
-theme_override_constants/margin_top = 24
+theme_override_constants/margin_top = 34
 theme_override_constants/margin_right = 34
-theme_override_constants/margin_bottom = 24
+theme_override_constants/margin_bottom = 34
 
 [node name="SetupPanel" type="PanelContainer" parent="SetupSafeArea/SetupOuterMargin"]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleSetupPanel")
+theme_type_variation = &"ApplicationPanel"
 
 [node name="PanelMargin" type="MarginContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel"]
 layout_mode = 2
@@ -144,15 +146,15 @@ theme_override_constants/separation = 10
 
 [node name="Title" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.96, 0.8, 0.28, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_font_sizes/font_size = 28
-text = "SET UP EXHIBITION MATCH"
+text = "EXHIBITION MATCH BUILDER"
 horizontal_alignment = 1
 
 [node name="Subtitle" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.68, 0.72, 0.8, 1)
-text = "Search or filter the roster, then choose one wrestler for each side."
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
+text = "Browse the roster, inspect wrestlers, then drag them into Team A and Team B."
 horizontal_alignment = 1
 autowrap_mode = 2
 
@@ -160,11 +162,11 @@ autowrap_mode = 2
 custom_minimum_size = Vector2(0, 2)
 layout_mode = 2
 mouse_filter = 2
-color = Color(0.78, 0.64, 0.2, 0.8)
+color = Color(0.486275, 0.360784, 1, 0.78)
 
 [node name="RulesPanel" type="PanelContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content"]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleSidePanel")
+theme_type_variation = &"RaisedPanel"
 
 [node name="RulesMargin" type="MarginContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RulesPanel"]
 layout_mode = 2
@@ -180,7 +182,7 @@ theme_override_constants/separation = 12
 
 [node name="RulesHeading" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RulesPanel/RulesMargin/RulesRow"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.96, 0.8, 0.28, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 text = "MATCH RULES"
 vertical_alignment = 1
 
@@ -224,86 +226,113 @@ fit_to_longest_item = false
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.72, 0.79, 0.9, 1)
-text = "DQ: ON | COUNT-OUT: ON (10) | CLOCK: 15s | WEAPONS: ILLEGAL"
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
+text = "DQ: ON | COUNT-OUT: ON (10) | CLOCK: 20s | WEAPONS: ILLEGAL"
 horizontal_alignment = 2
 vertical_alignment = 1
 text_overrun_behavior = 3
 
-[node name="SelectionRow" type="BoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content"]
+[node name="BuilderRow" type="BoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 18
 
-[node name="PlayerPanel" type="PanelContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow"]
+[node name="RosterPanel" type="PanelContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleSidePanel")
+theme_type_variation = &"RaisedPanel"
 
-[node name="PlayerMargin" type="MarginContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel"]
+[node name="RosterMargin" type="MarginContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/RosterPanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 10
 
-[node name="PlayerContent" type="VBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin"]
+[node name="RosterContent" type="VBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/RosterPanel/RosterMargin"]
 layout_mode = 2
 theme_override_constants/separation = 7
 
-[node name="PlayerHeader" type="HBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin/PlayerContent"]
+[node name="RosterHeading" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/RosterPanel/RosterMargin/RosterContent"]
 layout_mode = 2
-
-[node name="PlayerHeading" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin/PlayerContent/PlayerHeader"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.25, 0.64, 1, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_font_sizes/font_size = 19
-text = "PLAYER WRESTLER"
+text = "ROSTER BROWSER"
 
-[node name="PlayerLock" type="CheckButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin/PlayerContent/PlayerHeader"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(120, 44)
-layout_mode = 2
-text = "LOCK PLAYER"
-
-[node name="PlayerFilters" type="BoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin/PlayerContent"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 7
-
-[node name="PlayerSearch" type="LineEdit" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin/PlayerContent/PlayerFilters"]
+[node name="RosterSearch" type="LineEdit" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/RosterPanel/RosterMargin/RosterContent"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/normal = SubResource("StyleInput")
-placeholder_text = "Search name, country, region, face/heel..."
+placeholder_text = "Search name, country, region, class, face/heel, title..."
 clear_button_enabled = true
 
-[node name="PlayerClassFilter" type="OptionButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin/PlayerContent/PlayerFilters"]
+[node name="FilterGrid" type="GridContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/RosterPanel/RosterMargin/RosterContent"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(150, 42)
+layout_mode = 2
+columns = 3
+theme_override_constants/h_separation = 7
+theme_override_constants/v_separation = 7
+
+[node name="CountryFilter" type="OptionButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/RosterPanel/RosterMargin/RosterContent/FilterGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(142, 40)
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleInput")
 fit_to_longest_item = false
 
-[node name="PlayerPromotionFilter" type="OptionButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin/PlayerContent/PlayerFilters"]
+[node name="ClassFilter" type="OptionButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/RosterPanel/RosterMargin/RosterContent/FilterGrid"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(125, 42)
+custom_minimum_size = Vector2(142, 40)
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleInput")
 fit_to_longest_item = false
 
-[node name="PlayerRosterList" type="ItemList" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin/PlayerContent"]
+[node name="GenderFilter" type="OptionButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/RosterPanel/RosterMargin/RosterContent/FilterGrid"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 300)
+custom_minimum_size = Vector2(142, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleInput")
+fit_to_longest_item = false
+
+[node name="PromotionFilter" type="OptionButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/RosterPanel/RosterMargin/RosterContent/FilterGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(142, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleInput")
+fit_to_longest_item = false
+
+[node name="DispositionFilter" type="OptionButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/RosterPanel/RosterMargin/RosterContent/FilterGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(142, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleInput")
+fit_to_longest_item = false
+
+[node name="ChampionFilter" type="OptionButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/RosterPanel/RosterMargin/RosterContent/FilterGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(142, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleInput")
+fit_to_longest_item = false
+
+[node name="SortFilter" type="OptionButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/RosterPanel/RosterMargin/RosterContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleInput")
+fit_to_longest_item = false
+
+[node name="RosterList" type="ItemList" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/RosterPanel/RosterMargin/RosterContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 320)
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_colors/font_selected_color = Color(1, 0.9, 0.55, 1)
-theme_override_colors/guide_color = Color(0.15, 0.2, 0.28, 1)
+theme_override_colors/font_selected_color = Color(0.960784, 0.960784, 0.960784, 1)
+theme_override_colors/guide_color = Color(0.203922, 0.203922, 0.203922, 1)
 theme_override_font_sizes/font_size = 17
 theme_override_constants/line_separation = 12
 theme_override_styles/panel = SubResource("StyleList")
@@ -311,129 +340,113 @@ allow_reselect = true
 allow_rmb_select = true
 max_text_lines = 1
 
-[node name="PlayerSummary" type="VBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin/PlayerContent"]
-custom_minimum_size = Vector2(0, 166)
+[node name="TeamsPanel" type="PanelContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow"]
 layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="PlayerSummaryName" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin/PlayerContent/PlayerSummary"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(0.78, 0.84, 0.94, 1)
-text = "No wrestler selected"
-autowrap_mode = 2
-
-[node name="PlayerSummaryDetails" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/PlayerPanel/PlayerMargin/PlayerContent/PlayerSummary"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.76, 0.8, 0.88, 1)
-text = "Signatures: None\nFinishers: None\nClass: None\nGimmick: None\nNationality: Not Set\nPromotion: Not Assigned"
-autowrap_mode = 2
-
-[node name="OpponentPanel" type="PanelContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow"]
-layout_mode = 2
-size_flags_horizontal = 3
+size_flags_horizontal = 2
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleSidePanel")
+theme_type_variation = &"RaisedPanel"
 
-[node name="OpponentMargin" type="MarginContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel"]
+[node name="TeamsMargin" type="MarginContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 10
 
-[node name="OpponentContent" type="VBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin"]
+[node name="TeamsContent" type="VBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin"]
 layout_mode = 2
-theme_override_constants/separation = 7
+theme_override_constants/separation = 10
 
-[node name="OpponentHeader" type="HBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin/OpponentContent"]
+[node name="TeamsHeading" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent"]
 layout_mode = 2
-
-[node name="AILock" type="CheckButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin/OpponentContent/OpponentHeader"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(100, 44)
-layout_mode = 2
-text = "LOCK AI"
-
-[node name="OpponentHeading" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin/OpponentContent/OpponentHeader"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.93, 0.3, 0.3, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_font_sizes/font_size = 19
-text = "AI OPPONENT"
-horizontal_alignment = 2
+text = "MATCH TEAMS"
+horizontal_alignment = 1
 
-[node name="OpponentFilters" type="BoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin/OpponentContent"]
+[node name="TeamAPanel" type="PanelContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent"]
 unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 7
-
-[node name="OpponentSearch" type="LineEdit" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin/OpponentContent/OpponentFilters"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 42)
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_styles/normal = SubResource("StyleInput")
-placeholder_text = "Search name, country, region, face/heel..."
-clear_button_enabled = true
-
-[node name="OpponentClassFilter" type="OptionButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin/OpponentContent/OpponentFilters"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(150, 42)
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleInput")
-fit_to_longest_item = false
-
-[node name="OpponentPromotionFilter" type="OptionButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin/OpponentContent/OpponentFilters"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(125, 42)
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleInput")
-fit_to_longest_item = false
-
-[node name="OpponentRosterList" type="ItemList" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin/OpponentContent"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 300)
+custom_minimum_size = Vector2(420, 170)
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_colors/font_selected_color = Color(1, 0.9, 0.55, 1)
-theme_override_colors/guide_color = Color(0.15, 0.2, 0.28, 1)
-theme_override_font_sizes/font_size = 17
-theme_override_constants/line_separation = 12
-theme_override_styles/panel = SubResource("StyleList")
-allow_reselect = true
-allow_rmb_select = true
-max_text_lines = 1
+theme_type_variation = &"RaisedPanel"
 
-[node name="OpponentSummary" type="VBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin/OpponentContent"]
-custom_minimum_size = Vector2(0, 166)
+[node name="TeamAMargin" type="MarginContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent/TeamAPanel"]
 layout_mode = 2
-theme_override_constants/separation = 4
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 9
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 9
 
-[node name="OpponentSummaryName" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin/OpponentContent/OpponentSummary"]
+[node name="TeamAContent" type="VBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent/TeamAPanel/TeamAMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TeamAHeader" type="HBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent/TeamAPanel/TeamAMargin/TeamAContent"]
+layout_mode = 2
+
+[node name="TeamATitle" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent/TeamAPanel/TeamAMargin/TeamAContent/TeamAHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+text = "TEAM A"
+
+[node name="PlayerLock" type="CheckButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent/TeamAPanel/TeamAMargin/TeamAContent/TeamAHeader"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(118, 38)
+layout_mode = 2
+text = "LOCK TEAM"
+
+[node name="TeamAList" type="VBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent/TeamAPanel/TeamAMargin/TeamAContent"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(0.78, 0.84, 0.94, 1)
-text = "No wrestler selected"
-horizontal_alignment = 2
-autowrap_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 6
 
-[node name="OpponentSummaryDetails" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SelectionRow/OpponentPanel/OpponentMargin/OpponentContent/OpponentSummary"]
+[node name="TeamBPanel" type="PanelContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(420, 170)
+layout_mode = 2
+size_flags_vertical = 3
+theme_type_variation = &"RaisedPanel"
+
+[node name="TeamBMargin" type="MarginContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent/TeamBPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 9
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 9
+
+[node name="TeamBContent" type="VBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent/TeamBPanel/TeamBMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TeamBHeader" type="HBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent/TeamBPanel/TeamBMargin/TeamBContent"]
+layout_mode = 2
+
+[node name="TeamBTitle" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent/TeamBPanel/TeamBMargin/TeamBContent/TeamBHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+text = "TEAM B"
+
+[node name="AILock" type="CheckButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent/TeamBPanel/TeamBMargin/TeamBContent/TeamBHeader"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(118, 38)
+layout_mode = 2
+text = "LOCK TEAM"
+
+[node name="TeamBList" type="VBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent/TeamBPanel/TeamBMargin/TeamBContent"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.76, 0.8, 0.88, 1)
-text = "Signatures: None\nFinishers: None\nClass: None\nGimmick: None\nNationality: Not Set\nPromotion: Not Assigned"
-horizontal_alignment = 2
-autowrap_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 6
 
 [node name="SetupStatus" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.82, 0.74, 0.46, 1)
-text = "Choose two different wrestlers."
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
+text = "Drag one wrestler into each team."
 horizontal_alignment = 1
 autowrap_mode = 2
 
@@ -462,7 +475,7 @@ size_flags_horizontal = 3
 theme_override_styles/normal = SubResource("StyleCancel")
 theme_override_styles/hover = SubResource("StyleStartHover")
 theme_override_styles/focus = SubResource("StyleStartHover")
-text = "RANDOM PLAYER"
+text = "RANDOM TEAM A"
 
 [node name="RandomAIButton" type="Button" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RandomButtons"]
 unique_name_in_owner = true
@@ -472,7 +485,7 @@ size_flags_horizontal = 3
 theme_override_styles/normal = SubResource("StyleCancel")
 theme_override_styles/hover = SubResource("StyleStartHover")
 theme_override_styles/focus = SubResource("StyleStartHover")
-text = "RANDOM AI"
+text = "RANDOM TEAM B"
 
 [node name="SetupButtons" type="BoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content"]
 unique_name_in_owner = true
@@ -493,10 +506,105 @@ text = "START MATCH"
 
 [node name="CancelSetupButton" type="Button" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SetupButtons"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(170, 54)
+custom_minimum_size = Vector2(230, 54)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/normal = SubResource("StyleCancel")
 theme_override_styles/hover = SubResource("StyleStartHover")
 theme_override_styles/focus = SubResource("StyleStartHover")
 text = "CANCEL"
+
+[node name="DragPreview" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleStart")
+
+[node name="DragPreviewMargin" type="MarginContainer" parent="DragPreview"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 8
+
+[node name="DragPreviewLabel" type="Label" parent="DragPreview/DragPreviewMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+text = "Wrestler"
+
+[node name="DetailsDimmer" type="ColorRect" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0.0352941, 0.0352941, 0.0352941, 0.68)
+
+[node name="DetailsPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(620, 520)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -310.0
+offset_top = -260.0
+offset_right = 310.0
+offset_bottom = 260.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"ModalPanel"
+
+[node name="DetailsMargin" type="MarginContainer" parent="DetailsPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 14
+
+[node name="DetailsContent" type="VBoxContainer" parent="DetailsPanel/DetailsMargin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="DetailsHeader" type="HBoxContainer" parent="DetailsPanel/DetailsMargin/DetailsContent"]
+layout_mode = 2
+
+[node name="DetailsTitle" type="Label" parent="DetailsPanel/DetailsMargin/DetailsContent/DetailsHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+theme_override_font_sizes/font_size = 22
+text = "WRESTLER DETAILS"
+
+[node name="DetailsCloseButton" type="Button" parent="DetailsPanel/DetailsMargin/DetailsContent/DetailsHeader"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 42)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleCancel")
+theme_override_styles/hover = SubResource("StyleStartHover")
+text = "X"
+
+[node name="DetailsScroll" type="ScrollContainer" parent="DetailsPanel/DetailsMargin/DetailsContent"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="DetailsText" type="RichTextLabel" parent="DetailsPanel/DetailsMargin/DetailsContent/DetailsScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = ""

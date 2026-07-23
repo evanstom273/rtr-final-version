@@ -5,91 +5,91 @@
 [ext_resource type="PackedScene" path="res://Scenes/Match/moves_radial_menu.tscn" id="3_menu"]
 [ext_resource type="PackedScene" path="res://Scenes/Match/setup_actions_menu.tscn" id="4_setup"]
 [ext_resource type="PackedScene" path="res://Scenes/Match/match_interaction_overlay.tscn" id="5_interaction"]
-[ext_resource type="PackedScene" path="res://Scenes/Match/match_report_popup.tscn" id="6_report"]
 [ext_resource type="PackedScene" path="res://Scenes/Match/match_result_popup.tscn" id="7_result"]
-[ext_resource type="PackedScene" path="res://Scenes/Match/match_setup_popup.tscn" id="8_match_setup"]
 [ext_resource type="PackedScene" path="res://Scenes/Match/UI/match_ring_view.tscn" id="9_ring"]
 [ext_resource type="PackedScene" path="res://Scenes/Match/weapon_radial_menu.tscn" id="10_weapon"]
+[ext_resource type="Material" path="res://Themes/smoked_background_material.tres" id="11_background"]
+[ext_resource type="PackedScene" path="res://Scenes/Match/match_pause_menu.tscn" id="12_pause"]
 
 [sub_resource type="StyleBoxFlat" id="StyleSelectorPanel"]
-bg_color = Color(0.065, 0.085, 0.125, 1)
+bg_color = Color(0.105882, 0.105882, 0.105882, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.2, 0.25, 0.34, 1)
+border_color = Color(0.203922, 0.203922, 0.203922, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="StyleSelector"]
-bg_color = Color(0.035, 0.05, 0.08, 1)
+bg_color = Color(0.105882, 0.105882, 0.105882, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.28, 0.34, 0.45, 1)
+border_color = Color(0.203922, 0.203922, 0.203922, 1)
 corner_radius_top_left = 5
 corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
 [sub_resource type="StyleBoxFlat" id="StyleCenterPanel"]
-bg_color = Color(0.045, 0.06, 0.09, 1)
+bg_color = Color(0.0784314, 0.0784314, 0.0784314, 1)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.78, 0.64, 0.2, 0.85)
+border_color = Color(0.203922, 0.203922, 0.203922, 0.85)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
 [sub_resource type="StyleBoxFlat" id="StyleBanner"]
-bg_color = Color(0.1, 0.08, 0.025, 1)
+bg_color = Color(0.105882, 0.105882, 0.105882, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.88, 0.7, 0.2, 0.8)
+border_color = Color(0.203922, 0.203922, 0.203922, 0.8)
 corner_radius_top_left = 7
 corner_radius_top_right = 7
 corner_radius_bottom_right = 7
 corner_radius_bottom_left = 7
 
 [sub_resource type="StyleBoxFlat" id="StyleAction"]
-bg_color = Color(0.09, 0.13, 0.2, 1)
+bg_color = Color(0.105882, 0.105882, 0.105882, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.28, 0.38, 0.55, 1)
+border_color = Color(0.203922, 0.203922, 0.203922, 1)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
 [sub_resource type="StyleBoxFlat" id="StyleLog"]
-bg_color = Color(0.025, 0.035, 0.055, 1)
+bg_color = Color(0.0352941, 0.0352941, 0.0352941, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.2, 0.25, 0.34, 1)
+border_color = Color(0.203922, 0.203922, 0.203922, 1)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
 [sub_resource type="StyleBoxFlat" id="StylePin"]
-bg_color = Color(0.48, 0.1, 0.12, 1)
+bg_color = Color(0.105882, 0.105882, 0.105882, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.9, 0.3, 0.3, 1)
+border_color = Color(0.486275, 0.360784, 1, 1)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
@@ -105,6 +105,7 @@ grow_vertical = 2
 script = ExtResource("1_main")
 
 [node name="Background" type="ColorRect" parent="." unique_id=1563690880]
+material = ExtResource("11_background")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -112,7 +113,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.018, 0.025, 0.04, 1)
+color = Color(0.0352941, 0.0352941, 0.0352941, 1)
 
 [node name="SafeArea" type="MarginContainer" parent="." unique_id=1943107250]
 unique_name_in_owner = true
@@ -126,19 +127,20 @@ grow_vertical = 2
 [node name="PageMargin" type="MarginContainer" parent="SafeArea" unique_id=818296669]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 14
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 18
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 28
 
 [node name="Page" type="VBoxContainer" parent="SafeArea/PageMargin" unique_id=234662993]
 layout_mode = 2
+size_flags_vertical = 3
 theme_override_constants/separation = 10
 
 [node name="SelectorPanel" type="PanelContainer" parent="SafeArea/PageMargin/Page" unique_id=1023246354]
 visible = false
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleSelectorPanel")
+theme_type_variation = &"RaisedPanel"
 
 [node name="SelectorMargin" type="MarginContainer" parent="SafeArea/PageMargin/Page/SelectorPanel" unique_id=503069932]
 layout_mode = 2
@@ -164,7 +166,7 @@ theme_override_constants/separation = 4
 [node name="PlayerLabel" type="Label" parent="SafeArea/PageMargin/Page/SelectorPanel/SelectorMargin/SelectorContent/SelectorRow/PlayerChoice" unique_id=4725350]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.25, 0.64, 1, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 text = "PLAYER WRESTLER"
 
 [node name="PlayerSelector" type="OptionButton" parent="SafeArea/PageMargin/Page/SelectorPanel/SelectorMargin/SelectorContent/SelectorRow/PlayerChoice" unique_id=677111525]
@@ -180,7 +182,7 @@ fit_to_longest_item = false
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 38)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.84, 0.88, 0.95, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_font_sizes/font_size = 17
 text = "Unassigned"
 vertical_alignment = 1
@@ -189,7 +191,7 @@ autowrap_mode = 2
 [node name="Versus" type="Label" parent="SafeArea/PageMargin/Page/SelectorPanel/SelectorMargin/SelectorContent/SelectorRow" unique_id=1854377102]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.8, 0.68, 0.25, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 theme_override_font_sizes/font_size = 20
 text = "VS"
 vertical_alignment = 2
@@ -202,7 +204,7 @@ theme_override_constants/separation = 4
 [node name="AILabel" type="Label" parent="SafeArea/PageMargin/Page/SelectorPanel/SelectorMargin/SelectorContent/SelectorRow/AIChoice" unique_id=372444790]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.93, 0.3, 0.3, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 text = "AI WRESTLER"
 horizontal_alignment = 2
 
@@ -219,7 +221,7 @@ fit_to_longest_item = false
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 38)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.84, 0.88, 0.95, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_font_sizes/font_size = 17
 text = "Unassigned"
 horizontal_alignment = 2
@@ -229,7 +231,7 @@ autowrap_mode = 2
 [node name="SelectionStatus" type="Label" parent="SafeArea/PageMargin/Page/SelectorPanel/SelectorMargin/SelectorContent" unique_id=1363349090]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.62, 0.3, 1)
+theme_override_colors/font_color = Color(0.909804, 0.611765, 0.196078, 1)
 horizontal_alignment = 1
 autowrap_mode = 2
 
@@ -264,7 +266,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 size_flags_stretch_ratio = 1.75
-theme_override_styles/panel = SubResource("StyleCenterPanel")
+theme_type_variation = &"RaisedPanel"
 
 [node name="CenterMargin" type="MarginContainer" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn" unique_id=1089231513]
 layout_mode = 2
@@ -279,13 +281,12 @@ theme_override_constants/separation = 9
 
 [node name="VSBannerPanel" type="PanelContainer" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn/CenterMargin/CenterContent" unique_id=783188190]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBanner")
 
 [node name="VSBanner" type="Label" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn/CenterMargin/CenterContent/VSBannerPanel" unique_id=123716363]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.95, 0.79, 0.25, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_font_sizes/font_size = 18
 text = "STANDARD SINGLES MATCH"
 horizontal_alignment = 1
@@ -301,7 +302,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.25, 0.64, 1, 1)
+theme_override_colors/font_color = Color(0.486275, 0.360784, 1, 1)
 text = "ATTACKER: PLAYER"
 vertical_alignment = 1
 text_overrun_behavior = 3
@@ -310,7 +311,7 @@ text_overrun_behavior = 3
 unique_name_in_owner = true
 custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.94, 0.95, 0.98, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_font_sizes/font_size = 18
 text = "00:00"
 horizontal_alignment = 2
@@ -320,7 +321,7 @@ unique_name_in_owner = true
 visible = false
 custom_minimum_size = Vector2(104, 24)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.96, 0.8, 0.28, 1)
+theme_override_colors/font_color = Color(0.909804, 0.611765, 0.196078, 1)
 theme_override_font_sizes/font_size = 16
 text = "COUNT: 0 / 10"
 horizontal_alignment = 2
@@ -331,7 +332,7 @@ unique_name_in_owner = true
 visible = false
 custom_minimum_size = Vector2(0, 54)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.96, 0.8, 0.28, 1)
+theme_override_colors/font_color = Color(0.831373, 0.686275, 0.215686, 1)
 theme_override_font_sizes/font_size = 20
 text = "MATCH RESULT"
 horizontal_alignment = 1
@@ -343,7 +344,7 @@ unique_name_in_owner = true
 visible = false
 custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.95, 0.79, 0.25, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_styles/normal = SubResource("StyleAction")
 text = "VIEW MATCH REPORT"
 
@@ -351,7 +352,6 @@ text = "VIEW MATCH REPORT"
 custom_minimum_size = Vector2(0, 140)
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleLog")
 
 [node name="LogMargin" type="MarginContainer" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn/CenterMargin/CenterContent/LogPanel" unique_id=1921789160]
 layout_mode = 2
@@ -366,7 +366,7 @@ theme_override_constants/separation = 7
 
 [node name="LogHeading" type="Label" parent="SafeArea/PageMargin/Page/CardsRow/VBoxContainer/CenterColumn/CenterMargin/CenterContent/LogPanel/LogMargin/LogContent" unique_id=2097000643]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.78, 0.82, 0.9, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 text = "MATCH LOG"
 horizontal_alignment = 1
 
@@ -400,7 +400,7 @@ text_overrun_behavior = 3
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.55, 0.78, 1, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_styles/normal = SubResource("StyleAction")
 text = "SETUP / SHOWBOAT"
 text_overrun_behavior = 3
@@ -409,7 +409,7 @@ text_overrun_behavior = 3
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.95, 0.79, 0.25, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_styles/normal = SubResource("StyleAction")
 text = "EXECUTE"
 text_overrun_behavior = 3
@@ -426,7 +426,7 @@ unique_name_in_owner = true
 visible = false
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.95, 0.79, 0.25, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_styles/normal = SubResource("StyleAction")
 text = "SET UP NEW MATCH"
 
@@ -443,7 +443,7 @@ size_flags_vertical = 3
 unique_name_in_owner = true
 layout_mode = 2
 role_title = "AI"
-accent_color = Color(0.93, 0.3, 0.3, 1)
+accent_color = Color(0.690196, 0.690196, 0.690196, 1)
 
 [node name="PortraitRotateOverlay" type="ColorRect" parent="." unique_id=1439042001]
 unique_name_in_owner = true
@@ -455,7 +455,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.018, 0.025, 0.04, 0.985)
+color = Color(0.0352941, 0.0352941, 0.0352941, 0.985)
 
 [node name="RotateMessage" type="Label" parent="PortraitRotateOverlay" unique_id=1439042002]
 layout_mode = 1
@@ -470,7 +470,7 @@ offset_right = 210.0
 offset_bottom = 70.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_colors/font_color = Color(0.9, 0.93, 0.98, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_font_sizes/font_size = 24
 text = "ROTATE TO LANDSCAPE
 
@@ -478,6 +478,23 @@ The tactical match view is designed for landscape play."
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
+
+[node name="PauseButton" type="Button" parent="."]
+unique_name_in_owner = true
+visible = false
+z_index = 80
+custom_minimum_size = Vector2(52, 52)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -72.0
+offset_top = 18.0
+offset_right = -20.0
+offset_bottom = 70.0
+grow_horizontal = 0
+tooltip_text = "Pause match"
+text = "Ⅱ"
 
 [node name="MovesRadialMenu" parent="." unique_id=1861384882 instance=ExtResource("3_menu")]
 unique_name_in_owner = true
@@ -489,7 +506,7 @@ unique_name_in_owner = true
 visible = false
 layout_mode = 1
 
-[node name="WeaponRadialMenu" parent="." instance=ExtResource("10_weapon")]
+[node name="WeaponRadialMenu" parent="." unique_id=1638654388 instance=ExtResource("10_weapon")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 1
@@ -504,12 +521,7 @@ unique_name_in_owner = true
 visible = false
 layout_mode = 1
 
-[node name="MatchReportPopup" parent="." unique_id=1401911859 instance=ExtResource("6_report")]
-unique_name_in_owner = true
-visible = false
-layout_mode = 1
-
-[node name="MatchSetupPopup" parent="." unique_id=749129682 instance=ExtResource("8_match_setup")]
+[node name="MatchPauseMenu" parent="." instance=ExtResource("12_pause")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 1

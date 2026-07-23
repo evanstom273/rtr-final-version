@@ -5,7 +5,7 @@ signal move_selected(move: MoveResource)
 signal player_move_selected(move: MoveResource)
 signal target_focus_changed(part: int)
 
-const FINISHER_COLOR := Color(0.95, 0.78, 0.22, 1.0)
+const FINISHER_COLOR := AppThemePalette.PRESTIGE
 const MOVE_BUTTON_HEIGHT := 58.0
 const MOVE_GRID_GAP := 8.0
 const MOVE_GRID_RESERVED_HEIGHT := 205.0
@@ -227,7 +227,7 @@ func _show_move_category(move_type: int) -> void:
 			button.add_theme_color_override("font_hover_color", FINISHER_COLOR.lightened(0.15))
 			button.add_theme_color_override("font_pressed_color", FINISHER_COLOR)
 		elif _wrestler != null and move in _wrestler.signature_moves:
-			var signature_color := Color(0.48, 0.78, 1.0, 1.0)
+			var signature_color := AppThemePalette.ACTIVE
 			button.add_theme_color_override("font_color", signature_color)
 			button.add_theme_color_override("font_hover_color", signature_color.lightened(0.15))
 			button.add_theme_color_override("font_pressed_color", signature_color)

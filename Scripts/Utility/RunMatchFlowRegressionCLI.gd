@@ -8,28 +8,27 @@ func _ready() -> void:
 
 
 func _run() -> void:
-	var packed := load("res://Scenes/Match/simple_match_ui.tscn") as PackedScene
-	_check(packed != null, "main match scene loads")
-	if packed == null:
+	var flow_packed := load("res://Scenes/Match/exhibition_flow.tscn") as PackedScene
+	_check(flow_packed != null, "exhibition flow scene loads")
+	if flow_packed == null:
 		_finish()
 		return
-	var match_ui := packed.instantiate() as SimpleMatchUI
-	_check(match_ui != null, "main match scene instantiates")
-	if match_ui == null:
+	var flow := flow_packed.instantiate() as ExhibitionFlowController
+	_check(flow != null, "exhibition flow scene instantiates")
+	if flow == null:
 		_finish()
 		return
-	get_tree().root.add_child(match_ui)
+	get_tree().root.add_child(flow)
 	await get_tree().process_frame
 	await get_tree().process_frame
-	_check(not match_ui._match_initialized, "initial setup opens before a match is initialized")
-	_check(match_ui._match_setup_popup.visible, "initial setup popup is visible")
-	_check(match_ui._roster.size() >= 2, "at least two wrestlers load through ResourceLoader")
-	if match_ui._roster.size() < 2:
-		match_ui.queue_free()
+	_check(flow._setup_screen != null and flow._setup_screen.visible, "initial setup screen is visible before a match is initialized")
+	_check(flow._roster.size() >= 2, "at least two wrestlers load through ResourceLoader")
+	if flow._roster.size() < 2:
+		flow.queue_free()
 		_finish()
 		return
 
-	var popup := match_ui._match_setup_popup as MatchSetupPopup
+	var popup := flow._setup_screen as MatchSetupPopup
 	popup._rng.seed = 937451
 	var roster_scroll := popup._player_list.get_v_scroll_bar()
 	roster_scroll.value = 0.0
@@ -60,12 +59,22 @@ func _run() -> void:
 			"random matchup never duplicates a wrestler",
 		)
 	popup._on_random_match_pressed()
+	await get_tree().process_frame
 	_check(
-		popup.visible and not popup._launch_pending and not match_ui._match_initialized,
+		flow._setup_screen != null
+		and flow._setup_screen.visible
+		and not popup._launch_pending
+		and flow._match_screen == null,
 		"random matchup previews selections without launching",
 	)
 	popup._on_start_pressed()
-	_check(match_ui._match_initialized and not popup.visible, "Start accepts the previewed matchup exactly once")
+	await get_tree().process_frame
+	var match_ui := flow._match_screen as SimpleMatchUI
+	_check(match_ui != null and match_ui._match_initialized, "Start accepts the previewed matchup exactly once")
+	if match_ui == null:
+		flow.queue_free()
+		_finish()
+		return
 	_check(
 		not match_ui.match_log_entries.is_empty()
 		and str(match_ui.match_log_entries[0]).contains("bell rings"),
@@ -75,13 +84,36 @@ func _run() -> void:
 	match_ui._scheduled_ai_generation = -1
 	match_ui._scheduled_neutral_generation = -1
 	match_ui._match_initialized = false
-	popup.open_setup(match_ui._roster, match_ui.player_wrestler, match_ui.ai_wrestler, false)
+	var setup_screen_scene := load("res://Scenes/Match/exhibition_setup.tscn") as PackedScene
+	_check(setup_screen_scene != null, "exhibition setup scene loads independently")
+	if setup_screen_scene == null:
+		_finish()
+		return
+	popup = setup_screen_scene.instantiate() as MatchSetupPopup
+	get_tree().root.add_child(popup)
+	await get_tree().process_frame
+	popup.open_setup(flow._roster, null, null, false)
+
+	var match_scene := load("res://Scenes/Match/simple_match_ui.tscn") as PackedScene
+	_check(match_scene != null, "active match scene loads")
+	if match_scene == null:
+		_finish()
+		return
+	var isolated_match_ui := match_scene.instantiate() as SimpleMatchUI
+	_check(isolated_match_ui != null, "active match scene instantiates")
+	if isolated_match_ui == null:
+		_finish()
+		return
+	get_tree().root.add_child(isolated_match_ui)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	match_ui = isolated_match_ui
 
 	popup._player_locked = true
-	popup._selected_player = match_ui._roster[0]
+	popup._selected_player = flow._roster[0]
 	var locked_pair := popup._choose_random_pair(true, false)
 	_check(
-		not locked_pair.is_empty() and popup._same_wrestler(locked_pair.player, match_ui._roster[0]),
+		not locked_pair.is_empty() and popup._same_wrestler(locked_pair.player, flow._roster[0]),
 		"Player lock preserves the selected wrestler",
 	)
 	popup._player_locked = false
@@ -90,8 +122,8 @@ func _run() -> void:
 	popup._opponent_filtered_indices.clear()
 	popup._opponent_filtered_indices.append(1)
 	popup._recent_wrestler_paths = PackedStringArray([
-		match_ui._roster[0].resource_path,
-		match_ui._roster[1].resource_path,
+		flow._roster[0].resource_path,
+		flow._roster[1].resource_path,
 	])
 	var recent_pair := popup._choose_random_pair(false, false)
 	_check(not recent_pair.is_empty(), "recent-history avoidance relaxes when necessary")
@@ -115,7 +147,9 @@ func _run() -> void:
 	) -> void:
 		launch_count[0] = int(launch_count[0]) + 1
 	)
-	guarded_popup.open_setup(match_ui._roster, match_ui._roster[0], match_ui._roster[1], false)
+	guarded_popup.open_setup(flow._roster, null, null, false)
+	guarded_popup._assign_to_team(flow._roster[0], true)
+	guarded_popup._assign_to_team(flow._roster[1], false)
 	guarded_popup._on_start_pressed()
 	guarded_popup._on_start_pressed()
 	_check(int(launch_count[0]) == 1 and guarded_popup._launch_pending, "rapid Start presses emit exactly one launch")
@@ -123,10 +157,83 @@ func _run() -> void:
 	_check(not guarded_popup._launch_pending, "rejected launch re-enables setup")
 	guarded_popup.queue_free()
 
-	match_ui.player_wrestler = match_ui._roster[0]
-	match_ui.ai_wrestler = match_ui._roster[1]
+	match_ui.player_wrestler = flow._roster[0]
+	match_ui.ai_wrestler = flow._roster[1]
 	match_ui.player_side_state.initialize(match_ui.player_wrestler)
 	match_ui.ai_side_state.initialize(match_ui.ai_wrestler)
+	match_ui.current_controller = SimpleMatchUI.ControlState.PLAYER_CONTROL
+	match_ui.match_ended = false
+	match_ui.is_resolving_action = false
+	match_ui.player_side_state.set_match_state(
+		WrestlerResource.Position.STANDING,
+		WrestlerResource.Orientation.FRONT,
+		WrestlerResource.Area.OUTSIDE,
+		WrestlerResource.MotionState.STATIONARY,
+	)
+	match_ui.ai_side_state.set_match_state(
+		WrestlerResource.Position.GROUNDED,
+		WrestlerResource.Orientation.FACE_UP,
+		WrestlerResource.Area.OUTSIDE,
+		WrestlerResource.MotionState.STATIONARY,
+	)
+	_check(not match_ui._can_pin(SimpleMatchUI.Side.PLAYER), "manual pins are illegal outside")
+	_check(
+		not match_ui._pin_area_is_legal(SimpleMatchUI.Side.PLAYER, SimpleMatchUI.Side.AI),
+		"embedded pins are illegal outside",
+	)
+	_check(
+		not match_ui._submission_area_is_legal(SimpleMatchUI.Side.PLAYER, SimpleMatchUI.Side.AI),
+		"submissions are illegal outside",
+	)
+	match_ui.player_side_state.set_match_state(
+		WrestlerResource.Position.STANDING,
+		WrestlerResource.Orientation.FRONT,
+		WrestlerResource.Area.APRON,
+		WrestlerResource.MotionState.STATIONARY,
+	)
+	match_ui.ai_side_state.set_match_state(
+		WrestlerResource.Position.STANDING,
+		WrestlerResource.Orientation.FRONT,
+		WrestlerResource.Area.IN_RING,
+		WrestlerResource.MotionState.STATIONARY,
+	)
+	match_ui._clear_active_referee_count(false)
+	_check(
+		not match_ui._side_is_outside(SimpleMatchUI.Side.PLAYER),
+		"stepping to the apron does not trigger a count-out",
+	)
+	_check(
+		not match_ui._submission_area_is_legal(SimpleMatchUI.Side.PLAYER, SimpleMatchUI.Side.AI),
+		"the count-out-safe apron still does not allow submissions",
+	)
+	match_ui._settle_referee_count("regression apron setup")
+	_check(not match_ui._referee_count_active, "apron springboard setup leaves the referee count inactive")
+	var springboard_result := MoveResource.new()
+	springboard_result.move_type = MoveResource.MoveType.SPRINGBOARD
+	springboard_result.resulting_attacker_position = WrestlerResource.Position.GROUNDED
+	springboard_result.resulting_attacker_orientation = WrestlerResource.Orientation.FACE_UP
+	springboard_result.resulting_attacker_area_mode = MoveResource.AreaResultMode.SPECIFIC
+	springboard_result.resulting_attacker_area = WrestlerResource.Area.IN_RING
+	springboard_result.resulting_target_position = WrestlerResource.Position.GROUNDED
+	springboard_result.resulting_target_orientation = WrestlerResource.Orientation.FACE_UP
+	springboard_result.resulting_target_area_mode = MoveResource.AreaResultMode.SPECIFIC
+	springboard_result.resulting_target_area = WrestlerResource.Area.IN_RING
+	match_ui.apply_positions(
+		SimpleMatchUI.Side.PLAYER,
+		SimpleMatchUI.Side.AI,
+		springboard_result,
+		SimpleMatchUI.ActionResult.CLEAN_SUCCESS,
+	)
+	match_ui._settle_referee_count("regression apron springboard")
+	_check(
+		match_ui.player_side_state.current_area == WrestlerResource.Area.IN_RING
+		and match_ui.ai_side_state.current_area == WrestlerResource.Area.IN_RING,
+		"apron springboard applies its authored in-ring landing",
+	)
+	_check(
+		not match_ui._referee_count_active and match_ui._referee_count_value == 0,
+		"apron springboard remains count-out safe through its in-ring landing",
+	)
 	match_ui._match_setup_metadata = {
 		"match_setup": "Random Both",
 		"player_locked": false,

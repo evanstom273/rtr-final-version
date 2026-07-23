@@ -1,0 +1,225 @@
+[gd_resource type="Theme" format=3 uid="uid://rtkndmx131e2"]
+
+[ext_resource type="Texture2D" uid="uid://qw8ttg51w4cp" path="res://Themes/Materials/panel.svg" id="1_panel"]
+[ext_resource type="Texture2D" uid="uid://d1jfv0msphev8" path="res://Themes/Materials/card.svg" id="2_card"]
+[ext_resource type="Texture2D" uid="uid://y1co6qqvriij" path="res://Themes/Materials/modal.svg" id="3_modal"]
+[ext_resource type="Texture2D" uid="uid://dlde7wscdotws" path="res://Themes/Materials/control.svg" id="4_control"]
+[ext_resource type="Texture2D" uid="uid://caudinjo5qgs1" path="res://Themes/Materials/control_hover.svg" id="5_hover"]
+[ext_resource type="Texture2D" uid="uid://v6axjqpoj4u6" path="res://Themes/Materials/control_pressed.svg" id="6_pressed"]
+[ext_resource type="Texture2D" uid="uid://dc7yummcwwcry" path="res://Themes/Materials/control_focus.svg" id="7_focus"]
+
+[sub_resource type="StyleBoxFlat" id="ControlDisabled"]
+content_margin_left = 10.0
+content_margin_right = 10.0
+bg_color = Color(0.0901961, 0.0901961, 0.0901961, 0.72)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.203922, 0.203922, 0.203922, 0.65)
+corner_radius_top_left = 7
+corner_radius_top_right = 7
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 7
+
+[sub_resource type="StyleBoxTexture" id="ControlFocus"]
+content_margin_left = 10.0
+content_margin_right = 10.0
+texture = ExtResource("7_focus")
+texture_margin_left = 14.0
+texture_margin_top = 14.0
+texture_margin_right = 14.0
+texture_margin_bottom = 14.0
+
+[sub_resource type="StyleBoxTexture" id="ControlHover"]
+content_margin_left = 10.0
+content_margin_right = 10.0
+texture = ExtResource("5_hover")
+texture_margin_left = 11.0
+texture_margin_top = 11.0
+texture_margin_right = 11.0
+texture_margin_bottom = 11.0
+
+[sub_resource type="StyleBoxTexture" id="ControlNormal"]
+content_margin_left = 10.0
+content_margin_right = 10.0
+texture = ExtResource("4_control")
+texture_margin_left = 11.0
+texture_margin_top = 11.0
+texture_margin_right = 11.0
+texture_margin_bottom = 11.0
+
+[sub_resource type="StyleBoxTexture" id="ControlPressed"]
+content_margin_left = 10.0
+content_margin_right = 10.0
+texture = ExtResource("6_pressed")
+texture_margin_left = 11.0
+texture_margin_top = 11.0
+texture_margin_right = 11.0
+texture_margin_bottom = 11.0
+
+[sub_resource type="StyleBoxFlat" id="ProgressBackground"]
+bg_color = Color(0.0352941, 0.0352941, 0.0352941, 0.72)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.203922, 0.203922, 0.203922, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="Separator"]
+bg_color = Color(0.203922, 0.203922, 0.203922, 1)
+
+[sub_resource type="StyleBoxFlat" id="List"]
+bg_color = Color(0.0352941, 0.0352941, 0.0352941, 0.68)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.203922, 0.203922, 0.203922, 1)
+corner_radius_top_left = 7
+corner_radius_top_right = 7
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 7
+
+[sub_resource type="StyleBoxFlat" id="Selected"]
+bg_color = Color(0.486275, 0.360784, 1, 0.18)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.486275, 0.360784, 1, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxTexture" id="Modal"]
+texture = ExtResource("3_modal")
+texture_margin_left = 18.0
+texture_margin_top = 18.0
+texture_margin_right = 18.0
+texture_margin_bottom = 18.0
+modulate_color = Color(1, 1, 1, 0.94)
+
+[sub_resource type="StyleBoxTexture" id="Panel"]
+texture = ExtResource("1_panel")
+texture_margin_left = 14.0
+texture_margin_top = 14.0
+texture_margin_right = 14.0
+texture_margin_bottom = 14.0
+modulate_color = Color(1, 1, 1, 0.82)
+
+[sub_resource type="StyleBoxFlat" id="ProgressFill"]
+bg_color = Color(0.486275, 0.360784, 1, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxTexture" id="Card"]
+texture = ExtResource("2_card")
+texture_margin_left = 15.0
+texture_margin_top = 15.0
+texture_margin_right = 15.0
+texture_margin_bottom = 15.0
+modulate_color = Color(1, 1, 1, 0.9)
+
+[resource]
+default_font_size = 16
+ApplicationPanel/base_type = &"PanelContainer"
+ApplicationPanel/styles/panel = SubResource("Panel")
+Button/colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+Button/colors/font_disabled_color = Color(0.427451, 0.427451, 0.427451, 1)
+Button/colors/font_focus_color = Color(0.960784, 0.960784, 0.960784, 1)
+Button/colors/font_hover_color = Color(0.960784, 0.960784, 0.960784, 1)
+Button/colors/font_pressed_color = Color(0.960784, 0.960784, 0.960784, 1)
+Button/styles/disabled = SubResource("ControlDisabled")
+Button/styles/focus = SubResource("ControlFocus")
+Button/styles/hover = SubResource("ControlHover")
+Button/styles/normal = SubResource("ControlNormal")
+Button/styles/pressed = SubResource("ControlPressed")
+CheckBox/colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+CheckBox/colors/font_disabled_color = Color(0.427451, 0.427451, 0.427451, 1)
+CheckBox/styles/disabled = SubResource("ControlDisabled")
+CheckBox/styles/focus = SubResource("ControlFocus")
+CheckBox/styles/hover = SubResource("ControlHover")
+CheckBox/styles/normal = SubResource("ControlNormal")
+CheckBox/styles/pressed = SubResource("ControlPressed")
+CheckButton/colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+CheckButton/colors/font_disabled_color = Color(0.427451, 0.427451, 0.427451, 1)
+CheckButton/styles/disabled = SubResource("ControlDisabled")
+CheckButton/styles/focus = SubResource("ControlFocus")
+CheckButton/styles/hover = SubResource("ControlHover")
+CheckButton/styles/normal = SubResource("ControlNormal")
+CheckButton/styles/pressed = SubResource("ControlPressed")
+HScrollBar/styles/grabber = SubResource("ControlNormal")
+HScrollBar/styles/grabber_highlight = SubResource("ControlHover")
+HScrollBar/styles/grabber_pressed = SubResource("ControlPressed")
+HScrollBar/styles/scroll = SubResource("ProgressBackground")
+HSeparator/styles/separator = SubResource("Separator")
+ItemList/colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+ItemList/colors/font_selected_color = Color(0.960784, 0.960784, 0.960784, 1)
+ItemList/colors/guide_color = Color(0.203922, 0.203922, 0.203922, 1)
+ItemList/styles/panel = SubResource("List")
+ItemList/styles/selected = SubResource("Selected")
+ItemList/styles/selected_focus = SubResource("Selected")
+Label/colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+LineEdit/colors/caret_color = Color(0.486275, 0.360784, 1, 1)
+LineEdit/colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+LineEdit/colors/font_placeholder_color = Color(0.690196, 0.690196, 0.690196, 0.7)
+LineEdit/colors/selection_color = Color(0.486275, 0.360784, 1, 0.35)
+LineEdit/styles/focus = SubResource("ControlFocus")
+LineEdit/styles/normal = SubResource("ControlNormal")
+LineEdit/styles/read_only = SubResource("ControlDisabled")
+ModalPanel/base_type = &"PanelContainer"
+ModalPanel/styles/panel = SubResource("Modal")
+OptionButton/colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+OptionButton/colors/font_disabled_color = Color(0.427451, 0.427451, 0.427451, 1)
+OptionButton/styles/disabled = SubResource("ControlDisabled")
+OptionButton/styles/focus = SubResource("ControlFocus")
+OptionButton/styles/hover = SubResource("ControlHover")
+OptionButton/styles/normal = SubResource("ControlNormal")
+OptionButton/styles/pressed = SubResource("ControlPressed")
+Panel/styles/panel = SubResource("Panel")
+PanelContainer/styles/panel = SubResource("Panel")
+PopupMenu/colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+PopupMenu/colors/font_disabled_color = Color(0.427451, 0.427451, 0.427451, 1)
+PopupMenu/colors/font_hover_color = Color(0.960784, 0.960784, 0.960784, 1)
+PopupMenu/styles/hover = SubResource("Selected")
+PopupMenu/styles/panel = SubResource("Modal")
+PopupPanel/styles/panel = SubResource("Modal")
+ProgressBar/colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+ProgressBar/styles/background = SubResource("ProgressBackground")
+ProgressBar/styles/fill = SubResource("ProgressFill")
+RaisedPanel/base_type = &"PanelContainer"
+RaisedPanel/styles/panel = SubResource("Card")
+RichTextLabel/colors/default_color = Color(0.960784, 0.960784, 0.960784, 1)
+RichTextLabel/colors/font_selected_color = Color(0.960784, 0.960784, 0.960784, 1)
+RichTextLabel/colors/selection_color = Color(0.486275, 0.360784, 1, 0.35)
+TabBar/colors/font_selected_color = Color(0.960784, 0.960784, 0.960784, 1)
+TabBar/colors/font_unselected_color = Color(0.690196, 0.690196, 0.690196, 1)
+TabBar/styles/tab_hovered = SubResource("ControlHover")
+TabBar/styles/tab_selected = SubResource("ControlFocus")
+TabBar/styles/tab_unselected = SubResource("ControlNormal")
+TabContainer/styles/panel = SubResource("Panel")
+TabContainer/styles/tab_hovered = SubResource("ControlHover")
+TabContainer/styles/tab_selected = SubResource("ControlFocus")
+TabContainer/styles/tab_unselected = SubResource("ControlNormal")
+TextEdit/colors/caret_color = Color(0.486275, 0.360784, 1, 1)
+TextEdit/colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+TextEdit/colors/font_placeholder_color = Color(0.690196, 0.690196, 0.690196, 0.7)
+TextEdit/colors/selection_color = Color(0.486275, 0.360784, 1, 0.35)
+TextEdit/styles/focus = SubResource("ControlFocus")
+TextEdit/styles/normal = SubResource("ControlNormal")
+TextEdit/styles/read_only = SubResource("ControlDisabled")
+TooltipLabel/colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+TooltipPanel/styles/panel = SubResource("Modal")
+VScrollBar/styles/grabber = SubResource("ControlNormal")
+VScrollBar/styles/grabber_highlight = SubResource("ControlHover")
+VScrollBar/styles/grabber_pressed = SubResource("ControlPressed")
+VScrollBar/styles/scroll = SubResource("ProgressBackground")
+VSeparator/styles/separator = SubResource("Separator")

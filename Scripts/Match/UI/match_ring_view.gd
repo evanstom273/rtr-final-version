@@ -55,9 +55,9 @@ func set_responsive_layout(mode: int, effective_size: Vector2) -> void:
 		ResponsiveUI.LayoutMode.PHONE:
 			custom_minimum_size = Vector2(280.0, 175.0 if not portrait_phone else 150.0)
 		ResponsiveUI.LayoutMode.TABLET:
-			custom_minimum_size = Vector2(300.0, 220.0)
+			custom_minimum_size = Vector2(300.0, 200.0)
 		_:
-			custom_minimum_size = Vector2(340.0, 280.0)
+			custom_minimum_size = Vector2(340.0, 220.0)
 	_marker_layer.scale = Vector2.ONE
 	_layout_markers.call_deferred()
 
@@ -117,7 +117,14 @@ func present_event(event: Dictionary) -> void:
 		&"move_started":
 			if actor != null:
 				actor.pulse(&"signature" if bool(event.get("is_signature", false)) else (&"finisher" if bool(event.get("is_finisher", false)) else &"move"))
-			_show_action_line(actor_id, target_id, Color(0.95, 0.78, 0.22, 0.85) if bool(event.get("is_finisher", false)) else Color(0.55, 0.78, 1.0, 0.8))
+			_show_action_line(
+				actor_id,
+				target_id,
+				AppThemePalette.with_alpha(
+					AppThemePalette.PRESTIGE if bool(event.get("is_finisher", false)) else AppThemePalette.ACTIVE,
+					0.85 if bool(event.get("is_finisher", false)) else 0.8,
+				),
+			)
 			_special_label.text = str(event.get("label", "MOVE"))
 			_flash_event_label()
 		&"move_resolved":

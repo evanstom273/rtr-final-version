@@ -49,10 +49,10 @@ extends Control
 		if is_node_ready():
 			_update_opponent()
 
-@export var face_name_color: Color = Color(0.2509804, 0.6392157, 1.0, 1.0)
-@export var heel_name_color: Color = Color(0.92156863, 0.2901961, 0.2901961, 1.0)
-@export var champion_name_color: Color = Color(0.83137256, 0.6862745, 0.21568628, 1.0)
-@export var accent_dim_color: Color = Color(0.72, 0.72, 0.72, 1.0)
+@export var face_name_color: Color = AppThemePalette.FACE
+@export var heel_name_color: Color = AppThemePalette.HEEL
+@export var champion_name_color: Color = AppThemePalette.PRESTIGE
+@export var accent_dim_color: Color = AppThemePalette.SECONDARY_TEXT
 
 const SegmentedOverlayScript := preload("res://Scripts/UI/segmented_overlay.gd")
 
@@ -511,7 +511,7 @@ func _append_match_log(text: String, is_major: bool) -> void:
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	l.uppercase = true
 	var font_size := 18 if is_major else 16
-	var font_color := Color(0.95, 0.85, 0.35, 1) if is_major else accent_dim_color
+	var font_color := AppThemePalette.PRESTIGE if is_major else accent_dim_color
 	l.add_theme_font_size_override("font_size", font_size)
 	l.add_theme_color_override("font_color", font_color)
 	_match_log_list.add_child(l)

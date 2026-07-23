@@ -1,7 +1,7 @@
-[gd_resource load_steps=5 format=3 type="Resource" script_class="WeaponResource" uid="uid://b6r5jb2ip463c"]
+[gd_resource type="Resource" script_class="WeaponResource" format=3 uid="uid://b6r5jb2ip463c"]
 
 [ext_resource type="Script" uid="uid://b6tiefm22qdb3" path="res://Scripts/Data/WeaponData.gd" id="1_weapon"]
-[ext_resource type="Script" path="res://Scripts/Data/WeaponAttackData.gd" id="2_attack"]
+[ext_resource type="Script" uid="uid://b1yhte5bk0enh" path="res://Scripts/Data/WeaponAttackData.gd" id="2_attack"]
 
 [sub_resource type="Resource" id="WeaponAttack_standing"]
 script = ExtResource("2_attack")

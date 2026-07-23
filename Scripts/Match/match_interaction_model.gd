@@ -228,8 +228,9 @@ static func build_setup_execution_profile(state: MatchSideState, action_id: Stri
 	]:
 		base_window = 20.0
 	var modifiers := _difficulty_modifiers(state, null, true)
+	var setup_attribute_profile := MatchAttributeModel.get_setup_modifier(state, null, action_id)
 	var window := clampf(
-		(base_window + float(modifiers.window)) * float(modifiers.execution_multiplier),
+		(base_window + float(modifiers.window) + float(setup_attribute_profile.get("window_modifier", 0.0))) * float(modifiers.execution_multiplier),
 		6.0,
 		30.0,
 	)
@@ -239,7 +240,7 @@ static func build_setup_execution_profile(state: MatchSideState, action_id: Stri
 		"gold_zone_scale": 0.25,
 		"time_limit": time_limit,
 		"marker_speed": marker_speed * float(modifiers.speed),
-		"ai_success_chance": setup_execution_success_chance(state),
+		"ai_success_chance": setup_execution_success_chance(state, action_id),
 		"low_stamina_penalty": bool(modifiers.low_stamina),
 		"exhaustion_band": int(modifiers.exhaustion_band),
 		"exhaustion_combined": float(modifiers.exhaustion_combined),
@@ -302,6 +303,7 @@ static func build_reversal_profile(
 		"ai_success_chance": chance,
 		"reversal_chance": chance,
 		"reversal_exhaustion_penalty": MatchExhaustionModel.reversal_penalty(defender),
+		"attribute_reversal_modifier": float(MatchAttributeModel.get_reversal_modifier(attacker, defender, move, setup_action).get("modifier", 0.0)),
 		"attacker_execution_penalty": MatchExhaustionModel.execution_penalty(
 			attacker,
 			MatchExhaustionModel.move_demand(
@@ -392,7 +394,6 @@ static func execution_success_chance(
 ) -> float:
 	if state == null or state.wrestler == null:
 		return 50.0
-	var relevant := _relevant_attribute(state, interaction_type)
 	var impact := move.move_impact if move != null else 1
 	var control_meter := interaction_type in [
 		InteractionType.HOLD_POWER,
@@ -401,10 +402,16 @@ static func execution_success_chance(
 	]
 	var chance := (
 		(70.0 if control_meter else 72.0)
-		+ (relevant - 70.0) * 0.35
 		+ (state.momentum - 50.0) * 0.12
 		- float(maxi(0, impact - 5)) * 1.5
 	)
+	var attribute_profile := MatchAttributeModel.get_move_attribute_profile(
+		state,
+		null,
+		move,
+		{"environmental_followup": environmental_followup},
+	)
+	chance += float(attribute_profile.get("window_modifier", 0.0))
 	if move != null and move.is_finisher:
 		chance -= 8.0
 	if move != null and _is_high_risk(move):
@@ -420,15 +427,15 @@ static func execution_success_chance(
 	return clampf(chance, 18.0, 92.0)
 
 
-static func setup_execution_success_chance(state: MatchSideState) -> float:
+static func setup_execution_success_chance(state: MatchSideState, action_id: StringName = &"") -> float:
 	if state == null or state.wrestler == null:
 		return 50.0
-	var relevant := _setup_attribute(state)
 	var chance := (
 		70.0
-		+ (relevant - 70.0) * 0.35
 		+ (state.momentum - 50.0) * 0.12
 	)
+	var setup_profile := MatchAttributeModel.get_setup_modifier(state, null, action_id)
+	chance += float(setup_profile.get("window_modifier", 0.0))
 	chance *= MatchExhaustionModel.execution_multiplier(state, MatchExhaustionModel.Demand.BASIC)
 	return clampf(chance, 18.0, 92.0)
 
@@ -520,6 +527,13 @@ static func reversal_success_chance(
 			chance -= 5.0
 	if WrestlerResource.WrestlerClass.TECHNICIAN in defender.wrestler.wrestler_class:
 		chance += 5.0
+	var attribute_reversal_profile := MatchAttributeModel.get_reversal_modifier(
+		attacker,
+		defender,
+		move,
+		setup_action,
+	)
+	chance += float(attribute_reversal_profile.get("modifier", 0.0))
 	if (
 		defender.current_position in [WrestlerResource.Position.GROUNDED, WrestlerResource.Position.SEATED, WrestlerResource.Position.KNEELING]
 		or defender.current_area == WrestlerResource.Area.CORNER
@@ -681,6 +695,14 @@ static func build_submission_context(
 	contextual_start_marker += (attacker_pressure_bonus - resistance_bonus) * 0.18
 	var attacker_score := submission_pressure_score(attacker, defender, move, true, target_resolution) + attacker_pressure_bonus
 	var defender_score := submission_pressure_score(defender, defender, move, false, target_resolution) + resistance_bonus - defender.bleeding_resistance_penalty()
+	var attribute_submission_profile := MatchAttributeModel.get_submission_modifiers(
+		attacker,
+		defender,
+		move,
+		target_resolution,
+	)
+	attacker_score += float(attribute_submission_profile.get("attack_score_modifier", 0.0))
+	defender_score += float(attribute_submission_profile.get("defence_score_modifier", 0.0))
 	var escape_penalty := MatchExhaustionModel.submission_escape_penalty(defender)
 	return {
 		# Every struggle begins from a visibly neutral centre. Damage, condition,
@@ -696,6 +718,8 @@ static func build_submission_context(
 		"pressure_bonus": attacker_pressure_bonus,
 		"resistance_bonus": resistance_bonus,
 		"healthy_target_resistance_bonus": 5.0 if target_hp >= 80.0 and not move.is_finisher else 0.0,
+		"attribute_submission_attack": float(attribute_submission_profile.get("attack_score_modifier", 0.0)),
+		"attribute_submission_defence": float(attribute_submission_profile.get("defence_score_modifier", 0.0)),
 		"squash_context": squash_context,
 		"submission_escape_penalty": escape_penalty,
 	}
@@ -807,9 +831,14 @@ static func _difficulty_modifiers(
 		if control_meter and high_risk:
 			window -= 8.0
 			speed_add += 0.12
-	else:
-		var relevant := _setup_attribute(state)
-		window += clampf((relevant - 70.0) * 0.10, -5.0, 5.0)
+		var attribute_profile := MatchAttributeModel.get_move_attribute_profile(
+			state,
+			null,
+			move,
+			{"environmental_followup": environmental_followup},
+		)
+		window += float(attribute_profile.get("window_modifier", 0.0))
+		speed_add += float(attribute_profile.get("speed_multiplier", 1.0)) - 1.0
 	var demand := MatchExhaustionModel.effective_move_demand(
 		move,
 		state.is_signature_move(move),

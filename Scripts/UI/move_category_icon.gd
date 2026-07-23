@@ -5,7 +5,7 @@ class_name MoveCategoryIcon
 	set(value):
 		icon_id = value
 		queue_redraw()
-@export var icon_color: Color = Color(0.9, 0.91, 0.89, 1.0):
+@export var icon_color: Color = AppThemePalette.PRIMARY_TEXT:
 	set(value):
 		icon_color = value
 		queue_redraw()
@@ -160,6 +160,6 @@ func _draw_arrow_head(point: Vector2, direction: Vector2, unit: float, width: fl
 
 
 func _draw_lock(center: Vector2, unit: float) -> void:
-	var lock_color := Color(0.94, 0.76, 0.25, 1.0)
+	var lock_color := AppThemePalette.PRESTIGE
 	draw_arc(center + Vector2(0, -3) * unit, 4.0 * unit, PI, TAU, 10, lock_color, maxf(1.4, 1.8 * unit), true)
 	draw_rect(Rect2(center + Vector2(-5, -3) * unit, Vector2(10, 8) * unit), lock_color, false, maxf(1.4, 1.8 * unit), true)

@@ -169,6 +169,23 @@ var stamina_execution_penalty_total: float = 0.0
 var stamina_execution_penalty_samples: int = 0
 var fatigue_amplification_total: float = 0.0
 var fatigue_amplification_samples: int = 0
+var attribute_damage_multiplier_total: float = 0.0
+var attribute_damage_multiplier_samples: int = 0
+var attribute_reversal_modifier_total: float = 0.0
+var attribute_reversal_modifier_samples: int = 0
+var attribute_reversal_difficulty_total: float = 0.0
+var attribute_reversal_difficulty_samples: int = 0
+var attribute_setup_modifier_total: float = 0.0
+var attribute_setup_modifier_samples: int = 0
+var attribute_submission_attack_total: float = 0.0
+var attribute_submission_attack_samples: int = 0
+var attribute_submission_defence_total: float = 0.0
+var attribute_submission_defence_samples: int = 0
+var attribute_taunt_momentum_bonus_total: float = 0.0
+var attribute_taunt_momentum_bonus_samples: int = 0
+var attribute_movement_recovery_total: float = 0.0
+var attribute_movement_recovery_samples: int = 0
+var last_attribute_profile: Dictionary = {}
 var minimum_stamina_reached: float = 100.0
 var maximum_fatigue_reached: float = 0.0
 var exhaustion_low_stamina_announced: bool = false
@@ -362,6 +379,23 @@ func initialize(value: WrestlerResource) -> void:
 	stamina_execution_penalty_samples = 0
 	fatigue_amplification_total = 0.0
 	fatigue_amplification_samples = 0
+	attribute_damage_multiplier_total = 0.0
+	attribute_damage_multiplier_samples = 0
+	attribute_reversal_modifier_total = 0.0
+	attribute_reversal_modifier_samples = 0
+	attribute_reversal_difficulty_total = 0.0
+	attribute_reversal_difficulty_samples = 0
+	attribute_setup_modifier_total = 0.0
+	attribute_setup_modifier_samples = 0
+	attribute_submission_attack_total = 0.0
+	attribute_submission_attack_samples = 0
+	attribute_submission_defence_total = 0.0
+	attribute_submission_defence_samples = 0
+	attribute_taunt_momentum_bonus_total = 0.0
+	attribute_taunt_momentum_bonus_samples = 0
+	attribute_movement_recovery_total = 0.0
+	attribute_movement_recovery_samples = 0
+	last_attribute_profile.clear()
 	minimum_stamina_reached = max_stamina
 	maximum_fatigue_reached = 0.0
 	exhaustion_low_stamina_announced = false
@@ -851,6 +885,73 @@ func average_stamina_execution_penalty() -> float:
 
 func average_fatigue_amplification() -> float:
 	return fatigue_amplification_total / float(maxi(1, fatigue_amplification_samples))
+
+
+func average_attribute_damage_multiplier() -> float:
+	return attribute_damage_multiplier_total / float(maxi(1, attribute_damage_multiplier_samples))
+
+
+func average_attribute_reversal_modifier() -> float:
+	return attribute_reversal_modifier_total / float(maxi(1, attribute_reversal_modifier_samples))
+
+
+func average_attribute_reversal_difficulty() -> float:
+	return attribute_reversal_difficulty_total / float(maxi(1, attribute_reversal_difficulty_samples))
+
+
+func average_attribute_setup_modifier() -> float:
+	return attribute_setup_modifier_total / float(maxi(1, attribute_setup_modifier_samples))
+
+
+func average_attribute_submission_attack() -> float:
+	return attribute_submission_attack_total / float(maxi(1, attribute_submission_attack_samples))
+
+
+func average_attribute_submission_defence() -> float:
+	return attribute_submission_defence_total / float(maxi(1, attribute_submission_defence_samples))
+
+
+func average_attribute_taunt_momentum_bonus() -> float:
+	return attribute_taunt_momentum_bonus_total / float(maxi(1, attribute_taunt_momentum_bonus_samples))
+
+
+func average_attribute_movement_recovery() -> float:
+	return attribute_movement_recovery_total / float(maxi(1, attribute_movement_recovery_samples))
+
+
+func note_attribute_damage_profile(profile: Dictionary) -> void:
+	attribute_damage_multiplier_total += float(profile.get("damage_multiplier", 1.0))
+	attribute_damage_multiplier_samples += 1
+	last_attribute_profile = profile.duplicate(true)
+
+
+func note_attribute_reversal_profile(profile: Dictionary) -> void:
+	attribute_reversal_modifier_total += float(profile.get("defender_skill_modifier", 0.0))
+	attribute_reversal_modifier_samples += 1
+	attribute_reversal_difficulty_total += float(profile.get("attacker_difficulty_modifier", 0.0))
+	attribute_reversal_difficulty_samples += 1
+
+
+func note_attribute_setup_profile(profile: Dictionary) -> void:
+	attribute_setup_modifier_total += float(profile.get("window_modifier", 0.0))
+	attribute_setup_modifier_samples += 1
+	attribute_movement_recovery_total += float(profile.get("recovery_modifier", 0.0))
+	attribute_movement_recovery_samples += 1
+
+
+func note_attribute_submission_attack(value: float) -> void:
+	attribute_submission_attack_total += value
+	attribute_submission_attack_samples += 1
+
+
+func note_attribute_submission_defence(value: float) -> void:
+	attribute_submission_defence_total += value
+	attribute_submission_defence_samples += 1
+
+
+func note_attribute_taunt_profile(profile: Dictionary) -> void:
+	attribute_taunt_momentum_bonus_total += float(profile.get("momentum_bonus", 0.0))
+	attribute_taunt_momentum_bonus_samples += 1
 
 
 func note_exhaustion_profile(profile: Dictionary) -> void:

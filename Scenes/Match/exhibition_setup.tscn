@@ -1,0 +1,581 @@
+[gd_scene format=3 uid="uid://dh1ep5jbj1muo"]
+
+[ext_resource type="Script" uid="uid://bih3ux18u2caw" path="res://Scripts/UI/match_setup_popup.gd" id="1_setup"]
+[ext_resource type="Material" path="res://Themes/smoked_background_material.tres" id="2_background"]
+[ext_resource type="Theme" uid="uid://rtkndmx131e2" path="res://Themes/application_theme.tres" id="3_bn8te"]
+
+[sub_resource type="StyleBoxFlat" id="StyleInput"]
+content_margin_left = 10.0
+content_margin_right = 10.0
+bg_color = Color(0.105882, 0.105882, 0.105882, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.203922, 0.203922, 0.203922, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleList"]
+bg_color = Color(0.0352941, 0.0352941, 0.0352941, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.203922, 0.203922, 0.203922, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleStart"]
+bg_color = Color(0.105882, 0.105882, 0.105882, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.301961, 0.686275, 0.313726, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleStartHover"]
+bg_color = Color(0.137255, 0.137255, 0.137255, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.301961, 0.686275, 0.313726, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleCancel"]
+bg_color = Color(0.105882, 0.105882, 0.105882, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.203922, 0.203922, 0.203922, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="ExhibitionSetup" type="Control" unique_id=693585716]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_setup")
+
+[node name="Dimmer" type="ColorRect" parent="." unique_id=1499428168]
+material = ExtResource("2_background")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0352941, 0.0352941, 0.0352941, 0.9)
+
+[node name="SetupSafeArea" type="MarginContainer" parent="." unique_id=445088315]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SetupOuterMargin" type="MarginContainer" parent="SetupSafeArea" unique_id=2076264066]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/margin_left = 34
+theme_override_constants/margin_top = 34
+theme_override_constants/margin_right = 34
+theme_override_constants/margin_bottom = 34
+
+[node name="SetupPanel" type="PanelContainer" parent="SetupSafeArea/SetupOuterMargin" unique_id=1343223519]
+layout_mode = 2
+theme = ExtResource("3_bn8te")
+theme_type_variation = &"ApplicationPanel"
+
+[node name="PanelMargin" type="MarginContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel" unique_id=476135264]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 16
+
+[node name="Content" type="VBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin" unique_id=834027673]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content" unique_id=249927711]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+theme_override_font_sizes/font_size = 28
+text = "EXHIBITION MATCH BUILDER"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content" unique_id=593333384]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
+text = "Browse the roster, inspect wrestlers, then drag them into Team A and Team B."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="TitleRule" type="ColorRect" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content" unique_id=493218630]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.486275, 0.360784, 1, 0.78)
+
+[node name="RulesPanel" type="PanelContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content" unique_id=675948269]
+layout_mode = 2
+theme_type_variation = &"RaisedPanel"
+
+[node name="RulesMargin" type="MarginContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RulesPanel" unique_id=1096535232]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 7
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 7
+
+[node name="RulesRow" type="BoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RulesPanel/RulesMargin" unique_id=2048698762]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="RulesHeading" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RulesPanel/RulesMargin/RulesRow" unique_id=1096125925]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+text = "MATCH RULES"
+vertical_alignment = 1
+
+[node name="DQEnabled" type="CheckButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RulesPanel/RulesMargin/RulesRow" unique_id=1043188359]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+text = "DISQUALIFICATIONS"
+
+[node name="CountOutsEnabled" type="CheckButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RulesPanel/RulesMargin/RulesRow" unique_id=1395648809]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+text = "COUNT-OUTS"
+
+[node name="CountLimitLabel" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RulesPanel/RulesMargin/RulesRow" unique_id=1076719729]
+layout_mode = 2
+text = "LIMIT"
+vertical_alignment = 1
+
+[node name="CountLimit" type="SpinBox" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RulesPanel/RulesMargin/RulesRow" unique_id=822033305]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(82, 0)
+layout_mode = 2
+min_value = 1.0
+value = 10.0
+
+[node name="ActionClockLabel" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RulesPanel/RulesMargin/RulesRow" unique_id=1033296232]
+layout_mode = 2
+text = "CLOCK STEP"
+vertical_alignment = 1
+
+[node name="ActionClockStep" type="OptionButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RulesPanel/RulesMargin/RulesRow" unique_id=1235632613]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 0)
+layout_mode = 2
+fit_to_longest_item = false
+
+[node name="RulesSummary" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RulesPanel/RulesMargin/RulesRow" unique_id=1288867304]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
+text = "DQ: ON | COUNT-OUT: ON (10) | CLOCK: 20s | WEAPONS: ILLEGAL"
+horizontal_alignment = 2
+vertical_alignment = 1
+text_overrun_behavior = 3
+
+[node name="BuilderRow" type="BoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content" unique_id=1573533123]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 18
+
+[node name="RosterPanel" type="PanelContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow" unique_id=1357017560]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_type_variation = &"RaisedPanel"
+
+[node name="RosterMargin" type="MarginContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/RosterPanel" unique_id=24508087]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="RosterContent" type="VBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/RosterPanel/RosterMargin" unique_id=1137105532]
+layout_mode = 2
+theme_override_constants/separation = 7
+
+[node name="RosterHeading" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/RosterPanel/RosterMargin/RosterContent" unique_id=1977350841]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+theme_override_font_sizes/font_size = 19
+text = "ROSTER BROWSER"
+
+[node name="RosterSearch" type="LineEdit" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/RosterPanel/RosterMargin/RosterContent" unique_id=614268152]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/normal = SubResource("StyleInput")
+placeholder_text = "Search name, country, region, class, face/heel, title..."
+clear_button_enabled = true
+
+[node name="FilterGrid" type="GridContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/RosterPanel/RosterMargin/RosterContent" unique_id=1890270494]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/h_separation = 7
+theme_override_constants/v_separation = 7
+columns = 3
+
+[node name="CountryFilter" type="OptionButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/RosterPanel/RosterMargin/RosterContent/FilterGrid" unique_id=913314422]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(142, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleInput")
+fit_to_longest_item = false
+
+[node name="ClassFilter" type="OptionButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/RosterPanel/RosterMargin/RosterContent/FilterGrid" unique_id=8467342]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(142, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleInput")
+fit_to_longest_item = false
+
+[node name="GenderFilter" type="OptionButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/RosterPanel/RosterMargin/RosterContent/FilterGrid" unique_id=833042682]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(142, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleInput")
+fit_to_longest_item = false
+
+[node name="PromotionFilter" type="OptionButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/RosterPanel/RosterMargin/RosterContent/FilterGrid" unique_id=1945044571]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(142, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleInput")
+fit_to_longest_item = false
+
+[node name="DispositionFilter" type="OptionButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/RosterPanel/RosterMargin/RosterContent/FilterGrid" unique_id=86621940]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(142, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleInput")
+fit_to_longest_item = false
+
+[node name="ChampionFilter" type="OptionButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/RosterPanel/RosterMargin/RosterContent/FilterGrid" unique_id=2135918884]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(142, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleInput")
+fit_to_longest_item = false
+
+[node name="SortFilter" type="OptionButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/RosterPanel/RosterMargin/RosterContent" unique_id=1732321517]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleInput")
+fit_to_longest_item = false
+
+[node name="RosterList" type="ItemList" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/RosterPanel/RosterMargin/RosterContent" unique_id=405963723]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 320)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_selected_color = Color(0.960784, 0.960784, 0.960784, 1)
+theme_override_colors/guide_color = Color(0.203922, 0.203922, 0.203922, 1)
+theme_override_constants/line_separation = 12
+theme_override_font_sizes/font_size = 17
+theme_override_styles/panel = SubResource("StyleList")
+allow_reselect = true
+allow_rmb_select = true
+
+[node name="TeamsPanel" type="PanelContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow" unique_id=611456490]
+layout_mode = 2
+size_flags_horizontal = 2
+size_flags_vertical = 3
+theme_type_variation = &"RaisedPanel"
+
+[node name="TeamsMargin" type="MarginContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel" unique_id=1925218199]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="TeamsContent" type="VBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin" unique_id=2126929858]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TeamsHeading" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent" unique_id=967707071]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+theme_override_font_sizes/font_size = 19
+text = "MATCH TEAMS"
+horizontal_alignment = 1
+
+[node name="TeamAPanel" type="PanelContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent" unique_id=1723497654]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(420, 170)
+layout_mode = 2
+size_flags_vertical = 3
+theme_type_variation = &"RaisedPanel"
+
+[node name="TeamAMargin" type="MarginContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent/TeamAPanel" unique_id=1517295516]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 9
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 9
+
+[node name="TeamAContent" type="VBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent/TeamAPanel/TeamAMargin" unique_id=1264273556]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TeamAHeader" type="HBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent/TeamAPanel/TeamAMargin/TeamAContent" unique_id=150444533]
+layout_mode = 2
+
+[node name="TeamATitle" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent/TeamAPanel/TeamAMargin/TeamAContent/TeamAHeader" unique_id=1437473231]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+text = "TEAM A"
+
+[node name="PlayerLock" type="CheckButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent/TeamAPanel/TeamAMargin/TeamAContent/TeamAHeader" unique_id=1086784597]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(118, 38)
+layout_mode = 2
+text = "LOCK TEAM"
+
+[node name="TeamAList" type="VBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent/TeamAPanel/TeamAMargin/TeamAContent" unique_id=1164418790]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="TeamBPanel" type="PanelContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent" unique_id=528465726]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(420, 170)
+layout_mode = 2
+size_flags_vertical = 3
+theme_type_variation = &"RaisedPanel"
+
+[node name="TeamBMargin" type="MarginContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent/TeamBPanel" unique_id=1886241704]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 9
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 9
+
+[node name="TeamBContent" type="VBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent/TeamBPanel/TeamBMargin" unique_id=2068278685]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TeamBHeader" type="HBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent/TeamBPanel/TeamBMargin/TeamBContent" unique_id=978252936]
+layout_mode = 2
+
+[node name="TeamBTitle" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent/TeamBPanel/TeamBMargin/TeamBContent/TeamBHeader" unique_id=648719449]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+text = "TEAM B"
+
+[node name="AILock" type="CheckButton" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent/TeamBPanel/TeamBMargin/TeamBContent/TeamBHeader" unique_id=2061807023]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(118, 38)
+layout_mode = 2
+text = "LOCK TEAM"
+
+[node name="TeamBList" type="VBoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/BuilderRow/TeamsPanel/TeamsMargin/TeamsContent/TeamBPanel/TeamBMargin/TeamBContent" unique_id=609504712]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="SetupStatus" type="Label" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content" unique_id=1398322038]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
+text = "Drag one wrestler into each team."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="RandomButtons" type="BoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content" unique_id=1582783560]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="RandomMatchButton" type="Button" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RandomButtons" unique_id=1185474705]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/normal = SubResource("StyleStart")
+theme_override_styles/pressed = SubResource("StyleStartHover")
+theme_override_styles/hover = SubResource("StyleStartHover")
+theme_override_styles/focus = SubResource("StyleStartHover")
+text = "RANDOM MATCH"
+
+[node name="RandomPlayerButton" type="Button" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RandomButtons" unique_id=1160635384]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(190, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/normal = SubResource("StyleCancel")
+theme_override_styles/hover = SubResource("StyleStartHover")
+theme_override_styles/focus = SubResource("StyleStartHover")
+text = "RANDOM TEAM A"
+
+[node name="RandomAIButton" type="Button" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/RandomButtons" unique_id=496977427]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(170, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/normal = SubResource("StyleCancel")
+theme_override_styles/hover = SubResource("StyleStartHover")
+theme_override_styles/focus = SubResource("StyleStartHover")
+text = "RANDOM TEAM B"
+
+[node name="SetupButtons" type="BoxContainer" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content" unique_id=1351899578]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="StartMatchButton" type="Button" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SetupButtons" unique_id=567646341]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 54)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/normal = SubResource("StyleStart")
+theme_override_styles/pressed = SubResource("StyleStartHover")
+theme_override_styles/hover = SubResource("StyleStartHover")
+theme_override_styles/focus = SubResource("StyleStartHover")
+text = "START MATCH"
+
+[node name="CancelSetupButton" type="Button" parent="SetupSafeArea/SetupOuterMargin/SetupPanel/PanelMargin/Content/SetupButtons" unique_id=654356080]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(230, 54)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/normal = SubResource("StyleCancel")
+theme_override_styles/hover = SubResource("StyleStartHover")
+theme_override_styles/focus = SubResource("StyleStartHover")
+text = "CANCEL"
+
+[node name="DragPreview" type="PanelContainer" parent="." unique_id=1750581240]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleStart")
+
+[node name="DragPreviewMargin" type="MarginContainer" parent="DragPreview" unique_id=1647871598]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 8
+
+[node name="DragPreviewLabel" type="Label" parent="DragPreview/DragPreviewMargin" unique_id=363919506]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+text = "Wrestler"
+
+[node name="DetailsDimmer" type="ColorRect" parent="." unique_id=1216987444]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0352941, 0.0352941, 0.0352941, 0.68)
+
+[node name="DetailsPanel" type="PanelContainer" parent="." unique_id=1562415471]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(620, 520)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -310.0
+offset_top = -260.0
+offset_right = 310.0
+offset_bottom = 260.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"ModalPanel"
+
+[node name="DetailsMargin" type="MarginContainer" parent="DetailsPanel" unique_id=65441372]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 14
+
+[node name="DetailsContent" type="VBoxContainer" parent="DetailsPanel/DetailsMargin" unique_id=337292892]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="DetailsHeader" type="HBoxContainer" parent="DetailsPanel/DetailsMargin/DetailsContent" unique_id=1063653608]
+layout_mode = 2
+
+[node name="DetailsTitle" type="Label" parent="DetailsPanel/DetailsMargin/DetailsContent/DetailsHeader" unique_id=1928994120]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+theme_override_font_sizes/font_size = 22
+text = "WRESTLER DETAILS"
+
+[node name="DetailsCloseButton" type="Button" parent="DetailsPanel/DetailsMargin/DetailsContent/DetailsHeader" unique_id=86693635]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 42)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleCancel")
+theme_override_styles/hover = SubResource("StyleStartHover")
+text = "X"
+
+[node name="DetailsScroll" type="ScrollContainer" parent="DetailsPanel/DetailsMargin/DetailsContent" unique_id=167325843]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="DetailsText" type="RichTextLabel" parent="DetailsPanel/DetailsMargin/DetailsContent/DetailsScroll" unique_id=515673855]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false

@@ -490,8 +490,15 @@ func _score_move(
 		move,
 		MatchInteractionModel.get_interaction_type_for_move(move),
 	)
+	var attribute_profile := MatchAttributeModel.get_move_attribute_profile(
+		ai_state,
+		target_state,
+		move,
+	)
 	var execution_chance := float(execution_profile.get("ai_success_chance", 50.0))
 	score += (execution_chance - 70.0) * 0.22
+	score += (float(attribute_profile.get("damage_multiplier", 1.0)) - 1.0) * 80.0
+	score += float(attribute_profile.get("control_modifier", 0.0)) * 0.65
 	score -= float(exhaustion_profile.get("execution_penalty", 0.0)) * 0.65
 	score -= (float(exhaustion_profile.get("stamina_cost_multiplier", 1.0)) - 1.0) * 24.0
 	var exhaustion := float(exhaustion_profile.get("combined_exhaustion", 0.0))
@@ -580,6 +587,13 @@ func _score_move(
 	elif ai_state.is_signature_move(move):
 		score += 45.0 if ai_state.finisher_stock < MatchSideState.MAX_FINISHER_STOCK else 8.0
 	if move.is_submission:
+		var submission_attributes := MatchAttributeModel.get_submission_modifiers(
+			ai_state,
+			target_state,
+			move,
+			target_resolution,
+		)
+		score += float(submission_attributes.get("attack_score_modifier", 0.0)) * 0.60
 		score += _submission_bonus(ai_state, target_state, move, match_time_seconds, target_resolution)
 	score += _class_personality_move_bonus(ai_state.wrestler, move)
 	if ai_state.consecutive_setup_actions >= 2:
@@ -717,6 +731,8 @@ func _score_setup(
 			action_id,
 		)
 		score -= response_chance * 0.08
+	var setup_attribute_profile := MatchAttributeModel.get_setup_modifier(ai_state, target_state, action_id)
+	score += float(setup_attribute_profile.get("scoring_modifier", 0.0))
 	var projected := _project_states(ai_state, target_state, action_id)
 	var future_moves := _moves_for_states(
 		ai_state,
@@ -836,7 +852,7 @@ func _score_setup(
 			elif ai_state.current_area == WrestlerResource.Area.TOP_ROPE:
 				score += 8.0
 			if ai_state.wrestler != null:
-				score += clampf((ai_state.wrestler.charisma - 50.0) * 0.20, -10.0, 10.0)
+				score += float(MatchAttributeModel.get_taunt_profile(ai_state, target_state).get("ai_score_modifier", 0.0))
 				if ai_state.wrestler.wrestler_disposition == WrestlerResource.WrestlerDisposition.HEEL:
 					score += 5.0
 				if (

@@ -226,17 +226,17 @@ func _draw_wheel_guide() -> void:
 	var center := _guide.size * 0.5
 	var radii := _wheel_radii() + _item_size * Vector2(0.26, 0.22)
 	var outer := _ellipse_points(center, radii, 72)
-	_guide.draw_colored_polygon(outer, Color(0.025, 0.035, 0.055, 0.96))
+	_guide.draw_colored_polygon(outer, AppThemePalette.with_alpha(AppThemePalette.MAIN_BACKGROUND, 0.96))
 	var outline := PackedVector2Array(outer)
 	outline.append(outer[0])
-	_guide.draw_polyline(outline, Color(0.78, 0.64, 0.2, 0.62), 2.0, true)
+	_guide.draw_polyline(outline, AppThemePalette.with_alpha(AppThemePalette.BORDER, 0.62), 2.0, true)
 	var inner := _ellipse_points(center, radii * 0.58, 72)
 	inner.append(inner[0])
-	_guide.draw_polyline(inner, Color(0.28, 0.38, 0.55, 0.34), 1.0, true)
+	_guide.draw_polyline(inner, AppThemePalette.with_alpha(AppThemePalette.BORDER, 0.34), 1.0, true)
 	for index in range(_items.size()):
 		var angle := START_ANGLE + TAU * float(index) / float(maxi(1, _items.size()))
 		var endpoint := center + Vector2(cos(angle) * radii.x * 0.78, sin(angle) * radii.y * 0.78)
-		_guide.draw_line(center, endpoint, Color(0.88, 0.7, 0.2, 0.09), 1.0, true)
+		_guide.draw_line(center, endpoint, AppThemePalette.with_alpha(AppThemePalette.BORDER, 0.18), 1.0, true)
 
 
 func _ellipse_points(center: Vector2, radii: Vector2, point_count: int) -> PackedVector2Array:

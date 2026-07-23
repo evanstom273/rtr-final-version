@@ -1,50 +1,51 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://Scripts/UI/match_report_popup.gd" id="1_report"]
+[ext_resource type="Material" path="res://Themes/smoked_background_material.tres" id="2_background"]
 
 [sub_resource type="StyleBoxFlat" id="StyleReportPanel"]
-bg_color = Color(0.025, 0.035, 0.055, 0.99)
+bg_color = Color(0.0784314, 0.0784314, 0.0784314, 0.99)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.78, 0.64, 0.2, 0.9)
+border_color = Color(0.203922, 0.203922, 0.203922, 0.9)
 corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
 [sub_resource type="StyleBoxFlat" id="StyleSection"]
-bg_color = Color(0.055, 0.07, 0.105, 1)
+bg_color = Color(0.105882, 0.105882, 0.105882, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.2, 0.25, 0.34, 1)
+border_color = Color(0.203922, 0.203922, 0.203922, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="StyleExportButton"]
-bg_color = Color(0.12, 0.18, 0.28, 1)
+bg_color = Color(0.105882, 0.105882, 0.105882, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.35, 0.65, 1, 1)
+border_color = Color(0.301961, 0.686275, 0.313726, 1)
 corner_radius_top_left = 7
 corner_radius_top_right = 7
 corner_radius_bottom_right = 7
 corner_radius_bottom_left = 7
 
 [sub_resource type="StyleBoxFlat" id="StyleReturnButton"]
-bg_color = Color(0.48, 0.1, 0.12, 1)
+bg_color = Color(0.105882, 0.105882, 0.105882, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.9, 0.3, 0.3, 1)
+border_color = Color(0.203922, 0.203922, 0.203922, 1)
 corner_radius_top_left = 7
 corner_radius_top_right = 7
 corner_radius_bottom_right = 7
@@ -61,6 +62,7 @@ mouse_filter = 0
 script = ExtResource("1_report")
 
 [node name="Dimmer" type="ColorRect" parent="."]
+material = ExtResource("2_background")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -68,7 +70,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 0
-color = Color(0.005, 0.008, 0.015, 0.9)
+color = Color(0.0352941, 0.0352941, 0.0352941, 0.9)
 
 [node name="ReportSafeArea" type="MarginContainer" parent="."]
 unique_name_in_owner = true
@@ -89,7 +91,7 @@ theme_override_constants/margin_bottom = 28
 
 [node name="ReportPanel" type="PanelContainer" parent="ReportSafeArea/ReportOuterMargin"]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleReportPanel")
+theme_type_variation = &"ModalPanel"
 
 [node name="ReportPanelMargin" type="MarginContainer" parent="ReportSafeArea/ReportOuterMargin/ReportPanel"]
 layout_mode = 2
@@ -124,14 +126,14 @@ size_flags_horizontal = 3
 [node name="ReportTitle" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/ReportHeaderRow/ReportHeadings"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.96, 0.8, 0.28, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_font_sizes/font_size = 28
 text = "MATCH REPORT"
 
 [node name="ReportSubtitle" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/ReportHeaderRow/ReportHeadings"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.68, 0.72, 0.8, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 text = "Full one-on-one match overview"
 autowrap_mode = 2
 
@@ -146,6 +148,13 @@ custom_minimum_size = Vector2(170, 52)
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleExportButton")
 text = "EXPORT .TXT"
+
+[node name="RematchButton" type="Button" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/ReportHeaderRow/ReportButtons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 52)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleExportButton")
+text = "REMATCH"
 
 [node name="NewMatchButton" type="Button" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/ReportHeaderRow/ReportButtons"]
 unique_name_in_owner = true
@@ -164,13 +173,13 @@ text = "RETURN TO MATCH"
 [node name="ExportStatus" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.55, 0.78, 1, 1)
+theme_override_colors/font_color = Color(0.301961, 0.686275, 0.313726, 1)
 horizontal_alignment = 2
 autowrap_mode = 2
 
 [node name="SummaryPanel" type="PanelContainer" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage"]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleSection")
+theme_type_variation = &"RaisedPanel"
 
 [node name="SummaryMargin" type="MarginContainer" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/SummaryPanel"]
 layout_mode = 2
@@ -187,7 +196,7 @@ columns = 4
 
 [node name="WinnerLabel" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/SummaryPanel/SummaryMargin/SummaryGrid"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 text = "Winner"
 
 [node name="WinnerValue" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/SummaryPanel/SummaryMargin/SummaryGrid"]
@@ -199,7 +208,7 @@ autowrap_mode = 2
 
 [node name="ResultLabel" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/SummaryPanel/SummaryMargin/SummaryGrid"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 text = "Result"
 
 [node name="ResultValue" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/SummaryPanel/SummaryMargin/SummaryGrid"]
@@ -210,7 +219,7 @@ text = "Not Set"
 
 [node name="TimeLabel" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/SummaryPanel/SummaryMargin/SummaryGrid"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 text = "Final Time"
 
 [node name="TimeValue" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/SummaryPanel/SummaryMargin/SummaryGrid"]
@@ -220,7 +229,7 @@ text = "00:00"
 
 [node name="FinishMoveLabel" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/SummaryPanel/SummaryMargin/SummaryGrid"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 text = "Finish Move"
 
 [node name="FinishMoveValue" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/SummaryPanel/SummaryMargin/SummaryGrid"]
@@ -232,7 +241,7 @@ autowrap_mode = 2
 
 [node name="SetupMethodLabel" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/SummaryPanel/SummaryMargin/SummaryGrid"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 text = "Match Setup"
 
 [node name="SetupMethodValue" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/SummaryPanel/SummaryMargin/SummaryGrid"]
@@ -243,7 +252,7 @@ text = "Manual"
 
 [node name="LocksLabel" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/SummaryPanel/SummaryMargin/SummaryGrid"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 text = "Locks"
 
 [node name="LocksValue" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/SummaryPanel/SummaryMargin/SummaryGrid"]
@@ -255,7 +264,7 @@ autowrap_mode = 2
 
 [node name="RandomizedLabel" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/SummaryPanel/SummaryMargin/SummaryGrid"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 text = "Randomized"
 
 [node name="RandomizedValue" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/SummaryPanel/SummaryMargin/SummaryGrid"]
@@ -267,7 +276,7 @@ autowrap_mode = 2
 
 [node name="StatsHeading" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.85, 0.88, 0.94, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_font_sizes/font_size = 17
 text = "FINAL MATCH STATISTICS"
 
@@ -279,7 +288,7 @@ theme_override_constants/separation = 18
 [node name="PlayerStatsPanel" type="PanelContainer" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/ReportStatsRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleSection")
+theme_type_variation = &"RaisedPanel"
 
 [node name="PlayerStatsMargin" type="MarginContainer" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/ReportStatsRow/PlayerStatsPanel"]
 layout_mode = 2
@@ -294,7 +303,7 @@ layout_mode = 2
 [node name="PlayerReportHeading" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/ReportStatsRow/PlayerStatsPanel/PlayerStatsMargin/PlayerStatsContent"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.25, 0.64, 1, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_font_sizes/font_size = 18
 text = "PLAYER"
 
@@ -307,7 +316,7 @@ autowrap_mode = 2
 [node name="AIStatsPanel" type="PanelContainer" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/ReportStatsRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleSection")
+theme_type_variation = &"RaisedPanel"
 
 [node name="AIStatsMargin" type="MarginContainer" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/ReportStatsRow/AIStatsPanel"]
 layout_mode = 2
@@ -322,7 +331,7 @@ layout_mode = 2
 [node name="AIReportHeading" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/ReportStatsRow/AIStatsPanel/AIStatsMargin/AIStatsContent"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.93, 0.3, 0.3, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_font_sizes/font_size = 18
 text = "AI"
 
@@ -334,7 +343,7 @@ autowrap_mode = 2
 
 [node name="LogHeading" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.85, 0.88, 0.94, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_font_sizes/font_size = 17
 text = "COMPLETE MATCH LOG"
 
@@ -342,7 +351,7 @@ text = "COMPLETE MATCH LOG"
 custom_minimum_size = Vector2(0, 170)
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleSection")
+theme_type_variation = &"RaisedPanel"
 
 [node name="LogMargin" type="MarginContainer" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/ReportPanelMargin/ReportPageScroll/ReportPage/LogPanel"]
 layout_mode = 2

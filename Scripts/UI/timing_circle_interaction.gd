@@ -146,8 +146,8 @@ func _draw_circle() -> void:
 	var max_radius := maxf(24.0, minf(_canvas.size.x, _canvas.size.y) * 0.43)
 	var target_radius := max_radius * 0.28
 	var half_window_radius := max_radius * (_success_window / 200.0)
-	_canvas.draw_circle(center, max_radius, Color(0.025, 0.04, 0.07, 0.98))
-	_canvas.draw_arc(center, maxf(2.0, target_radius - half_window_radius), 0.0, TAU, 96, Color(0.24, 0.45, 0.70, 0.55), 3.0)
-	_canvas.draw_arc(center, target_radius + half_window_radius, 0.0, TAU, 96, Color(0.86, 0.70, 0.24, 0.9), 4.0)
-	_canvas.draw_arc(center, maxf(2.0, max_radius * _progress), 0.0, TAU, 96, Color(0.92, 0.95, 1.0, 1.0), 7.0)
-	_canvas.draw_circle(center, 8.0, Color(0.75, 0.14, 0.18, 1.0))
+	_canvas.draw_circle(center, max_radius, AppThemePalette.with_alpha(AppThemePalette.MAIN_BACKGROUND, 0.98))
+	_canvas.draw_arc(center, maxf(2.0, target_radius - half_window_radius), 0.0, TAU, 96, AppThemePalette.with_alpha(AppThemePalette.BORDER, 0.55), 3.0)
+	_canvas.draw_arc(center, target_radius + half_window_radius, 0.0, TAU, 96, AppThemePalette.with_alpha(AppThemePalette.SUCCESS, 0.9), 4.0)
+	_canvas.draw_arc(center, maxf(2.0, max_radius * _progress), 0.0, TAU, 96, AppThemePalette.PRIMARY_TEXT, 7.0)
+	_canvas.draw_circle(center, 8.0, AppThemePalette.ACTIVE)

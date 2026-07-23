@@ -4,7 +4,7 @@ class_name WrestlerMatchCard
 signal target_focus_requested(part: int)
 
 @export var role_title: String = "WRESTLER"
-@export var accent_color: Color = Color(0.25, 0.64, 1.0, 1.0)
+@export var accent_color: Color = AppThemePalette.SECONDARY_TEXT
 
 var wrestler: WrestlerResource
 var match_state: Dictionary = {}
@@ -69,10 +69,10 @@ func set_responsive_layout(mode: int, effective_size: Vector2) -> void:
 
 func _apply_compact_layout(portrait_phone: bool) -> void:
 	var horizontal_margin := 9 if portrait_phone else 14
-	var vertical_margin := 7 if portrait_phone else 12
-	var content_separation := 4 if portrait_phone else 8
+	var vertical_margin := 7 if portrait_phone else 10
+	var content_separation := 4 if portrait_phone else 6
 	var horizontal_separation := 6 if portrait_phone else 10
-	var vertical_separation := 2 if portrait_phone else 7
+	var vertical_separation := 2 if portrait_phone else 5
 	_margin.add_theme_constant_override("margin_left", horizontal_margin)
 	_margin.add_theme_constant_override("margin_top", vertical_margin)
 	_margin.add_theme_constant_override("margin_right", horizontal_margin)
@@ -98,7 +98,7 @@ func _apply_compact_layout(portrait_phone: bool) -> void:
 			if child is Label and not child.name.ends_with("Value"):
 				(child as Label).custom_minimum_size.x = label_width
 	for bar in _all_bars():
-		bar.custom_minimum_size.y = 17.0 if portrait_phone else 25.0
+		bar.custom_minimum_size.y = 17.0 if portrait_phone else 22.0
 	_match_stamina_value.add_theme_font_size_override("font_size", 10 if portrait_phone else 12)
 
 
@@ -123,6 +123,7 @@ func refresh() -> void:
 		_show_unassigned()
 		return
 
+	_apply_accent()
 	_name_value.text = _display_or_fallback(wrestler.wrestler_name, "Unnamed Wrestler")
 	_origin_value.text = _format_origin(wrestler)
 	_gimmick_value.text = "Gimmick: %s" % _format_gimmick(wrestler).replace("\n", " — ")
@@ -144,11 +145,11 @@ func refresh() -> void:
 	]
 	_signature_moves_value.add_theme_color_override(
 		"font_color",
-		Color(0.98, 0.82, 0.3, 1.0) if signature_ready else Color(0.58, 0.68, 0.82, 1.0),
+		AppThemePalette.PRESTIGE if signature_ready else AppThemePalette.SECONDARY_TEXT,
 	)
 	_finisher_moves_value.add_theme_color_override(
 		"font_color",
-		Color(0.98, 0.82, 0.3, 1.0) if finisher_stock > 0 else Color(0.62, 0.65, 0.7, 1.0),
+		AppThemePalette.PRESTIGE if finisher_stock > 0 else AppThemePalette.SECONDARY_TEXT,
 	)
 	var held_weapon_name := str(match_state.get("held_weapon_name", "")).strip_edges()
 	var durability := int(match_state.get("held_weapon_uses_remaining", 0))
@@ -159,13 +160,13 @@ func refresh() -> void:
 	)
 	_held_weapon_value.add_theme_color_override(
 		"font_color",
-		Color(1.0, 0.58, 0.38, 1.0) if not held_weapon_name.is_empty() else Color(0.56, 0.62, 0.72, 1.0),
+		AppThemePalette.WARNING if not held_weapon_name.is_empty() else AppThemePalette.SECONDARY_TEXT,
 	)
 	var bleeding_label := str(match_state.get("bleeding_label", "None"))
 	_bleeding_value.text = "BLEEDING  %s" % bleeding_label
 	_bleeding_value.add_theme_color_override(
 		"font_color",
-		Color(0.96, 0.34, 0.32, 1.0) if bleeding_label != "None" else Color(0.56, 0.62, 0.72, 1.0),
+		AppThemePalette.ERROR if bleeding_label != "None" else AppThemePalette.SECONDARY_TEXT,
 	)
 	_position_value.text = _format_match_state()
 	_name_value.tooltip_text = _name_value.text
@@ -262,13 +263,14 @@ func _format_finisher_stock(stock: int) -> String:
 
 
 func _apply_accent() -> void:
-	_role_title.add_theme_color_override("font_color", accent_color)
-	_name_value.add_theme_color_override("font_color", accent_color)
+	var identity_color := AppThemePalette.wrestler_color(wrestler)
+	_role_title.add_theme_color_override("font_color", AppThemePalette.SECONDARY_TEXT)
+	_name_value.add_theme_color_override("font_color", identity_color)
 
 	var panel_style := get_theme_stylebox("panel")
 	if panel_style is StyleBoxFlat:
 		var card_style := (panel_style as StyleBoxFlat).duplicate() as StyleBoxFlat
-		card_style.border_color = Color(accent_color.r, accent_color.g, accent_color.b, 0.85)
+		card_style.border_color = AppThemePalette.BORDER
 		add_theme_stylebox_override("panel", card_style)
 
 	for bar: ProgressBar in [
@@ -283,7 +285,7 @@ func _apply_accent() -> void:
 		var fill_style := bar.get_theme_stylebox("fill")
 		if fill_style is StyleBoxFlat:
 			var accent_fill := (fill_style as StyleBoxFlat).duplicate() as StyleBoxFlat
-			accent_fill.bg_color = Color(accent_color.r, accent_color.g, accent_color.b, 0.8)
+			accent_fill.bg_color = AppThemePalette.with_alpha(AppThemePalette.SECONDARY_TEXT, 0.8)
 			bar.add_theme_stylebox_override("fill", accent_fill)
 
 

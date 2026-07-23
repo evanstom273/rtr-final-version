@@ -1,0 +1,255 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Scripts/UI/match_report_popup.gd" id="1_report"]
+[ext_resource type="Material" path="res://Themes/smoked_background_material.tres" id="2_background"]
+
+[node name="MatchReportScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_report")
+
+[node name="Background" type="ColorRect" parent="."]
+material = ExtResource("2_background")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0352941, 0.0352941, 0.0352941, 0.94)
+
+[node name="ReportSafeArea" type="MarginContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ReportOuterMargin" type="MarginContainer" parent="ReportSafeArea"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/margin_left = 42
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 42
+theme_override_constants/margin_bottom = 28
+
+[node name="ReportPanel" type="PanelContainer" parent="ReportSafeArea/ReportOuterMargin"]
+layout_mode = 2
+theme_type_variation = &"ModalPanel"
+
+[node name="Margin" type="MarginContainer" parent="ReportSafeArea/ReportOuterMargin/ReportPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 20
+
+[node name="ReportPageScroll" type="ScrollContainer" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 3
+scroll_deadzone = 8
+
+[node name="Page" type="VBoxContainer" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 14
+
+[node name="ReportHeaderRow" type="BoxContainer" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Headings" type="VBoxContainer" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/ReportHeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ReportTitle" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/ReportHeaderRow/Headings"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "MATCH REPORT"
+
+[node name="ReportSubtitle" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/ReportHeaderRow/Headings"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
+text = "Completed wrestling match"
+autowrap_mode = 2
+
+[node name="ReportButtons" type="BoxContainer" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/ReportHeaderRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ExportReportButton" type="Button" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/ReportHeaderRow/ReportButtons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 48)
+layout_mode = 2
+text = "EXPORT .TXT"
+
+[node name="RematchButton" type="Button" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/ReportHeaderRow/ReportButtons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 48)
+layout_mode = 2
+text = "REMATCH"
+
+[node name="NewMatchButton" type="Button" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/ReportHeaderRow/ReportButtons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(130, 48)
+layout_mode = 2
+text = "NEW MATCH"
+
+[node name="ReturnToMatchButton" type="Button" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/ReportHeaderRow/ReportButtons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(170, 48)
+layout_mode = 2
+text = "RETURN TO MATCH"
+
+[node name="ExportStatus" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page"]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 2
+autowrap_mode = 2
+
+[node name="RetryArchiveButton" type="Button" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+text = "RETRY ADDING TO MATCH REPORTS"
+
+[node name="RatingPanel" type="PanelContainer" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page"]
+layout_mode = 2
+theme_type_variation = &"RaisedPanel"
+
+[node name="RatingMargin" type="MarginContainer" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/RatingPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 14
+
+[node name="RatingValue" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/RatingPanel/RatingMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.831373, 0.686275, 0.215686, 1)
+theme_override_font_sizes/font_size = 30
+text = "☆☆☆☆☆  0.00"
+horizontal_alignment = 1
+
+[node name="SummaryPanel" type="PanelContainer" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page"]
+layout_mode = 2
+theme_type_variation = &"RaisedPanel"
+
+[node name="SummaryMargin" type="MarginContainer" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/SummaryPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 14
+
+[node name="SummaryGrid" type="GridContainer" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/SummaryPanel/SummaryMargin"]
+layout_mode = 2
+theme_override_constants/h_separation = 18
+theme_override_constants/v_separation = 8
+columns = 4
+
+[node name="WinnerLabel" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/SummaryPanel/SummaryMargin/SummaryGrid"]
+layout_mode = 2
+text = "WINNER"
+[node name="WinnerValue" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/SummaryPanel/SummaryMargin/SummaryGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "No Winner"
+[node name="LoserLabel" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/SummaryPanel/SummaryMargin/SummaryGrid"]
+layout_mode = 2
+text = "LOSER"
+[node name="LoserValue" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/SummaryPanel/SummaryMargin/SummaryGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "None"
+[node name="DurationLabel" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/SummaryPanel/SummaryMargin/SummaryGrid"]
+layout_mode = 2
+text = "DURATION"
+[node name="DurationValue" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/SummaryPanel/SummaryMargin/SummaryGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "00:00"
+[node name="MatchTypeLabel" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/SummaryPanel/SummaryMargin/SummaryGrid"]
+layout_mode = 2
+text = "MATCH TYPE"
+[node name="MatchTypeValue" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/SummaryPanel/SummaryMargin/SummaryGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Singles"
+[node name="StipulationLabel" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/SummaryPanel/SummaryMargin/SummaryGrid"]
+layout_mode = 2
+text = "STIPULATION"
+[node name="StipulationValue" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/SummaryPanel/SummaryMargin/SummaryGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Standard"
+[node name="MethodLabel" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/SummaryPanel/SummaryMargin/SummaryGrid"]
+layout_mode = 2
+text = "METHOD"
+[node name="MethodValue" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/SummaryPanel/SummaryMargin/SummaryGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Not Set"
+[node name="FinishLabel" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/SummaryPanel/SummaryMargin/SummaryGrid"]
+layout_mode = 2
+text = "FINISH"
+[node name="FinishValue" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/SummaryPanel/SummaryMargin/SummaryGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "None"
+autowrap_mode = 2
+
+[node name="NotesTitle" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "MATCH NOTES"
+
+[node name="RatingHighlights" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
+text = "• A straightforward wrestling contest"
+autowrap_mode = 2
+
+[node name="LogTitle" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "COMPLETE PLAY-BY-PLAY"
+
+[node name="LogPanel" type="PanelContainer" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page"]
+custom_minimum_size = Vector2(0, 430)
+layout_mode = 2
+theme_type_variation = &"RaisedPanel"
+
+[node name="LogMargin" type="MarginContainer" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/LogPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 18
+
+[node name="FullMatchLog" type="Label" parent="ReportSafeArea/ReportOuterMargin/ReportPanel/Margin/ReportPageScroll/Page/LogPanel/LogMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "No match log entries were recorded."
+autowrap_mode = 2

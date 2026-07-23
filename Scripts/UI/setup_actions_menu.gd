@@ -244,18 +244,18 @@ func _group_for_action(action_id: StringName) -> int:
 func _group_details(group: int) -> Dictionary:
 	match group:
 		ActionGroup.RECOVERY:
-			return {"label": "Recovery", "color": Color(0.44, 0.75, 1.0, 1.0)}
+			return {"label": "Recovery", "color": AppThemePalette.SUCCESS}
 		ActionGroup.MOVEMENT:
-			return {"label": "Movement", "color": Color(0.55, 0.8, 1.0, 1.0)}
+			return {"label": "Movement", "color": AppThemePalette.ACTIVE}
 		ActionGroup.OPPONENT_SETUP:
-			return {"label": "Opponent Setup", "color": Color(0.92, 0.93, 0.9, 1.0)}
+			return {"label": "Opponent Setup", "color": AppThemePalette.PRIMARY_TEXT}
 		ActionGroup.RING_POSITION:
-			return {"label": "Ring Position", "color": Color(0.83, 0.67, 0.24, 1.0)}
+			return {"label": "Ring Position", "color": AppThemePalette.SECONDARY_TEXT}
 		ActionGroup.SHOWBOAT:
-			return {"label": "Showboat", "color": Color(0.96, 0.8, 0.28, 1.0)}
+			return {"label": "Showboat", "color": AppThemePalette.WARNING}
 		ActionGroup.WEAPON:
-			return {"label": "Weapons", "color": Color(1.0, 0.48, 0.36, 1.0)}
-	return {"label": "Setup", "color": Color(0.84, 0.87, 0.92, 1.0)}
+			return {"label": "Weapons", "color": AppThemePalette.DESTRUCTIVE}
+	return {"label": "Setup", "color": AppThemePalette.PRIMARY_TEXT}
 
 
 static func _action_details(

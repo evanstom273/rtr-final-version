@@ -4,38 +4,38 @@
 [ext_resource type="PackedScene" path="res://Scenes/Match/body_damage_mannequin.tscn" id="2_mannequin"]
 
 [sub_resource type="StyleBoxFlat" id="StyleCard"]
-bg_color = Color(0.055, 0.07, 0.105, 1)
+bg_color = Color(0.0784314, 0.0784314, 0.0784314, 1)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.25, 0.64, 1, 0.85)
+border_color = Color(0.203922, 0.203922, 0.203922, 0.85)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
 [sub_resource type="StyleBoxFlat" id="StyleProgressBackground"]
-bg_color = Color(0.025, 0.035, 0.055, 1)
+bg_color = Color(0.0352941, 0.0352941, 0.0352941, 1)
 corner_radius_top_left = 4
 corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
 [sub_resource type="StyleBoxFlat" id="StyleProgressFill"]
-bg_color = Color(0.25, 0.64, 1, 0.8)
+bg_color = Color(0.690196, 0.690196, 0.690196, 0.8)
 corner_radius_top_left = 4
 corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
 [sub_resource type="StyleBoxFlat" id="StyleStateSummary"]
-bg_color = Color(0.025, 0.035, 0.055, 1)
+bg_color = Color(0.105882, 0.105882, 0.105882, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.18, 0.23, 0.31, 1)
+border_color = Color(0.203922, 0.203922, 0.203922, 1)
 corner_radius_top_left = 5
 corner_radius_top_right = 5
 corner_radius_bottom_right = 5
@@ -45,7 +45,7 @@ corner_radius_bottom_left = 5
 custom_minimum_size = Vector2(300, 0)
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleCard")
+theme_type_variation = &"RaisedPanel"
 script = ExtResource("1_card")
 
 [node name="Margin" type="MarginContainer" parent="."]
@@ -62,7 +62,7 @@ theme_override_constants/separation = 10
 [node name="RoleTitle" type="Label" parent="Margin/Content"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.25, 0.64, 1, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 theme_override_font_sizes/font_size = 18
 text = "WRESTLER"
 horizontal_alignment = 1
@@ -71,7 +71,7 @@ horizontal_alignment = 1
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 34)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.25, 0.64, 1, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_font_sizes/font_size = 28
 text = "No wrestler assigned"
 horizontal_alignment = 1
@@ -83,7 +83,7 @@ layout_mode = 2
 
 [node name="ProfileHeading" type="Label" parent="Margin/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.85, 0.88, 0.94, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_font_sizes/font_size = 16
 text = "PROFILE"
 
@@ -96,7 +96,7 @@ columns = 2
 [node name="OriginLabel" type="Label" parent="Margin/Content/ProfileGrid"]
 custom_minimum_size = Vector2(105, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 text = "From"
 
 [node name="OriginValue" type="Label" parent="Margin/Content/ProfileGrid"]
@@ -108,7 +108,7 @@ text_overrun_behavior = 3
 
 [node name="HeightLabel" type="Label" parent="Margin/Content/ProfileGrid"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 text = "Height"
 
 [node name="HeightValue" type="Label" parent="Margin/Content/ProfileGrid"]
@@ -118,7 +118,7 @@ text = "—"
 
 [node name="WeightLabel" type="Label" parent="Margin/Content/ProfileGrid"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 text = "Weight"
 
 [node name="WeightValue" type="Label" parent="Margin/Content/ProfileGrid"]
@@ -128,7 +128,7 @@ text = "—"
 
 [node name="AgeLabel" type="Label" parent="Margin/Content/ProfileGrid"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 text = "Age"
 
 [node name="AgeValue" type="Label" parent="Margin/Content/ProfileGrid"]
@@ -138,7 +138,7 @@ text = "—"
 
 [node name="GenderLabel" type="Label" parent="Margin/Content/ProfileGrid"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 text = "Gender"
 
 [node name="GenderValue" type="Label" parent="Margin/Content/ProfileGrid"]
@@ -148,7 +148,7 @@ text = "—"
 
 [node name="DispositionLabel" type="Label" parent="Margin/Content/ProfileGrid"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 text = "Face / Heel"
 
 [node name="DispositionValue" type="Label" parent="Margin/Content/ProfileGrid"]
@@ -158,7 +158,7 @@ text = "—"
 
 [node name="ClassesLabel" type="Label" parent="Margin/Content/ProfileGrid"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 text = "Classes"
 
 [node name="ClassesValue" type="Label" parent="Margin/Content/ProfileGrid"]
@@ -170,7 +170,7 @@ text_overrun_behavior = 3
 
 [node name="GimmickLabel" type="Label" parent="Margin/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 text = "Gimmick"
 
 [node name="GimmickValue" type="Label" parent="Margin/Content"]
@@ -184,7 +184,7 @@ layout_mode = 2
 
 [node name="AttributesHeading" type="Label" parent="Margin/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.85, 0.88, 0.94, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_font_sizes/font_size = 16
 text = "ATTRIBUTES"
 
@@ -286,7 +286,7 @@ layout_mode = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 34)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.72, 0.82, 0.95, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 theme_override_font_sizes/font_size = 13
 text = "SIGNATURES  None assigned"
 autowrap_mode = 2
@@ -297,7 +297,7 @@ text_overrun_behavior = 4
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 34)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.96, 0.8, 0.28, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 theme_override_font_sizes/font_size = 13
 text = "FINISHERS  None assigned"
 autowrap_mode = 2
@@ -308,7 +308,7 @@ text_overrun_behavior = 4
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.56, 0.62, 0.72, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 theme_override_font_sizes/font_size = 12
 text = "HELD WEAPON  None"
 text_overrun_behavior = 3
@@ -317,7 +317,7 @@ text_overrun_behavior = 3
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 18)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.56, 0.62, 0.72, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 theme_override_font_sizes/font_size = 12
 text = "BLEEDING  None"
 text_overrun_behavior = 3
@@ -327,7 +327,7 @@ layout_mode = 2
 
 [node name="ConditionHeading" type="Label" parent="Margin/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.85, 0.88, 0.94, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_font_sizes/font_size = 16
 text = "MATCH CONDITION"
 
@@ -382,7 +382,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_override_colors/font_color = Color(0.96, 0.97, 1, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
 theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 1
@@ -406,7 +406,6 @@ theme_override_styles/fill = SubResource("StyleProgressFill")
 [node name="StateSummary" type="PanelContainer" parent="Margin/Content/ConditionPanel"]
 custom_minimum_size = Vector2(0, 54)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleStateSummary")
 
 [node name="StateMargin" type="MarginContainer" parent="Margin/Content/ConditionPanel/StateSummary"]
 layout_mode = 2
@@ -422,7 +421,7 @@ theme_override_constants/separation = 10
 [node name="PositionLabel" type="Label" parent="Margin/Content/ConditionPanel/StateSummary/StateMargin/StateRow"]
 custom_minimum_size = Vector2(68, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 text = "STATE"
 vertical_alignment = 1
 

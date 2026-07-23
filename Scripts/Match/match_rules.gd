@@ -64,7 +64,6 @@ static func normalized_action_clock_seconds(value: int) -> int:
 
 func is_outside_area(area: int) -> bool:
 	return area in [
-		WrestlerResource.Area.APRON,
 		WrestlerResource.Area.OUTSIDE,
 		WrestlerResource.Area.RAMP,
 	]

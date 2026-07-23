@@ -3,24 +3,24 @@
 [ext_resource type="Script" path="res://Scripts/UI/contest_timing_bar.gd" id="1_contest"]
 
 [sub_resource type="StyleBoxFlat" id="StyleOverlayPanel"]
-bg_color = Color(0.035, 0.05, 0.08, 0.98)
+bg_color = Color(0.0784314, 0.0784314, 0.0784314, 0.98)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.72, 0.62, 0.26, 1)
+border_color = Color(0.203922, 0.203922, 0.203922, 1)
 corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
 [sub_resource type="StyleBoxFlat" id="StyleStopButton"]
-bg_color = Color(0.12, 0.18, 0.28, 1)
+bg_color = Color(0.105882, 0.105882, 0.105882, 1)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.35, 0.65, 1, 1)
+border_color = Color(0.486275, 0.360784, 1, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
@@ -44,7 +44,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 0
-color = Color(0.005, 0.008, 0.015, 0.82)
+color = Color(0.0352941, 0.0352941, 0.0352941, 0.82)
 
 [node name="Center" type="CenterContainer" parent="."]
 layout_mode = 1
@@ -57,7 +57,7 @@ grow_vertical = 2
 [node name="Panel" type="PanelContainer" parent="Center"]
 custom_minimum_size = Vector2(660, 0)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleOverlayPanel")
+theme_type_variation = &"ModalPanel"
 
 [node name="Margin" type="MarginContainer" parent="Center/Panel"]
 layout_mode = 2
@@ -73,7 +73,7 @@ theme_override_constants/separation = 14
 [node name="ContestTitle" type="Label" parent="Center/Panel/Margin/Content"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.96, 0.8, 0.28, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_font_sizes/font_size = 25
 text = "DEFENSIVE CONTEST"
 horizontal_alignment = 1
@@ -89,7 +89,7 @@ autowrap_mode = 2
 [node name="ContestOdds" type="Label" parent="Center/Panel/Margin/Content"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.74, 0.82, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 text = "CLEAN 55%   PARTIAL 30%   REVERSE 15%"
 horizontal_alignment = 1
 
@@ -125,7 +125,7 @@ layout_mode = 0
 offset_right = 165.0
 offset_bottom = 78.0
 mouse_filter = 2
-color = Color(0.72, 0.12, 0.16, 1)
+color = Color(0.878431, 0.345098, 0.345098, 1)
 
 [node name="YellowLeftZone" type="ColorRect" parent="Center/Panel/Margin/Content/ContestTrack"]
 unique_name_in_owner = true
@@ -134,7 +134,7 @@ offset_left = 165.0
 offset_right = 255.0
 offset_bottom = 78.0
 mouse_filter = 2
-color = Color(0.88, 0.67, 0.13, 1)
+color = Color(0.909804, 0.611765, 0.196078, 1)
 
 [node name="GreenZone" type="ColorRect" parent="Center/Panel/Margin/Content/ContestTrack"]
 unique_name_in_owner = true
@@ -143,7 +143,7 @@ offset_left = 255.0
 offset_right = 345.0
 offset_bottom = 78.0
 mouse_filter = 2
-color = Color(0.12, 0.62, 0.32, 1)
+color = Color(0.298039, 0.686275, 0.313725, 1)
 
 [node name="YellowRightZone" type="ColorRect" parent="Center/Panel/Margin/Content/ContestTrack"]
 unique_name_in_owner = true
@@ -152,7 +152,7 @@ offset_left = 345.0
 offset_right = 435.0
 offset_bottom = 78.0
 mouse_filter = 2
-color = Color(0.88, 0.67, 0.13, 1)
+color = Color(0.909804, 0.611765, 0.196078, 1)
 
 [node name="RedRightZone" type="ColorRect" parent="Center/Panel/Margin/Content/ContestTrack"]
 unique_name_in_owner = true
@@ -161,7 +161,7 @@ offset_left = 435.0
 offset_right = 600.0
 offset_bottom = 78.0
 mouse_filter = 2
-color = Color(0.72, 0.12, 0.16, 1)
+color = Color(0.878431, 0.345098, 0.345098, 1)
 
 [node name="TimingIndicator" type="ColorRect" parent="Center/Panel/Margin/Content/ContestTrack"]
 unique_name_in_owner = true

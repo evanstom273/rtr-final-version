@@ -3,6 +3,10 @@ class_name SimpleMatchUI
 
 signal match_presentation_state_changed(snapshots: Array, context: Dictionary)
 signal match_presentation_event(event: Dictionary)
+signal full_report_requested(report: Dictionary)
+signal new_match_requested
+signal return_to_exhibition_requested
+signal return_to_main_menu_requested
 
 enum Side { NONE, PLAYER, AI }
 enum ControlState { PLAYER_CONTROL, AI_CONTROL, NEUTRAL, MATCH_ENDED }
@@ -93,6 +97,9 @@ var _last_dead_end_signature: String = ""
 var _dead_end_repetitions: int = 0
 var _watchdog_recovery_pending: bool = false
 var _latest_match_report: Dictionary = {}
+var _match_story_events: Array[Dictionary] = []
+var _archive_report_saved: bool = false
+var _archive_save_error: String = ""
 var _match_setup_metadata: Dictionary = {}
 var _match_rules := MatchRules.new()
 var _environment_state := MatchEnvironmentState.new()
@@ -129,6 +136,7 @@ var _interaction_player_wrestler: WrestlerResource
 var _interaction_ai_wrestler: WrestlerResource
 var _move_button_default_style: StyleBox
 var _move_button_available_style: StyleBoxFlat
+var _move_button_prestige_style: StyleBoxFlat
 var _move_button_default_font_color: Color
 var _weapon_runtime_moves: Dictionary = {}
 var _weapon_move_metadata: Dictionary = {}
@@ -172,8 +180,8 @@ var _chair_shot_move: MoveResource # Retained for the unused legacy helper.
 @onready var _weapon_radial_menu: WeaponRadialMenu = %WeaponRadialMenu
 @onready var _interaction_overlay: MatchInteractionOverlay = %MatchInteractionOverlay
 @onready var _match_result_popup = %MatchResultPopup
-@onready var _match_report_popup: MatchReportPopup = %MatchReportPopup
-@onready var _match_setup_popup = %MatchSetupPopup
+@onready var _pause_button: Button = %PauseButton
+@onready var _pause_menu: MatchPauseMenu = %MatchPauseMenu
 
 
 func _ready() -> void:
@@ -208,15 +216,14 @@ func _ready() -> void:
 	_match_result_popup.view_report_requested.connect(_on_result_view_report_requested)
 	_match_result_popup.new_match_requested.connect(_on_new_match_requested)
 	_match_result_popup.closed.connect(_on_result_popup_closed)
-	_match_report_popup.return_requested.connect(_on_match_report_returned)
-	_match_report_popup.new_match_requested.connect(_on_new_match_requested)
-	_match_setup_popup.match_requested.connect(_on_match_setup_requested)
-	_match_setup_popup.cancelled.connect(_on_match_setup_cancelled)
+	_pause_button.pressed.connect(_open_pause_menu)
+	_pause_menu.return_to_exhibition_requested.connect(_on_pause_return_to_exhibition)
+	_pause_menu.return_to_main_menu_requested.connect(_on_pause_return_to_main_menu)
+	_pause_button.visible = OS.has_feature("mobile") or OS.has_feature("android")
 	_cache_move_button_styles()
 	_load_roster()
 	_resolve_initial_assignments()
 	_populate_selectors()
-	_open_initial_match_setup.call_deferred()
 
 
 func _configure_match_log_scrolling() -> void:
@@ -237,18 +244,28 @@ func _cache_move_button_styles() -> void:
 	if normal_style != null:
 		_move_button_default_style = normal_style.duplicate() as StyleBox
 		_move_button_available_style = normal_style.duplicate() as StyleBoxFlat
+		_move_button_prestige_style = normal_style.duplicate() as StyleBoxFlat
 	if _move_button_available_style != null:
-		_move_button_available_style.bg_color = Color(0.13, 0.12, 0.055, 1.0)
-		_move_button_available_style.border_color = Color(0.95, 0.78, 0.22, 1.0)
+		_move_button_available_style.bg_color = AppThemePalette.SECONDARY_PANEL
+		_move_button_available_style.border_color = AppThemePalette.ACTIVE
 		_move_button_available_style.border_width_left = 2
 		_move_button_available_style.border_width_top = 2
 		_move_button_available_style.border_width_right = 2
 		_move_button_available_style.border_width_bottom = 2
+	if _move_button_prestige_style != null:
+		_move_button_prestige_style.bg_color = AppThemePalette.SECONDARY_PANEL
+		_move_button_prestige_style.border_color = AppThemePalette.PRESTIGE
+		_move_button_prestige_style.border_width_left = 2
+		_move_button_prestige_style.border_width_top = 2
+		_move_button_prestige_style.border_width_right = 2
+		_move_button_prestige_style.border_width_bottom = 2
 	_move_button_default_font_color = _move_selector_button.get_theme_color("font_color")
 
 
 func _exit_tree() -> void:
 	_turn_generation += 1
+	if is_instance_valid(_pause_menu):
+		_pause_menu.force_close()
 	ResponsiveUI.unregister_layout_target(self)
 	ResponsiveUI.unregister_safe_area(_safe_area)
 
@@ -262,7 +279,7 @@ func set_responsive_layout(mode: int, _effective_size: Vector2) -> void:
 	_ring_view.size_flags_stretch_ratio = 1.0
 	_center_stack.add_theme_constant_override("separation", int(ResponsiveUI.choose(7, 9, 10)))
 	var page_margin := ResponsiveUI.get_page_margin()
-	var vertical_margin := int(ResponsiveUI.choose(8, 12, 14))
+	var vertical_margin := page_margin
 	_page_margin.add_theme_constant_override("margin_left", page_margin)
 	_page_margin.add_theme_constant_override("margin_top", vertical_margin)
 	_page_margin.add_theme_constant_override("margin_right", page_margin)
@@ -326,6 +343,9 @@ func start_match() -> void:
 	pin_sequence_active = false
 	submission_sequence_active = false
 	_latest_match_report.clear()
+	_match_story_events.clear()
+	_archive_report_saved = false
+	_archive_save_error = ""
 	match_log_entries.clear()
 	player_side_state.initialize(player_wrestler)
 	ai_side_state.initialize(ai_wrestler)
@@ -365,8 +385,6 @@ func start_match() -> void:
 	_view_report_button.visible = false
 	_new_match_button.visible = false
 	_match_result_popup.close_result()
-	_match_report_popup.close_report()
-	_match_setup_popup.close_setup()
 	_ring_view.reset_match()
 	# Assign first, ring the bell, then arm the first continuation. This prevents
 	# an AI deferred callback from resolving behind the mandatory setup popup.
@@ -471,6 +489,7 @@ func _ring_snapshot_for_side(side: int) -> Dictionary:
 		"display_name": _wrestler_name(state.wrestler),
 		"side_label": "P1" if side == Side.PLAYER else "AI",
 		"is_player": side == Side.PLAYER,
+		"disposition": int(state.wrestler.wrestler_disposition),
 		"is_active": not match_ended or side in [winner_side, loser_side],
 		"has_control": current_attacker_side == side and not match_ended,
 		"is_targeted": current_defender_side == side and is_resolving_action,
@@ -604,7 +623,7 @@ func _settle_referee_count(context: String = "") -> void:
 			if _referee_count_value >= maxi(1, _match_rules.count_out_limit - 2):
 				if state != null:
 					state.late_count_returns += 1
-				add_match_log_entry("%s dives back inside at %d!" % [_side_name(side), _referee_count_value], Color(0.95, 0.78, 0.22, 1.0))
+				add_match_log_entry("%s dives back inside at %d!" % [_side_name(side), _referee_count_value], AppThemePalette.WARNING)
 			else:
 				add_match_log_entry("%s gets back inside the ring." % _side_name(side))
 		_count_outside_presence[side] = is_outside
@@ -618,12 +637,12 @@ func _settle_referee_count(context: String = "") -> void:
 		return
 	_referee_count_pending_resolution = false
 	if outside_sides.size() >= 2:
-		add_match_log_entry("Neither wrestler made it back — the referee calls for the bell.", Color(0.95, 0.78, 0.22, 1.0))
+		add_match_log_entry("Neither wrestler made it back — the referee calls for the bell.", AppThemePalette.ERROR)
 		end_match(Side.NONE, Side.NONE, FinishType.DOUBLE_COUNT_OUT, null, "Both wrestlers failed to answer the count.", "Referee count %d" % _referee_count_value)
 		return
 	var counted_out_side: int = int(outside_sides[0])
 	var winning_side := _opponent_side(counted_out_side)
-	add_match_log_entry("That's %d! %s has been counted out." % [_match_rules.count_out_limit, _side_name(counted_out_side)], Color(0.95, 0.78, 0.22, 1.0))
+	add_match_log_entry("That's %d! %s has been counted out." % [_match_rules.count_out_limit, _side_name(counted_out_side)], AppThemePalette.ERROR)
 	end_match(winning_side, counted_out_side, FinishType.COUNT_OUT, null, "%s failed to return before the referee's count." % _side_name(counted_out_side), "Referee count %d" % _referee_count_value)
 
 
@@ -636,7 +655,7 @@ func _start_referee_count() -> void:
 	_last_count_commentary_value = 0
 	for side in [Side.PLAYER, Side.AI]:
 		_count_outside_presence[side] = _side_is_outside(side)
-	add_match_log_entry("The referee begins the count.", Color(0.95, 0.78, 0.22, 1.0))
+	add_match_log_entry("The referee begins the count.", AppThemePalette.WARNING)
 	_emit_ring_event(&"count_started", Side.NONE, Side.NONE, {"count": 0, "limit": _match_rules.count_out_limit})
 	_update_referee_count_presentation()
 
@@ -647,9 +666,9 @@ func _announce_referee_count(value: int) -> void:
 	_last_count_commentary_value = value
 	var words := ["", "ONE!", "TWO!", "THREE!", "FOUR!", "FIVE!", "SIX!", "SEVEN!", "EIGHT!", "NINE!", "TEN!"]
 	var count_text: String = str(words[value]) if value < words.size() else "%d!" % value
-	add_match_log_entry(count_text, Color(0.95, 0.78, 0.22, 1.0))
+	add_match_log_entry(count_text, AppThemePalette.WARNING)
 	if value == _match_rules.count_out_limit - 1:
-		add_match_log_entry("They are one count away from losing the match on the floor.", Color(1.0, 0.58, 0.42, 1.0))
+		add_match_log_entry("They are one count away from losing the match on the floor.", AppThemePalette.ERROR)
 	_emit_ring_event(&"count_updated", Side.NONE, Side.NONE, {"count": value, "limit": _match_rules.count_out_limit})
 
 
@@ -696,7 +715,7 @@ func _update_referee_count_presentation() -> void:
 
 func add_match_log_entry(
 	message: String,
-	color: Color = Color(0.84, 0.87, 0.92, 1.0),
+	color: Color = AppThemePalette.PRIMARY_TEXT,
 ) -> void:
 	if not is_node_ready() or message.strip_edges().is_empty():
 		return
@@ -708,10 +727,10 @@ func add_match_log_entry(
 	var timestamp := Label.new()
 	timestamp.custom_minimum_size = Vector2(48, 0)
 	timestamp.text = _formatted_match_clock()
-	timestamp.add_theme_color_override("font_color", Color(0.95, 0.78, 0.22, 1.0))
+	timestamp.add_theme_color_override("font_color", AppThemePalette.SECONDARY_TEXT)
 	var divider := Label.new()
 	divider.text = "—"
-	divider.add_theme_color_override("font_color", Color(0.48, 0.52, 0.6, 1.0))
+	divider.add_theme_color_override("font_color", AppThemePalette.DISABLED_TEXT)
 	var entry := Label.new()
 	entry.custom_minimum_size.x = 1.0
 	entry.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -1131,7 +1150,7 @@ func execute_move(
 		if attacker_side == Side.PLAYER:
 			add_match_log_entry(
 				"That move is no longer available from the current positions.",
-				Color(1.0, 0.66, 0.3, 1.0),
+				AppThemePalette.WARNING,
 			)
 		_clear_selected_move()
 		refresh_match_ui()
@@ -1216,6 +1235,14 @@ func execute_move(
 		reversed,
 		target_resolution,
 	)
+	if match_ended:
+		return
+	# Resolve authored ring-entry/exit before an embedded cover or submission.
+	# Apron springboards remain count-out safe; moves that land outside keep the
+	# referee count alive (or complete it) before the next interaction begins.
+	_settle_referee_count("move result state")
+	if match_ended:
+		return
 	_note_exhaustion_action_result(attacker_side, attacker_state, result, started_at_zero_stamina)
 	_difficulty_diagnostics.record(
 		&"move_resolved",
@@ -1284,6 +1311,8 @@ func _should_start_embedded_pin(
 ) -> bool:
 	if move == null or move.is_submission or result != ActionResult.CLEAN_SUCCESS:
 		return false
+	if not _pin_area_is_legal(attacker_side, defender_side):
+		return false
 	if move.is_flash_pin or move.is_pinning_combination:
 		return true
 	if not move.is_finisher:
@@ -1326,11 +1355,18 @@ func _run_defender_response(
 	)
 	defender.response_profile_total += float(profile.get("ai_success_chance", 0.0))
 	defender.response_profile_samples += 1
+	var attribute_reversal_profile := MatchAttributeModel.get_reversal_modifier(
+		attacker,
+		defender,
+		move,
+		&"",
+	)
+	defender.note_attribute_reversal_profile(attribute_reversal_profile)
 	var result := MatchInteractionModel.InputResult.FAIL
 	if defender_side == Side.PLAYER:
 		var request := profile.duplicate(true)
 		request["title"] = "%s: %s" % ["ESCAPE" if move.is_submission else "REVERSE", _move_name(move)]
-		request["prompt"] = "Stop the moving marker inside the gold zone."
+		request["prompt"] = "Stop the moving marker inside the green zone."
 		request["button_text"] = "ESCAPE" if move.is_submission else "REVERSE"
 		var response := await _run_visible_reversal_meter(request)
 		if bool(response.get("stale", false)) or match_ended or _interaction_context_changed():
@@ -1533,6 +1569,10 @@ func apply_move_result(
 		_recent_reversal_side = Side.NONE
 	if reversal_landed:
 		defender.reversals += 1
+		_record_story_event(&"reversal", defender_side, {
+			"move": _move_name(move),
+			"against": _side_name(attacker_side),
+		})
 	var reversed_finisher_reward := 0
 	if reversal_landed and attacker.is_finisher_move(move):
 		reversed_finisher_reward = defender.grant_finisher_stock()
@@ -1554,6 +1594,7 @@ func apply_move_result(
 		attacker.botches_scrambles += 1
 	if result == ActionResult.HIGH_RISK_CRASH:
 		attacker.high_risk_crashes += 1
+		_record_story_event(&"high_risk_crash", attacker_side, {"move": _move_name(move)})
 	apply_damage(attacker_side, defender_side, move, result, target_resolution)
 	apply_stamina_fatigue_momentum(attacker_side, defender_side, move, result)
 	apply_positions(attacker_side, defender_side, move, result)
@@ -1603,7 +1644,7 @@ func apply_move_result(
 					]
 				add_match_log_entry(
 					clean_line,
-					Color(0.95, 0.78, 0.22, 1.0) if move.is_finisher else Color(0.84, 0.87, 0.92, 1.0),
+					AppThemePalette.PRESTIGE if move.is_finisher else AppThemePalette.PRIMARY_TEXT,
 				)
 		ActionResult.LABOURED_SUCCESS:
 			if not move.is_submission:
@@ -1622,7 +1663,7 @@ func apply_move_result(
 						defender.finisher_stock,
 						MatchSideState.MAX_FINISHER_STOCK,
 					],
-					Color(0.95, 0.78, 0.22, 1.0),
+					AppThemePalette.PRESTIGE,
 				)
 		ActionResult.CONTESTED_STRUGGLE:
 			if move.is_strike:
@@ -1661,7 +1702,7 @@ func apply_move_result(
 						defender.finisher_stock,
 						MatchSideState.MAX_FINISHER_STOCK,
 					],
-					Color(0.95, 0.78, 0.22, 1.0),
+					AppThemePalette.PRESTIGE,
 				)
 	if signature_converted:
 		add_match_log_entry(
@@ -1670,7 +1711,7 @@ func apply_move_result(
 				attacker.finisher_stock,
 				MatchSideState.MAX_FINISHER_STOCK,
 			],
-			Color(0.95, 0.78, 0.22, 1.0),
+			AppThemePalette.PRESTIGE,
 		)
 	attacker.sync_to_resource()
 	defender.sync_to_resource()
@@ -1690,6 +1731,16 @@ func apply_damage(
 	var attacker_hp_before := attacker.total_hp()
 	var defender_hp_before := defender.total_hp()
 	var ladder_variant := _is_ladder_variant(move, attacker)
+	var attribute_profile := MatchAttributeModel.get_move_attribute_profile(
+		attacker,
+		defender,
+		move,
+		{
+			"ladder_variant": ladder_variant,
+			"environmental_followup": _is_environmental_followup(attacker_side, defender_side, move),
+		},
+	)
+	var attribute_damage_multiplier := float(attribute_profile.get("damage_multiplier", 1.0))
 	var part_hp_before: Dictionary = {}
 	for part in target_resolution.get("parts", []):
 		part_hp_before[int(part)] = defender.get_part_hp(int(part))
@@ -1712,7 +1763,7 @@ func apply_damage(
 			# deliberately shallow enough that repeated limb work does not snowball
 			# entirely from its own bonus damage.
 			var damage := float(move.move_impact) + ((100.0 - current_hp) * 0.08)
-			defender.damage_part(part_id, damage * modifier * float(weights.get(part_id, 1.0)) * (1.20 if ladder_variant else 1.0))
+			defender.damage_part(part_id, damage * modifier * float(weights.get(part_id, 1.0)) * (1.20 if ladder_variant else 1.0) * attribute_damage_multiplier)
 		if ladder_variant:
 			attacker.ladder_dives += 1
 	var attacker_damage := maxf(0.0, attacker_hp_before - attacker.total_hp())
@@ -1734,6 +1785,22 @@ func apply_damage(
 		)
 		attacker.record_target_resolution(part, part_damage, landed, null)
 	if landed:
+		attacker.note_attribute_damage_profile(attribute_profile)
+		_record_story_event(
+			&"move_landed",
+			attacker_side,
+			{
+				"move": _move_name(move),
+				"impact": move.move_impact,
+				"signature": attacker.is_signature_move(move),
+				"finisher": attacker.is_finisher_move(move),
+				"high_risk": _is_high_risk(move),
+			},
+		)
+		if attacker.is_signature_move(move):
+			_record_story_event(&"signature_landed", attacker_side, {"move": _move_name(move)})
+		if attacker.is_finisher_move(move):
+			_record_story_event(&"finisher_landed", attacker_side, {"move": _move_name(move)})
 		if move.is_submission:
 			attacker.last_submission_target = story_part
 		if move.is_finisher:
@@ -1801,7 +1868,7 @@ func _record_body_target_story(
 		return
 	defender.pending_body_commentary.clear()
 	defender.last_body_commentary_time = _match_time_seconds
-	add_match_log_entry(chosen_message, Color(1.0, 0.68, 0.28, 1.0) if critical else Color(0.72, 0.79, 0.9, 1.0))
+	add_match_log_entry(chosen_message, AppThemePalette.ERROR if critical else AppThemePalette.SECONDARY_TEXT)
 
 
 func apply_stamina_fatigue_momentum(
@@ -2074,7 +2141,7 @@ func execute_setup_action(side: int, action_id: StringName) -> void:
 		_player_setup_intent = action_id
 	last_action_result = ActionResult.SETUP_SUCCESS
 	actor.last_action_result = ActionResult.SETUP_SUCCESS
-	add_match_log_entry(_setup_log_message(side, action_id), Color(0.55, 0.78, 1.0, 1.0))
+	add_match_log_entry(_setup_log_message(side, action_id), AppThemePalette.ACTIVE)
 	is_resolving_action = false
 	_clear_selected_move_if_invalid()
 	_set_controller(_control_for_side(side))
@@ -2089,7 +2156,7 @@ func _execute_catch_breath(side: int, actor: MatchSideState) -> void:
 	var recovered := actor.recover_stamina(recovery)
 	add_match_log_entry(
 		"%s backs away, catches their breath, and recovers %.1f stamina." % [_side_name(side), recovered],
-		Color(0.52, 0.82, 1.0, 1.0),
+		AppThemePalette.SUCCESS,
 	)
 	if side == Side.AI:
 		_ai_decision_engine.note_setup_executed(SetupActionsMenu.CATCH_BREATH, actor)
@@ -2140,7 +2207,7 @@ func _resolve_recovery_delay_if_needed(
 	actor.add_fatigue(0.5)
 	add_match_log_entry(
 		"%s tries to recover, but exhaustion keeps them down for another beat." % _side_name(side),
-		Color(0.82, 0.72, 0.64, 1.0),
+		AppThemePalette.WARNING,
 	)
 	_emit_exhaustion_threshold_commentary(side, actor)
 	is_resolving_action = false
@@ -2163,6 +2230,7 @@ func _record_setup_action(actor: MatchSideState, action_id: StringName) -> void:
 	if actor == null:
 		return
 	actor.setup_actions += 1
+	actor.note_attribute_setup_profile(MatchAttributeModel.get_setup_modifier(actor, null, action_id))
 	if action_id in [SetupActionsMenu.CATCH_BREATH, SetupActionsMenu.TAUNT]:
 		return
 	if MatchSetupStateRules.is_recovery(action_id):
@@ -2206,7 +2274,7 @@ func _execute_rule_action(
 	match action_id:
 		SetupActionsMenu.WAIT_FOR_COUNT:
 			actor.spend_stamina(MatchExhaustionModel.stamina_cost_multiplier(actor, MatchExhaustionModel.Demand.BASIC))
-			add_match_log_entry("%s stays safely inside and urges the referee to keep counting." % _side_name(side), Color(0.95, 0.78, 0.22, 1.0))
+			add_match_log_entry("%s stays safely inside and urges the referee to keep counting." % _side_name(side), AppThemePalette.WARNING)
 			_emit_ring_event(&"count_wait", side, _opponent_side(side))
 			# Waiting is a pass, not a control-preserving action. The wrestler on
 			# the floor receives the next turn and a fair chance to beat the count.
@@ -2229,9 +2297,9 @@ func _execute_rule_action(
 			actor.weapons_retrieved += 1
 			actor.last_weapon_action_time = _match_time_seconds
 			actor.spend_stamina(2.0 * MatchExhaustionModel.stamina_cost_multiplier(actor, MatchExhaustionModel.Demand.BASIC))
-			add_match_log_entry("%s reaches beneath the ring and retrieves a %s." % [_side_name(side), weapon.display_name.to_lower()], Color(1.0, 0.62, 0.3, 1.0))
+			add_match_log_entry("%s reaches beneath the ring and retrieves a %s." % [_side_name(side), weapon.display_name.to_lower()], AppThemePalette.WARNING)
 			if _match_rules.disqualifications_enabled:
-				add_match_log_entry("The referee warns %s not to use it." % _side_name(side), Color(1.0, 0.48, 0.42, 1.0))
+				add_match_log_entry("The referee warns %s not to use it." % _side_name(side), AppThemePalette.WARNING)
 			_emit_ring_event(&"weapon_retrieved", side, _opponent_side(side), {"weapon": weapon.display_name, "instance_id": instance.instance_id})
 		SetupActionsMenu.PICK_UP_WEAPON:
 			var dropped := _environment_state.get_instance(selected_instance_id)
@@ -2246,7 +2314,7 @@ func _execute_rule_action(
 			_set_held_instance(actor, dropped)
 			actor.dropped_weapons_picked_up += 1
 			actor.last_weapon_action_time = _match_time_seconds
-			add_match_log_entry("%s picks the %s back up." % [_side_name(side), actor.held_weapon.display_name.to_lower()], Color(1.0, 0.62, 0.3, 1.0))
+			add_match_log_entry("%s picks the %s back up." % [_side_name(side), actor.held_weapon.display_name.to_lower()], AppThemePalette.WARNING)
 			_emit_ring_event(&"weapon_retrieved", side, _opponent_side(side), {"weapon": actor.held_weapon.display_name, "from_floor": true})
 		SetupActionsMenu.DROP_WEAPON:
 			if actor.held_weapon == null:
@@ -2287,7 +2355,7 @@ func _execute_chair_shot(side: int, actor: MatchSideState, target: MatchSideStat
 	actor.weapon_attacks_attempted += 1
 	if weapon.display_name not in actor.weapon_types_used:
 		actor.weapon_types_used.append(weapon.display_name)
-	add_match_log_entry("%s raises the steel chair and commits to the swing!" % _side_name(side), Color(1.0, 0.48, 0.36, 1.0))
+	add_match_log_entry("%s raises the steel chair and commits to the swing!" % _side_name(side), AppThemePalette.DESTRUCTIVE)
 	_emit_ring_event(&"weapon_attack", side, _opponent_side(side), {"weapon": weapon.display_name, "illegal": _match_rules.weapon_attack_causes_disqualification(weapon)})
 	var defender_side := _opponent_side(side)
 	var defender_input := await _run_setup_defender_response(side, defender_side, SetupActionsMenu.CHAIR_SHOT, actor, target)
@@ -2316,18 +2384,21 @@ func _execute_chair_shot(side: int, actor: MatchSideState, target: MatchSideStat
 		actor.weapon_attacks_landed += 1
 		var target_resolution := MoveTargetResolver.resolve(_chair_shot_move, actor.target_focus_body_part, target)
 		var target_part := int(target_resolution.get("story_part", int(weapon.target_body_part)))
+		var attribute_profile := MatchAttributeModel.get_move_attribute_profile(actor, target, _chair_shot_move)
+		var attribute_damage_multiplier := float(attribute_profile.get("damage_multiplier", 1.0))
 		var target_hp_before := target.get_part_hp(target_part)
-		target.damage_part(target_part, float(weapon.impact) * 1.75)
+		target.damage_part(target_part, float(weapon.impact) * 1.75 * attribute_damage_multiplier)
 		var dealt_damage := maxf(0.0, target_hp_before - target.get_part_hp(target_part))
 		actor.damage_dealt += dealt_damage
 		target.damage_taken += dealt_damage
+		actor.note_attribute_damage_profile(attribute_profile)
 		actor.record_target_resolution(target_part, dealt_damage, true, _chair_shot_move)
 		target.set_match_state(WrestlerResource.Position.GROUNDED, WrestlerResource.Orientation.FACE_UP, target.current_area, WrestlerResource.MotionState.STATIONARY)
 		_apply_successful_move_momentum(actor)
 		last_action_result = ActionResult.CLEAN_SUCCESS
 		add_match_log_entry(
 			"%s drives the chair into %s's %s!" % [_side_name(side), _side_name(defender_side), MoveTargetResolver.part_label(target_part).to_lower()],
-			Color(1.0, 0.48, 0.36, 1.0),
+			AppThemePalette.DESTRUCTIVE,
 		)
 	if reversed and actor.held_weapon_uses_remaining > 0:
 		_dropped_weapon = weapon
@@ -2340,16 +2411,16 @@ func _execute_chair_shot(side: int, actor: MatchSideState, target: MatchSideStat
 		actor.illegal_weapon_uses += 1
 		actor.disqualifications_caused += 1
 		is_resolving_action = false
-		add_match_log_entry("The referee immediately calls for the bell — %s used an illegal weapon." % _side_name(side), Color(0.95, 0.78, 0.22, 1.0))
+		add_match_log_entry("The referee immediately calls for the bell — %s used an illegal weapon." % _side_name(side), AppThemePalette.ERROR)
 		end_match(defender_side, side, FinishType.DISQUALIFICATION, null, "%s was disqualified for using a steel chair." % _side_name(side), "Steel Chair attack")
 		return
 	if actor.held_weapon != null and actor.held_weapon_uses_remaining <= 0:
 		actor.weapons_broken += 1
 		actor.held_weapon = null
-		add_match_log_entry("The battered steel chair finally buckles and breaks apart.", Color(1.0, 0.62, 0.3, 1.0))
+		add_match_log_entry("The battered steel chair finally buckles and breaks apart.", AppThemePalette.WARNING)
 		_emit_ring_event(&"weapon_broken", side, defender_side, {"weapon": weapon.display_name})
 	actor.legal_weapon_attacks += 1
-	add_match_log_entry("No disqualifications tonight — the chair shot is legal.", Color(0.95, 0.78, 0.22, 1.0))
+	add_match_log_entry("No disqualifications tonight — the chair shot is legal.", AppThemePalette.WARNING)
 	is_resolving_action = false
 	_set_controller(_control_for_side(defender_side) if reversed else _control_for_side(side))
 	refresh_match_ui()
@@ -2384,7 +2455,7 @@ func _execute_weapon_move(side: int, move: MoveResource, target_resolution: Dict
 	actor.weapon_attacks_attempted += 1
 	if weapon.display_name not in actor.weapon_types_used:
 		actor.weapon_types_used.append(weapon.display_name)
-	add_match_log_entry("%s commits to %s with the %s!" % [_side_name(side), attack.display_name.to_lower(), weapon.display_name.to_lower()], Color(1.0, 0.48, 0.36, 1.0))
+	add_match_log_entry("%s commits to %s with the %s!" % [_side_name(side), attack.display_name.to_lower(), weapon.display_name.to_lower()], AppThemePalette.DESTRUCTIVE)
 	_emit_ring_event(&"weapon_attack", side, defender_side, {"weapon": weapon.display_name, "illegal": _match_rules.weapon_attack_causes_disqualification(weapon)})
 	if target_resolution.is_empty():
 		target_resolution = MoveTargetResolver.resolve(move, actor.target_focus_body_part, target)
@@ -2419,16 +2490,19 @@ func _execute_weapon_move(side: int, move: MoveResource, target_resolution: Dict
 	else:
 		actor.weapon_attacks_landed += 1
 		var target_part := int(target_resolution.get("story_part", int(weapon.target_body_part)))
+		var attribute_profile := MatchAttributeModel.get_move_attribute_profile(actor, target, move)
+		var attribute_damage_multiplier := float(attribute_profile.get("damage_multiplier", 1.0))
 		var before_hp := target.get_part_hp(target_part)
-		target.damage_part(target_part, float(move.move_impact) * 1.75)
+		target.damage_part(target_part, float(move.move_impact) * 1.75 * attribute_damage_multiplier)
 		var dealt_damage := maxf(0.0, before_hp - target.get_part_hp(target_part))
 		actor.damage_dealt += dealt_damage
 		target.damage_taken += dealt_damage
+		actor.note_attribute_damage_profile(attribute_profile)
 		actor.record_target_resolution(target_part, dealt_damage, true, move)
 		target.set_match_state(attack.resulting_target_position, attack.resulting_target_orientation, target.current_area, WrestlerResource.MotionState.STATIONARY)
 		_apply_successful_move_momentum(actor)
 		last_action_result = ActionResult.CLEAN_SUCCESS
-		add_match_log_entry("%s drives the %s into %s's %s!" % [_side_name(side), weapon.display_name.to_lower(), _side_name(defender_side), MoveTargetResolver.part_label(target_part).to_lower()], Color(1.0, 0.48, 0.36, 1.0))
+		add_match_log_entry("%s drives the %s into %s's %s!" % [_side_name(side), weapon.display_name.to_lower(), _side_name(defender_side), MoveTargetResolver.part_label(target_part).to_lower()], AppThemePalette.DESTRUCTIVE)
 		_maybe_advance_bleeding(actor, target, weapon, move, target_resolution, true)
 	_note_exhaustion_action_result(
 		side,
@@ -2445,14 +2519,14 @@ func _execute_weapon_move(side: int, move: MoveResource, target_resolution: Dict
 		actor.illegal_weapon_uses += 1
 		actor.disqualifications_caused += 1
 		is_resolving_action = false
-		add_match_log_entry("The referee immediately calls for the bell — %s used an illegal weapon." % _side_name(side), Color(0.95, 0.78, 0.22, 1.0))
+		add_match_log_entry("The referee immediately calls for the bell — %s used an illegal weapon." % _side_name(side), AppThemePalette.ERROR)
 		end_match(defender_side, side, FinishType.DISQUALIFICATION, null, "%s was disqualified for landing an illegal %s attack." % [_side_name(side), weapon.display_name], "%s attack" % weapon.display_name)
 		return
 	if held != null and held.durability <= 0:
 		actor.weapons_broken += 1
 		_environment_state.consume(held, true)
 		_clear_held_weapon(actor)
-		add_match_log_entry("The %s breaks after the committed attack." % weapon.display_name.to_lower(), Color(1.0, 0.62, 0.3, 1.0))
+		add_match_log_entry("The %s breaks after the committed attack." % weapon.display_name.to_lower(), AppThemePalette.WARNING)
 		_emit_ring_event(&"weapon_broken", side, defender_side, {"weapon": weapon.display_name})
 	if not _match_rules.disqualifications_enabled:
 		actor.legal_weapon_attacks += 1
@@ -2589,7 +2663,7 @@ func _execute_environment_action(side: int, action_id: StringName, actor: MatchS
 			(4.0 if action_id == SetupActionsMenu.SPREAD_THUMBTACKS else 6.0)
 			* MatchExhaustionModel.stamina_cost_multiplier(actor, MatchExhaustionModel.Demand.STANDARD)
 		)
-		add_match_log_entry(_environment_setup_log(side, action_id), Color(0.95, 0.72, 0.28, 1.0))
+		add_match_log_entry(_environment_setup_log(side, action_id), AppThemePalette.WARNING)
 		_emit_ring_event(&"environment_setup", side, defender_side, {"action": String(action_id), "weapon": held.weapon.display_name, "instance_id": held.instance_id})
 		_finish_environment_action(side, ActionResult.SETUP_SUCCESS)
 		return
@@ -2608,7 +2682,7 @@ func _execute_environment_action(side: int, action_id: StringName, actor: MatchS
 		_clear_held_weapon(actor)
 		actor.tables_stacked += 1
 		actor.spend_stamina(7.0 * MatchExhaustionModel.stamina_cost_multiplier(actor, MatchExhaustionModel.Demand.EXPLOSIVE))
-		add_match_log_entry("%s stacks a second table onto the first." % _side_name(side), Color(0.95, 0.72, 0.28, 1.0))
+		add_match_log_entry("%s stacks a second table onto the first." % _side_name(side), AppThemePalette.WARNING)
 		_finish_environment_action(side, ActionResult.SETUP_SUCCESS)
 		return
 	if action_id in [SetupActionsMenu.MOVE_CLEAR_TABLE, SetupActionsMenu.MOVE_CLEAR_THUMBTACKS]:
@@ -2694,7 +2768,7 @@ func _execute_environment_action(side: int, action_id: StringName, actor: MatchS
 			contested_object.lifecycle = MatchWeaponInstance.Lifecycle.DROPPED
 			contested_object.ladder_climber_side = Side.NONE
 			contested_object.ladder_climb_stage = 0
-	add_match_log_entry(_environment_setup_log(side, action_id), Color(0.95, 0.72, 0.28, 1.0))
+	add_match_log_entry(_environment_setup_log(side, action_id), AppThemePalette.WARNING)
 	_finish_environment_action(side, ActionResult.SETUP_SUCCESS)
 
 
@@ -2803,7 +2877,7 @@ func _maybe_advance_bleeding(
 		return
 	if defender.advance_bleeding():
 		attacker.bleeding_inflicted += 1
-		add_match_log_entry("%s is now bleeding %s after the %s connects." % [_side_name(side_for_state(defender)), defender.bleeding_label().to_lower(), weapon.display_name.to_lower()], Color(0.92, 0.34, 0.32, 1.0))
+		add_match_log_entry("%s is now bleeding %s after the %s connects." % [_side_name(side_for_state(defender)), defender.bleeding_label().to_lower(), weapon.display_name.to_lower()], AppThemePalette.ERROR)
 
 
 func _resolve_environment_after_move(
@@ -2843,12 +2917,21 @@ func _resolve_environment_after_move(
 	if not offensive_success and not defensive_redirect and not crash_into_object:
 		return
 	var bonus := 4.0
+	var attribute_profile := MatchAttributeModel.get_move_attribute_profile(
+		attacker,
+		defender,
+		move,
+		{"environmental_followup": true},
+	)
+	var attribute_damage_multiplier := float(attribute_profile.get("damage_multiplier", 1.0))
 	if object.weapon.weapon_kind == WeaponResource.WeaponKind.TABLE:
 		bonus = 8.0 if stacked else 5.0 if object.lifecycle == MatchWeaponInstance.Lifecycle.SET_CORNER else 4.0
-		victim.damage_part(MoveResource.MoveTargetParts.BODY, bonus)
-		victim.damage_taken += bonus
+		var final_bonus := bonus * attribute_damage_multiplier
+		victim.damage_part(MoveResource.MoveTargetParts.BODY, final_bonus)
+		victim.damage_taken += final_bonus
 		var credited := defender if redirected else attacker
-		credited.damage_dealt += bonus
+		credited.damage_dealt += final_bonus
+		credited.note_attribute_damage_profile(attribute_profile)
 		credited.tables_broken += 1
 		credited.table_spots_landed += 1
 		victim.table_spots_taken += 1
@@ -2858,23 +2941,25 @@ func _resolve_environment_after_move(
 			broken_ids.append(int(paired_id))
 		_objective_state.note_table_break(attacker_side, victim_side, broken_ids)
 		_consume_table_setup(object)
-		add_match_log_entry("%s crashes through %s!" % [_side_name(victim_side), "the stacked tables" if stacked else "the table"], Color(0.98, 0.62, 0.25, 1.0))
+		add_match_log_entry("%s crashes through %s!" % [_side_name(victim_side), "the stacked tables" if stacked else "the table"], AppThemePalette.DESTRUCTIVE)
 		_emit_ring_event(&"table_broken", attacker_side, victim_side, {"instance_id": object.instance_id, "redirected": defensive_redirect or redirected, "stacked": stacked})
 		if offensive_success and _match_rules.disqualifications_enabled:
 			is_resolving_action = false
 			end_match(defender_side, attacker_side, FinishType.DISQUALIFICATION, move, "%s was disqualified for driving the opponent through a table." % _side_name(attacker_side), "Table spot")
 	elif object.weapon.weapon_kind == WeaponResource.WeaponKind.THUMBTACKS:
 		var part := int(target_resolution.get("story_part", MoveResource.MoveTargetParts.BODY)) if victim == defender else MoveResource.MoveTargetParts.BODY
-		victim.damage_part(part, bonus)
-		victim.damage_taken += bonus
+		var final_bonus := bonus * attribute_damage_multiplier
+		victim.damage_part(part, final_bonus)
+		victim.damage_taken += final_bonus
 		var credited := defender if redirected else attacker
-		credited.damage_dealt += bonus
+		credited.damage_dealt += final_bonus
+		credited.note_attribute_damage_profile(attribute_profile)
 		credited.thumbtack_spots_landed += 1
 		victim.thumbtack_spots_taken += 1
 		victim.set_match_state(WrestlerResource.Position.GROUNDED, WrestlerResource.Orientation.FACE_UP, object.area, WrestlerResource.MotionState.STATIONARY)
 		_maybe_advance_bleeding(credited, victim, object.weapon, move, {"story_part": part}, result == ActionResult.CLEAN_SUCCESS)
 		_environment_state.consume(object)
-		add_match_log_entry("%s is driven into the thumbtacks!" % _side_name(victim_side), Color(0.98, 0.62, 0.25, 1.0))
+		add_match_log_entry("%s is driven into the thumbtacks!" % _side_name(victim_side), AppThemePalette.DESTRUCTIVE)
 		_emit_ring_event(&"thumbtacks_used", attacker_side, victim_side, {"instance_id": object.instance_id, "redirected": defensive_redirect or redirected})
 		if offensive_success and _match_rules.disqualifications_enabled:
 			is_resolving_action = false
@@ -2980,7 +3065,7 @@ func _execute_contested_setup_action(
 		actor.last_action_result = ActionResult.SETUP_SUCCESS
 		add_match_log_entry(
 			_taunt_success_log_message(side, actor, target) if is_taunt else _setup_log_message(side, action_id),
-			Color(0.95, 0.78, 0.22, 1.0) if is_taunt else Color(0.55, 0.78, 1.0, 1.0),
+			AppThemePalette.SUCCESS if is_taunt else AppThemePalette.ACTIVE,
 		)
 		if side == Side.AI:
 			_ai_decision_engine.note_setup_executed(action_id, actor)
@@ -3072,11 +3157,18 @@ func _run_setup_defender_response(
 		profile["success_window"] = clampf(adjusted * 0.78 if defender_side == Side.PLAYER else adjusted, 24.0, 65.0)
 	target.response_profile_total += float(profile.get("ai_success_chance", 0.0))
 	target.response_profile_samples += 1
+	var attribute_reversal_profile := MatchAttributeModel.get_reversal_modifier(
+		actor,
+		target,
+		null,
+		action_id,
+	)
+	target.note_attribute_reversal_profile(attribute_reversal_profile)
 	var result := MatchInteractionModel.InputResult.FAIL
 	if defender_side == Side.PLAYER:
 		var request := profile.duplicate(true)
 		request["title"] = "REVERSE: %s" % _setup_action_short_name(action_id)
-		request["prompt"] = "Stop the moving marker inside the gold zone."
+		request["prompt"] = "Stop the moving marker inside the green zone."
 		request["button_text"] = "REVERSE"
 		var response := await _run_visible_reversal_meter(request)
 		if bool(response.get("stale", false)) or match_ended or _interaction_context_changed():
@@ -3161,6 +3253,8 @@ func _apply_reversed_setup_positions(
 
 
 func _apply_successful_taunt(actor: MatchSideState) -> void:
+	var target: MatchSideState = ai_side_state if actor == player_side_state else player_side_state
+	var taunt_profile := MatchAttributeModel.get_taunt_profile(actor, target)
 	var stamina_reward := 4.0
 	match actor.current_area:
 		WrestlerResource.Area.APRON:
@@ -3168,12 +3262,14 @@ func _apply_successful_taunt(actor: MatchSideState) -> void:
 		WrestlerResource.Area.TOP_ROPE:
 			stamina_reward = 2.0
 	stamina_reward *= MatchExhaustionModel.stamina_recovery_multiplier(actor)
+	stamina_reward *= float(taunt_profile.get("stamina_multiplier", 1.0))
 	var recovered := actor.recover_stamina(stamina_reward)
 	var momentum_before := actor.momentum
-	actor.add_momentum(SUCCESSFUL_MOVE_MOMENTUM)
+	actor.add_momentum(maxf(1.0, SUCCESSFUL_MOVE_MOMENTUM + float(taunt_profile.get("momentum_bonus", 0.0))))
 	var momentum_gained := actor.momentum - momentum_before
 	actor.taunt_stamina_recovered += recovered
 	actor.taunt_momentum_gained += momentum_gained
+	actor.note_attribute_taunt_profile(taunt_profile)
 
 
 func _taunt_success_log_message(side: int, actor: MatchSideState, target: MatchSideState) -> String:
@@ -3247,6 +3343,14 @@ func start_pin_sequence(
 ) -> void:
 	if match_ended or is_resolving_action:
 		return
+	if embedded_pinning_move and not _pin_area_is_legal(attacker_side, defender_side):
+		pin_sequence_active = false
+		is_resolving_action = false
+		_active_pin_context.clear()
+		_set_controller(_control_for_side(attacker_side))
+		refresh_match_ui()
+		ensure_match_can_continue("rejected outside embedded pin")
+		return
 	if not embedded_pinning_move and not _can_pin(attacker_side):
 		return
 	is_resolving_action = true
@@ -3261,7 +3365,7 @@ func start_pin_sequence(
 		advance_match_clock()
 	_active_pin_context = _build_pin_context(attacker_side, defender_side)
 	_recent_reversal_side = Side.NONE
-	add_match_log_entry("%s hooks the leg!" % _side_name(attacker_side), Color(0.25, 0.64, 1.0, 1.0))
+	add_match_log_entry("%s hooks the leg!" % _side_name(attacker_side), AppThemePalette.ACTIVE)
 	_emit_ring_state({
 		"reason": "pin started",
 		"actor_id": _ring_participant_id(attacker_side),
@@ -3272,7 +3376,7 @@ func start_pin_sequence(
 	if bool(_active_pin_context.get("flash_qualified", false)):
 		add_match_log_entry(
 			"%s catches %s by surprise!" % [_side_name(attacker_side), _side_name(defender_side)],
-			Color(0.95, 0.78, 0.22, 1.0),
+			AppThemePalette.WARNING,
 		)
 	refresh_match_ui()
 	if defender_side == Side.PLAYER:
@@ -3298,7 +3402,7 @@ func start_pin_sequence(
 			_active_pin_context.clear()
 			return
 		if count < 3:
-			add_match_log_entry(_count_word(count) + "!", Color(0.95, 0.78, 0.22, 1.0))
+			add_match_log_entry(_count_word(count) + "!", AppThemePalette.WARNING)
 		var result := await resolve_pin_count(attacker_side, defender_side, count)
 		if result < 0 or match_ended:
 			pin_sequence_active = false
@@ -3318,11 +3422,14 @@ func start_pin_sequence(
 					"%s kicks out at one, nowhere near finished yet." % _side_name(defender_side),
 				)
 			elif count == 3:
+				_record_story_event(&"near_fall_late", defender_side, {"count": count})
 				add_match_log_entry(
 					"THREE—NO! %s kicks out at the last possible moment!" % _side_name(defender_side),
-					Color(0.95, 0.78, 0.22, 1.0),
+					AppThemePalette.SUCCESS,
 				)
 			else:
+				if count >= 2:
+					_record_story_event(&"near_fall", defender_side, {"count": count})
 				add_match_log_entry("%s kicks out at %s!" % [_side_name(defender_side), _count_phrase(count)])
 			if count == 2:
 				add_match_log_entry("%s nearly had it." % _side_name(attacker_side))
@@ -3407,13 +3514,17 @@ func _on_pin_count_reached(_request_id: int, count: int) -> void:
 		return
 	_last_player_pin_count = count
 	if count < 3:
-		add_match_log_entry(_count_word(count) + "!", Color(0.95, 0.78, 0.22, 1.0))
+		add_match_log_entry(_count_word(count) + "!", AppThemePalette.WARNING)
 
 
 func _complete_pin_kickout(attacker_side: int, defender_side: int, count: int) -> void:
 	var defender := _state_for_side(defender_side)
 	defender.kickouts += 1
 	last_action_result = ActionResult.KICKOUT
+	if count >= 3:
+		_record_story_event(&"near_fall_late", defender_side, {"count": count})
+	elif count >= 2:
+		_record_story_event(&"near_fall", defender_side, {"count": count})
 	if count <= 0:
 		add_match_log_entry("%s powers out before one!" % _side_name(defender_side))
 	elif count == 1 and bool(_active_pin_context.get("early_normal_protection", false)):
@@ -3465,7 +3576,7 @@ func resolve_pin_count(attacker_side: int, defender_side: int, count: int) -> in
 		return simulated_result
 	var request := profile.duplicate(true)
 	request["title"] = "KICK OUT — %s!" % _count_word(count)
-	request["prompt"] = "Stop the moving marker inside the gold zone."
+	request["prompt"] = "Stop the moving marker inside the green zone."
 	request["button_text"] = "KICK OUT"
 	var response := await _run_visible_control_meter(request)
 	if bool(response.get("stale", false)) or match_ended or _interaction_context_changed():
@@ -3543,11 +3654,11 @@ func _legacy_start_pin_sequence(attacker_side: int, defender_side: int) -> void:
 	advance_match_clock()
 	_active_pin_context = _build_pin_context(attacker_side, defender_side)
 	_recent_reversal_side = Side.NONE
-	add_match_log_entry("%s hooks the leg!" % _side_name(attacker_side), Color(0.25, 0.64, 1.0, 1.0))
+	add_match_log_entry("%s hooks the leg!" % _side_name(attacker_side), AppThemePalette.ACTIVE)
 	if bool(_active_pin_context.get("flash_qualified", false)):
 		add_match_log_entry(
 			"%s catches %s by surprise!" % [_side_name(attacker_side), _side_name(defender_side)],
-			Color(0.95, 0.78, 0.22, 1.0),
+			AppThemePalette.WARNING,
 		)
 	refresh_match_ui()
 	var temporary_resistance := 0.0
@@ -3556,7 +3667,7 @@ func _legacy_start_pin_sequence(attacker_side: int, defender_side: int) -> void:
 			_active_pin_context.clear()
 			return
 		if count < 3:
-			add_match_log_entry(_count_word(count) + "!", Color(0.95, 0.78, 0.22, 1.0))
+			add_match_log_entry(_count_word(count) + "!", AppThemePalette.WARNING)
 		var result := await _legacy_resolve_pin_count(attacker_side, defender_side, count, temporary_resistance)
 		if result == ContestTimingBar.GREEN_RESULT:
 			defender.kickouts += 1
@@ -3568,7 +3679,7 @@ func _legacy_start_pin_sequence(attacker_side: int, defender_side: int) -> void:
 			elif count == 3:
 				add_match_log_entry(
 					"THREE—NO! %s kicks out at the last possible moment!" % _side_name(defender_side),
-					Color(0.95, 0.78, 0.22, 1.0),
+					AppThemePalette.SUCCESS,
 				)
 			else:
 				add_match_log_entry("%s kicks out at %s!" % [_side_name(defender_side), _count_phrase(count)])
@@ -3625,6 +3736,14 @@ func start_submission_sequence(
 	contested_lock: bool = false,
 	target_resolution: Dictionary = {},
 ) -> void:
+	if move == null or not _submission_area_is_legal(attacker_side, defender_side):
+		submission_sequence_active = false
+		is_resolving_action = false
+		_active_submission_target_resolution.clear()
+		_set_controller(_control_for_side(attacker_side))
+		refresh_match_ui()
+		ensure_match_can_continue("rejected outside submission")
+		return
 	submission_sequence_active = true
 	is_resolving_action = true
 	var attacker := _state_for_side(attacker_side)
@@ -3643,7 +3762,7 @@ func start_submission_sequence(
 			_move_name(move),
 			MoveTargetResolver.part_label(int(target_resolution.get("story_part", MoveResource.MoveTargetParts.BODY))).to_lower(),
 		],
-		Color(0.95, 0.78, 0.22, 1.0) if move.is_finisher else Color(0.84, 0.87, 0.92, 1.0),
+		AppThemePalette.PRESTIGE if move.is_finisher else AppThemePalette.PRIMARY_TEXT,
 	)
 	_emit_ring_state({
 		"reason": "submission started",
@@ -3674,6 +3793,8 @@ func start_submission_sequence(
 	var start_marker := float(submission_context.get("start_marker", 50.0))
 	var attacker_score := float(submission_context.get("attacker_score", 50.0))
 	var defender_score := float(submission_context.get("defender_score", 50.0))
+	attacker.note_attribute_submission_attack(float(submission_context.get("attribute_submission_attack", 0.0)))
+	defender.note_attribute_submission_defence(float(submission_context.get("attribute_submission_defence", 0.0)))
 	_difficulty_diagnostics.record(&"submission_started", {
 		"match_time": _match_time_seconds,
 		"attacker": _side_name(attacker_side),
@@ -3743,6 +3864,10 @@ func start_submission_sequence(
 			attacker.submission_struggle_wins += 1
 			defender.submission_struggle_losses += 1
 			last_action_result = ActionResult.TAP_OUT
+			_record_story_event(&"submission_finish", attacker_side, {
+				"move": _move_name(move),
+				"elapsed": elapsed,
+			})
 			_emit_ring_event(&"submission_ended", attacker_side, defender_side)
 			end_match(attacker_side, defender_side, FinishType.SUBMISSION, move)
 			return
@@ -3751,6 +3876,10 @@ func start_submission_sequence(
 			defender.submission_struggle_wins += 1
 			attacker.submission_struggle_losses += 1
 			last_action_result = ActionResult.SUBMISSION_ESCAPE
+			_record_story_event(&"submission_escape", defender_side, {
+				"move": _move_name(move),
+				"elapsed": elapsed,
+			})
 			add_match_log_entry("%s claws free and breaks the hold." % _side_name(defender_side))
 			submission_sequence_active = false
 			is_resolving_action = false
@@ -3820,7 +3949,7 @@ func _on_submission_damage_tick(_request_id: int, marker: float) -> void:
 			]
 	if not threshold_message.is_empty() and _match_time_seconds - defender.last_body_commentary_time >= 60:
 		defender.last_body_commentary_time = _match_time_seconds
-		add_match_log_entry(threshold_message, Color(1.0, 0.68, 0.28, 1.0))
+		add_match_log_entry(threshold_message, AppThemePalette.WARNING)
 	refresh_match_ui()
 
 
@@ -3837,6 +3966,14 @@ func _on_submission_state_changed(_request_id: int, state: StringName) -> void:
 	var attacker := _state_for_side(_active_submission_attacker_side)
 	if attacker == null or not attacker.note_submission_commentary_state(state):
 		return
+	if state == SubmissionTugInteraction.STATE_NEAR_TAP:
+		_record_story_event(&"submission_near_tap", _active_submission_attacker_side, {
+			"move": _move_name(_active_submission_move),
+		})
+	elif state == SubmissionTugInteraction.STATE_NEAR_ESCAPE:
+		_record_story_event(&"submission_near_escape", _active_submission_defender_side, {
+			"move": _move_name(_active_submission_move),
+		})
 	match state:
 		SubmissionTugInteraction.STATE_ATTACKER_GAINING:
 			add_match_log_entry("%s cranks back harder on the hold." % _side_name(_active_submission_attacker_side))
@@ -3857,7 +3994,7 @@ func _legacy_start_submission_sequence(
 	is_resolving_action = true
 	add_match_log_entry(
 		"%s traps %s in \"%s\"!" % [_side_name(attacker_side), _side_name(defender_side), _move_name(move)],
-		Color(0.95, 0.78, 0.22, 1.0) if move.is_finisher else Color(0.84, 0.87, 0.92, 1.0),
+		AppThemePalette.PRESTIGE if move.is_finisher else AppThemePalette.PRIMARY_TEXT,
 	)
 	var defender := _state_for_side(defender_side)
 	var early_safety := _submission_early_safety_level(defender, move)
@@ -3998,7 +4135,7 @@ func end_match(
 		result_message = "The match ends in a draw."
 	else:
 		result_message = "The match is declared a no contest."
-	add_match_log_entry(result_message, Color(0.95, 0.78, 0.22, 1.0))
+	add_match_log_entry(result_message, AppThemePalette.PRESTIGE)
 	_active_pin_context.clear()
 	_result_banner.text = (
 		"%s WINS BY %s" % [_side_name(winning_side), _finish_type_name(result_type).to_upper()]
@@ -4015,6 +4152,13 @@ func end_match(
 		{"winner_id": _ring_participant_id(winning_side), "result": _finish_type_name(result_type)},
 	)
 	_latest_match_report = _build_match_report()
+	var archive_result: Dictionary = MatchReportArchive.save_completed_match(_latest_match_report)
+	if bool(archive_result.get("ok", false)):
+		_archive_report_saved = true
+		_latest_match_report["report_id"] = str(archive_result.get("report_id", _latest_match_report.get("report_id", "")))
+	else:
+		_archive_save_error = str(archive_result.get("error", "The match could not be added to history."))
+		_latest_match_report["archive_save_error"] = _archive_save_error
 	_difficulty_diagnostics.close({
 		"match_time": _match_time_seconds,
 		"winner": _side_name(winning_side) if winning_side != Side.NONE else "None",
@@ -4072,7 +4216,7 @@ func _resolve_probability_prompt(
 	_contest_timing_bar.open_contest(probabilities, title, prompt, time_limit_seconds, band_labels)
 	var result: StringName = await _contest_timing_bar.result_selected
 	if _contest_timing_bar.last_result_was_timeout and not timeout_message.is_empty() and not match_ended:
-		add_match_log_entry(timeout_message, Color(1.0, 0.5, 0.35, 1.0))
+		add_match_log_entry(timeout_message, AppThemePalette.ERROR)
 	contest_prompt_active = false
 	refresh_match_ui()
 	return result
@@ -4454,7 +4598,7 @@ func _resolve_control_after_action(
 				attacker.exhaustion_last_control_loss_log_time = _match_time_seconds
 				add_match_log_entry(
 					"%s cannot maintain control after the effort." % _side_name(attacker_side),
-					Color(0.78, 0.82, 0.9, 1.0),
+					AppThemePalette.SECONDARY_TEXT,
 				)
 			_set_resolved_controller(ControlState.NEUTRAL, attacker_side, defender_side)
 			return
@@ -4497,7 +4641,7 @@ func _note_exhaustion_action_result(
 			state.exhaustion_heroic_success_announced = true
 			add_match_log_entry(
 				"%s finds one last burst of energy and somehow lands the attack." % _side_name(side),
-				Color(0.95, 0.78, 0.22, 1.0),
+				AppThemePalette.SUCCESS,
 			)
 	_emit_exhaustion_threshold_commentary(side, state)
 
@@ -4507,16 +4651,16 @@ func _emit_exhaustion_threshold_commentary(side: int, state: MatchSideState) -> 
 		return
 	if state.stamina_percent() < 50.0 and not state.exhaustion_low_stamina_announced:
 		state.exhaustion_low_stamina_announced = true
-		add_match_log_entry("%s is visibly running out of energy." % _side_name(side), Color(0.72, 0.79, 0.9, 1.0))
+		add_match_log_entry("%s is visibly running out of energy." % _side_name(side), AppThemePalette.WARNING)
 	if state.fatigue > 75.0 and not state.exhaustion_high_fatigue_announced:
 		state.exhaustion_high_fatigue_announced = true
-		add_match_log_entry("%s is struggling to recover between exchanges." % _side_name(side), Color(0.82, 0.72, 0.64, 1.0))
+		add_match_log_entry("%s is struggling to recover between exchanges." % _side_name(side), AppThemePalette.WARNING)
 	if (
 		MatchExhaustionModel.exhaustion_band(state) == MatchExhaustionModel.ExhaustionBand.SPENT
 		and not state.exhaustion_spent_announced
 	):
 		state.exhaustion_spent_announced = true
-		add_match_log_entry("%s is completely spent." % _side_name(side), Color(0.95, 0.62, 0.35, 1.0))
+		add_match_log_entry("%s is completely spent." % _side_name(side), AppThemePalette.ERROR)
 
 
 func _advantaged_side(
@@ -4575,6 +4719,14 @@ func _set_controller(value: int, schedule_turn: bool = true) -> void:
 		_pending_weapon_action.clear()
 		_clear_selected_move()
 	if current_controller != previous_controller:
+		if (
+			previous_controller in [ControlState.PLAYER_CONTROL, ControlState.AI_CONTROL]
+			and current_controller in [ControlState.PLAYER_CONTROL, ControlState.AI_CONTROL]
+		):
+			_record_story_event(&"control_swing", current_attacker_side, {
+				"from": previous_controller,
+				"to": current_controller,
+			})
 		_emit_ring_event(&"control_changed", current_attacker_side, current_defender_side)
 	refresh_match_ui()
 	if not schedule_turn or match_ended:
@@ -5011,7 +5163,7 @@ func _run_neutral_recovery(generation: int) -> void:
 			recovery_state.exhaustion_delayed_recoveries += 1
 			add_match_log_entry(
 				"%s struggles to recover, and neither wrestler can claim control yet." % _side_name(recovery_side),
-				Color(0.82, 0.72, 0.64, 1.0),
+				AppThemePalette.WARNING,
 			)
 			is_resolving_action = false
 			_set_controller(ControlState.NEUTRAL)
@@ -5071,6 +5223,11 @@ func _move_is_valid(side: int, move: MoveResource) -> bool:
 	var attacker := _state_for_side(side)
 	var defender := _state_for_side(_opponent_side(side))
 	if attacker == null or defender == null or attacker.wrestler == null or defender.wrestler == null:
+		return false
+	if (
+		(move.is_submission or move.move_type == MoveResource.MoveType.SUBMISSION)
+		and not _submission_area_is_legal(side, _opponent_side(side))
+	):
 		return false
 	var weapon_metadata := _weapon_metadata_for_move(move)
 	if not weapon_metadata.is_empty():
@@ -5222,6 +5379,38 @@ func _can_pin(side: int) -> bool:
 	)
 
 
+func _pin_area_is_legal(attacker_side: int, defender_side: int) -> bool:
+	var attacker := _state_for_side(attacker_side)
+	var defender := _state_for_side(defender_side)
+	return (
+		attacker != null
+		and defender != null
+		and attacker.current_area == WrestlerResource.Area.IN_RING
+		and defender.current_area == WrestlerResource.Area.IN_RING
+	)
+
+
+func _submission_area_is_legal(attacker_side: int, defender_side: int) -> bool:
+	var attacker := _state_for_side(attacker_side)
+	var defender := _state_for_side(defender_side)
+	return (
+		attacker != null
+		and defender != null
+		and attacker.current_area not in [
+			WrestlerResource.Area.APRON,
+			WrestlerResource.Area.OUTSIDE,
+			WrestlerResource.Area.RAMP,
+			WrestlerResource.Area.LADDER,
+		]
+		and defender.current_area not in [
+			WrestlerResource.Area.APRON,
+			WrestlerResource.Area.OUTSIDE,
+			WrestlerResource.Area.RAMP,
+			WrestlerResource.Area.LADDER,
+		]
+	)
+
+
 func _side_has_control(side: int) -> bool:
 	return (
 		(side == Side.PLAYER and current_controller == ControlState.PLAYER_CONTROL)
@@ -5311,15 +5500,26 @@ func _update_special_state_move_button(valid_moves: Array[MoveResource], interac
 			_move_selector_button.add_theme_stylebox_override("normal", _move_button_default_style)
 		return
 	_move_selector_button.text = special_label
-	_move_selector_button.add_theme_color_override("font_color", Color(1.0, 0.86, 0.35, 1.0))
-	if _move_button_available_style != null:
-		_move_selector_button.add_theme_stylebox_override("normal", _move_button_available_style)
+	var prestige_ready := special_label.contains("FINISHER") or special_label.contains("SIGNATURE")
+	_move_selector_button.add_theme_color_override(
+		"font_color",
+		AppThemePalette.PRESTIGE if prestige_ready else AppThemePalette.ACTIVE,
+	)
+	var special_style := _move_button_prestige_style if prestige_ready else _move_button_available_style
+	if special_style != null:
+		_move_selector_button.add_theme_stylebox_override("normal", special_style)
 
 
 func _update_match_header() -> void:
 	if not is_node_ready():
 		return
 	_vs_banner.text = _match_presentation_label()
+	_vs_banner.add_theme_color_override(
+		"font_color",
+		AppThemePalette.PRESTIGE
+		if not str(_match_setup_metadata.get("championship", "")).strip_edges().is_empty()
+		else AppThemePalette.PRIMARY_TEXT,
+	)
 	match current_controller:
 		ControlState.PLAYER_CONTROL:
 			_attacker_indicator.text = "ATTACKER: %s" % _wrestler_name(player_wrestler)
@@ -5602,7 +5802,7 @@ func _open_latest_match_report() -> void:
 	if _latest_match_report.is_empty():
 		return
 	_match_result_popup.close_result()
-	_match_report_popup.open_report(_latest_match_report)
+	full_report_requested.emit(_latest_match_report.duplicate(true))
 
 
 func _on_result_view_report_requested() -> void:
@@ -5614,72 +5814,96 @@ func _on_result_popup_closed() -> void:
 		_view_report_button.grab_focus()
 
 
-func _on_match_report_returned() -> void:
+func _on_new_match_requested() -> void:
+	if not match_ended:
+		return
+	request_new_match()
+
+
+func restore_finished_match_screen() -> void:
+	visible = true
 	if _view_report_button.visible:
 		_view_report_button.grab_focus()
 
 
-func _open_initial_match_setup() -> void:
-	_match_setup_popup.open_setup(
-		_roster,
-		player_wrestler,
-		ai_wrestler,
-		false,
-		_recent_wrestler_paths(),
-	)
-
-
-func _on_new_match_requested() -> void:
-	if not match_ended:
-		return
-	_match_result_popup.close_result()
-	_match_report_popup.close_report()
-	_interaction_overlay.close_interaction(true)
-	_moves_radial_menu.close()
-	_setup_actions_menu.close()
-	_weapon_radial_menu.close_menu()
-	_pending_weapon_action.clear()
-	_match_setup_popup.open_setup(
-		_roster,
-		player_wrestler,
-		ai_wrestler,
-		true,
-		_recent_wrestler_paths(),
-	)
-
-
-func _on_match_setup_requested(
+func configure_match(
 	player: WrestlerResource,
 	opponent: WrestlerResource,
 	setup_metadata: Dictionary,
-) -> void:
+) -> bool:
 	if player == null or opponent == null:
-		_match_setup_popup.reject_launch("Both sides need a loaded wrestler resource.")
-		return
+		return false
 	if not _roster_contains_resource(player) or not _roster_contains_resource(opponent):
-		_match_setup_popup.reject_launch("That selection is no longer available in the loaded roster.")
-		return
+		return false
 	if _same_wrestler(player, opponent):
-		_match_setup_popup.reject_launch("Player and AI must be different wrestlers.")
-		return
-	_match_setup_popup.confirm_launch()
+		return false
 	player_wrestler = player
 	ai_wrestler = opponent
-	_match_setup_metadata = {
-		"match_setup": str(setup_metadata.get("match_setup", "Manual")),
-		"player_locked": bool(setup_metadata.get("player_locked", false)),
-		"ai_locked": bool(setup_metadata.get("ai_locked", false)),
-		"player_randomly_selected": bool(setup_metadata.get("player_randomly_selected", false)),
-		"ai_randomly_selected": bool(setup_metadata.get("ai_randomly_selected", false)),
-		"match_rules": (setup_metadata.get("match_rules", {}) as Dictionary).duplicate(true),
-	}
-	_match_rules = MatchRules.from_dictionary(_match_setup_metadata.match_rules).runtime_copy()
+	_match_setup_metadata = setup_metadata.duplicate(true)
+	_match_setup_metadata["match_setup"] = str(_match_setup_metadata.get("match_setup", "Manual"))
+	_match_setup_metadata["player_locked"] = bool(_match_setup_metadata.get("player_locked", false))
+	_match_setup_metadata["ai_locked"] = bool(_match_setup_metadata.get("ai_locked", false))
+	_match_setup_metadata["player_randomly_selected"] = bool(_match_setup_metadata.get("player_randomly_selected", false))
+	_match_setup_metadata["ai_randomly_selected"] = bool(_match_setup_metadata.get("ai_randomly_selected", false))
+	if not _match_setup_metadata.has("match_rules") or not (_match_setup_metadata["match_rules"] is Dictionary):
+		_match_setup_metadata["match_rules"] = {}
+	_match_rules = MatchRules.from_dictionary((_match_setup_metadata["match_rules"] as Dictionary)).runtime_copy()
 	_record_recent_matchup(player, opponent)
 	_sync_selector_to_resource(_player_selector, player_wrestler)
 	_sync_selector_to_resource(_ai_selector, ai_wrestler)
 	_update_disabled_options()
 	_selection_status.text = ""
 	start_match()
+	return true
+
+
+func request_new_match() -> void:
+	prepare_for_scene_exit()
+	new_match_requested.emit()
+
+
+func request_pause() -> void:
+	_open_pause_menu()
+
+
+func prepare_for_scene_exit() -> void:
+	_turn_generation += 1
+	_scheduled_ai_generation = -1
+	_scheduled_neutral_generation = -1
+	is_resolving_action = false
+	contest_prompt_active = false
+	pin_sequence_active = false
+	submission_sequence_active = false
+	_match_result_popup.close_result()
+	_interaction_overlay.close_interaction(true)
+	_moves_radial_menu.close()
+	_setup_actions_menu.close()
+	_weapon_radial_menu.close_menu()
+	_pending_weapon_action.clear()
+	if is_instance_valid(_pause_menu):
+		_pause_menu.force_close()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel") and not _pause_menu.is_open():
+		_open_pause_menu()
+		get_viewport().set_input_as_handled()
+
+
+func _open_pause_menu() -> void:
+	if not is_instance_valid(_pause_menu):
+		return
+	_pause_menu.open_menu()
+
+
+func _on_pause_return_to_exhibition() -> void:
+	prepare_for_scene_exit()
+	return_to_exhibition_requested.emit()
+
+
+func _on_pause_return_to_main_menu() -> void:
+	prepare_for_scene_exit()
+	return_to_main_menu_requested.emit()
 
 
 func _roster_contains_resource(wrestler: WrestlerResource) -> bool:
@@ -5709,11 +5933,6 @@ func _recent_wrestler_paths() -> PackedStringArray:
 	return paths
 
 
-func _on_match_setup_cancelled() -> void:
-	if match_ended and _new_match_button.visible:
-		_new_match_button.grab_focus()
-
-
 func _build_match_result_summary() -> Dictionary:
 	var winner_state := _state_for_side(winner_side)
 	return {
@@ -5735,15 +5954,45 @@ func _build_match_report() -> Dictionary:
 		finish_name = _move_name(finish_move)
 	elif not finish_action.is_empty():
 		finish_name = finish_action
+	var completed_at_utc := Time.get_datetime_string_from_system(true, true)
+	var local_datetime := Time.get_datetime_dict_from_system()
+	var date_display := "%04d-%02d-%02d %02d:%02d" % [
+		int(local_datetime.get("year", 0)),
+		int(local_datetime.get("month", 0)),
+		int(local_datetime.get("day", 0)),
+		int(local_datetime.get("hour", 0)),
+		int(local_datetime.get("minute", 0)),
+	]
+	var player_participant := _report_participant(Side.PLAYER)
+	var ai_participant := _report_participant(Side.AI)
+	var winner_id := _participant_id_for_side(winner_side)
+	var loser_id := _participant_id_for_side(loser_side)
+	var stipulation_id := _stipulation_id(_match_rules.stipulation)
+	var stipulation_name := _stipulation_name(_match_rules.stipulation)
+	_record_story_event(&"match_finish", winner_side, {
+		"result": result_name,
+		"move": finish_name,
+	})
 	var report := {
 		"title": "MATCH REPORT",
 		"subtitle": "%s vs. %s" % [_side_name(Side.PLAYER), _side_name(Side.AI)],
+		"schema_version": 1,
+		"completed_at_utc": completed_at_utc,
+		"date_display": date_display,
+		"participants": [player_participant, ai_participant],
 		"winner": _side_name(winner_side) if winner_side != Side.NONE else "No Winner",
 		"loser": _side_name(loser_side) if loser_side != Side.NONE else "None",
+		"winner_id": winner_id,
+		"loser_id": loser_id,
 		"result": result_name,
 		"finish_reason": finish_reason,
+		"duration_seconds": final_time,
 		"final_time": _format_match_time(final_time),
 		"finish_move": finish_name,
+		"match_type_id": "singles",
+		"match_type": "Singles",
+		"stipulation_id": stipulation_id,
+		"stipulation": stipulation_name,
 		"match_setup": str(_match_setup_metadata.get("match_setup", "Manual")),
 		"player_locked": bool(_match_setup_metadata.get("player_locked", false)),
 		"ai_locked": bool(_match_setup_metadata.get("ai_locked", false)),
@@ -5760,11 +6009,80 @@ func _build_match_report() -> Dictionary:
 		"environment_objects": _environment_state.snapshots(),
 		"player": player_report,
 		"ai": ai_report,
+		"story_events": _match_story_events.duplicate(true),
 		"log_lines": match_log_entries.duplicate(),
 		"file_stem": "%s_vs_%s" % [_side_name(Side.PLAYER), _side_name(Side.AI)],
 	}
+	var rating: Dictionary = MatchRatingCalculator.calculate(report, _match_story_events)
+	report["rating"] = rating
+	report["rating_highlights"] = rating.get("highlights", [])
+	report["diagnostics"] = {
+		"player": player_report.duplicate(true),
+		"ai": ai_report.duplicate(true),
+		"rating_components": (rating.get("components", {}) as Dictionary).duplicate(true),
+		"environment_objects": _environment_state.snapshots(),
+		"count_started": _referee_count_starts,
+		"highest_count": _referee_count_highest,
+		"count_resets": _referee_count_resets,
+		"final_count": _referee_count_value,
+	}
 	report["export_text"] = _build_match_report_text(report)
 	return report
+
+
+func _record_story_event(event_type: StringName, side: int, details: Dictionary = {}) -> void:
+	if not _match_initialized and event_type != &"match_finish":
+		return
+	var event := {
+		"type": str(event_type),
+		"time_seconds": _match_time_seconds,
+		"time": _format_match_time(_match_time_seconds),
+		"side": side,
+		"wrestler": _side_name(side) if side in [Side.PLAYER, Side.AI] else "",
+	}
+	for key in details:
+		event[key] = details[key]
+	_match_story_events.append(event)
+
+
+func _report_participant(side: int) -> Dictionary:
+	var state: MatchSideState = _state_for_side(side)
+	var wrestler: WrestlerResource = state.wrestler if state != null else null
+	if wrestler == null:
+		return {"id": "", "resource_path": "", "wrestler_id": 0, "name": "Unknown"}
+	return {
+		"id": _participant_id_for_side(side),
+		"resource_path": wrestler.resource_path,
+		"wrestler_id": wrestler.wrestler_id,
+		"name": _wrestler_name(wrestler),
+	}
+
+
+func _participant_id_for_side(side: int) -> String:
+	if side not in [Side.PLAYER, Side.AI]:
+		return ""
+	var state := _state_for_side(side)
+	if state == null or state.wrestler == null:
+		return ""
+	if not state.wrestler.resource_path.is_empty():
+		return state.wrestler.resource_path
+	return "wrestler:%d:%s" % [state.wrestler.wrestler_id, _wrestler_name(state.wrestler).to_lower()]
+
+
+func _stipulation_id(value: int) -> String:
+	match value:
+		MatchRules.Stipulation.NO_DISQUALIFICATION: return "no_disqualification"
+		MatchRules.Stipulation.TABLES: return "tables"
+		MatchRules.Stipulation.LADDER: return "ladder"
+	return "standard"
+
+
+func _stipulation_name(value: int) -> String:
+	match value:
+		MatchRules.Stipulation.NO_DISQUALIFICATION: return "No Disqualification"
+		MatchRules.Stipulation.TABLES: return "Tables"
+		MatchRules.Stipulation.LADDER: return "Ladder"
+	return "Standard"
 
 
 func _side_report_stats(state: MatchSideState, opponent: MatchSideState, role: String) -> Dictionary:
@@ -5880,6 +6198,15 @@ func _side_report_stats(state: MatchSideState, opponent: MatchSideState, role: S
 		"total_stamina_recovered": state.total_stamina_recovered,
 		"average_stamina_execution_penalty": state.average_stamina_execution_penalty(),
 		"average_fatigue_amplification": state.average_fatigue_amplification(),
+		"average_attribute_damage_multiplier": state.average_attribute_damage_multiplier(),
+		"average_attribute_reversal_modifier": state.average_attribute_reversal_modifier(),
+		"average_attribute_reversal_difficulty": state.average_attribute_reversal_difficulty(),
+		"average_attribute_setup_modifier": state.average_attribute_setup_modifier(),
+		"average_attribute_submission_attack": state.average_attribute_submission_attack(),
+		"average_attribute_submission_defence": state.average_attribute_submission_defence(),
+		"average_attribute_taunt_momentum_bonus": state.average_attribute_taunt_momentum_bonus(),
+		"average_attribute_movement_recovery": state.average_attribute_movement_recovery(),
+		"last_attribute_profile": MatchAttributeModel.get_debug_summary(state.last_attribute_profile),
 		"minimum_stamina": state.minimum_stamina_reached,
 		"minimum_stamina_percent": (
 			state.minimum_stamina_reached / state.max_stamina * 100.0
@@ -5992,6 +6319,49 @@ func _format_environment_report(objects: Array) -> String:
 
 
 func _build_match_report_text(report: Dictionary) -> String:
+	var rating: Dictionary = report.get("rating", {})
+	var participants: Array = report.get("participants", [])
+	var player_name := "Player"
+	var opponent_name := "Opponent"
+	if participants.size() > 0 and participants[0] is Dictionary:
+		player_name = str((participants[0] as Dictionary).get("name", player_name))
+	if participants.size() > 1 and participants[1] is Dictionary:
+		opponent_name = str((participants[1] as Dictionary).get("name", opponent_name))
+	var lines: Array[String] = [
+		"RISE TO RELEVANCE",
+		"MATCH REPORT",
+		"================================",
+		"",
+		MatchRatingCalculator.format_stars(float(rating.get("stars", 0.0))),
+		"",
+		"%s vs. %s" % [player_name, opponent_name],
+		"Winner: %s" % str(report.get("winner", "No Winner")),
+		"Loser: %s" % str(report.get("loser", "None")),
+		"Duration: %s" % str(report.get("final_time", "00:00")),
+		"Match: %s — %s" % [str(report.get("match_type", "Singles")), str(report.get("stipulation", "Standard"))],
+		"Result: %s" % str(report.get("result", "Not Set")),
+		"Finish: %s" % str(report.get("finish_move", "None")),
+		"",
+		"MATCH NOTES",
+		"-----------",
+	]
+	var highlights: Array = report.get("rating_highlights", [])
+	if highlights.is_empty():
+		lines.append("- A straightforward wrestling contest")
+	else:
+		for highlight in highlights:
+			lines.append("- %s" % str(highlight))
+	lines.append_array(["", "COMPLETE PLAY-BY-PLAY", "---------------------"])
+	var log_lines: Array = report.get("log_lines", [])
+	if log_lines.is_empty():
+		lines.append("No match log entries were recorded.")
+	else:
+		for log_line in log_lines:
+			lines.append(str(log_line))
+	return "\n".join(lines) + "\n"
+
+
+func _build_legacy_match_report_text(report: Dictionary) -> String:
 	var lines: Array[String] = [
 		"RISE TO RELEVANCE - MATCH REPORT",
 		"================================",
@@ -6288,6 +6658,19 @@ func _side_report_text(stats: Dictionary) -> Array[String]:
 			float(stats.get("average_stamina_execution_penalty", 0.0)),
 			float(stats.get("average_fatigue_amplification", 1.0)),
 		],
+		"Average attribute tuning: damage x%.3f | defender reversal %+.1f | attacker difficulty %+.1f | setup %+.1f" % [
+			float(stats.get("average_attribute_damage_multiplier", 1.0)),
+			float(stats.get("average_attribute_reversal_modifier", 0.0)),
+			float(stats.get("average_attribute_reversal_difficulty", 0.0)),
+			float(stats.get("average_attribute_setup_modifier", 0.0)),
+		],
+		"Submission attribute tuning: attack %+.1f | defence %+.1f | taunt momentum %+.1f | movement recovery %+.1f" % [
+			float(stats.get("average_attribute_submission_attack", 0.0)),
+			float(stats.get("average_attribute_submission_defence", 0.0)),
+			float(stats.get("average_attribute_taunt_momentum_bonus", 0.0)),
+			float(stats.get("average_attribute_movement_recovery", 0.0)),
+		],
+		"Last attribute profile: %s" % str(stats.get("last_attribute_profile", "neutral")),
 		"Damage dealt / taken: %.1f / %.1f" % [float(stats.get("damage_dealt", 0.0)), float(stats.get("damage_taken", 0.0))],
 		"Stamina: %.1f / %.1f (%.0f%%) | Fatigue: %.0f%% | Momentum: %.0f%%" % [
 			float(stats.get("stamina", 0.0)),

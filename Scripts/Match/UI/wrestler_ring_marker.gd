@@ -92,13 +92,13 @@ func _draw() -> void:
 		return
 	var centre := Vector2(size.x * 0.5, 29.0)
 	var position_state := int(snapshot.get("position", WrestlerResource.Position.STANDING))
-	var accent := Color(0.25, 0.64, 1.0, 1.0) if bool(snapshot.get("is_player", false)) else Color(0.93, 0.3, 0.3, 1.0)
+	var accent := AppThemePalette.disposition_color(int(snapshot.get("disposition", -1)))
 	var fill := Color(accent.r * 0.45, accent.g * 0.45, accent.b * 0.45, 0.96)
 	if bool(snapshot.get("has_control", false)):
-		draw_circle(centre, 24.0, Color(0.95, 0.78, 0.22, 0.22))
-		draw_arc(centre, 24.0, 0.0, TAU, 32, Color(0.95, 0.78, 0.22, 0.95), 3.0, true)
+		draw_circle(centre, 24.0, AppThemePalette.with_alpha(AppThemePalette.ACTIVE, 0.22))
+		draw_arc(centre, 24.0, 0.0, TAU, 32, AppThemePalette.with_alpha(AppThemePalette.ACTIVE, 0.95), 3.0, true)
 	if bool(snapshot.get("is_targeted", false)):
-		draw_arc(centre, 28.0, 0.0, TAU, 32, Color(0.95, 0.78, 0.22, 0.72), 2.0, true)
+		draw_arc(centre, 28.0, 0.0, TAU, 32, AppThemePalette.with_alpha(AppThemePalette.WARNING, 0.72), 2.0, true)
 	match position_state:
 		WrestlerResource.Position.GROUNDED:
 			draw_style_box(_marker_box(fill, accent, 9), Rect2(centre - Vector2(24.0, 9.0), Vector2(48.0, 18.0)))
@@ -110,14 +110,14 @@ func _draw() -> void:
 			draw_polyline(PackedVector2Array([diamond[0], diamond[1], diamond[2], diamond[3], diamond[0]]), accent, 2.5, true)
 		WrestlerResource.Position.PERCHED:
 			draw_circle(centre, 17.0, fill)
-			draw_arc(centre, 20.0, -PI, 0.0, 18, Color(0.95, 0.78, 0.22, 1.0), 3.0, true)
+			draw_arc(centre, 20.0, -PI, 0.0, 18, AppThemePalette.WARNING, 3.0, true)
 			draw_line(centre + Vector2(-18, 19), centre + Vector2(18, 19), accent, 3.0)
 		WrestlerResource.Position.CLIMBING:
 			var climbing_shape := PackedVector2Array([centre + Vector2(0, -20), centre + Vector2(17, 16), centre + Vector2(-17, 16)])
 			draw_colored_polygon(climbing_shape, fill)
 			draw_polyline(PackedVector2Array([climbing_shape[0], climbing_shape[1], climbing_shape[2], climbing_shape[0]]), accent, 2.5, true)
 			for y in [-10.0, 0.0, 10.0]:
-				draw_line(centre + Vector2(-8, y), centre + Vector2(8, y), Color(0.95, 0.78, 0.22), 2.0, true)
+				draw_line(centre + Vector2(-8, y), centre + Vector2(8, y), AppThemePalette.WARNING, 2.0, true)
 		_:
 			if bool(snapshot.get("is_player", false)):
 				draw_circle(centre, 18.0, fill)
@@ -129,7 +129,7 @@ func _draw() -> void:
 	_draw_orientation(centre, accent)
 	_draw_motion(centre, accent)
 	if int(snapshot.get("bleeding_severity", 0)) > 0:
-		draw_colored_polygon(PackedVector2Array([centre + Vector2(25, -18), centre + Vector2(20, -7), centre + Vector2(30, -7)]), Color(0.86, 0.16, 0.18, 0.92))
+		draw_colored_polygon(PackedVector2Array([centre + Vector2(25, -18), centre + Vector2(20, -7), centre + Vector2(30, -7)]), AppThemePalette.with_alpha(AppThemePalette.ERROR, 0.92))
 
 
 func _draw_orientation(centre: Vector2, accent: Color) -> void:
@@ -140,7 +140,7 @@ func _draw_orientation(centre: Vector2, accent: Color) -> void:
 			draw_circle(Vector2(centre.x - 5, eye_y), 1.8, Color.WHITE)
 			draw_circle(Vector2(centre.x + 5, eye_y), 1.8, Color.WHITE)
 		else:
-			draw_line(Vector2(centre.x - 7, eye_y), Vector2(centre.x + 7, eye_y), Color(0.9, 0.9, 0.92), 2.0)
+			draw_line(Vector2(centre.x - 7, eye_y), Vector2(centre.x + 7, eye_y), AppThemePalette.PRIMARY_TEXT, 2.0)
 		return
 	var direction := _facing_vector.normalized()
 	if direction.length_squared() < 0.1:
@@ -158,12 +158,12 @@ func _draw_motion(centre: Vector2, accent: Color) -> void:
 			for offset in [0.0, 6.0, 12.0]:
 				draw_line(centre + Vector2(-30.0 - offset, -7.0), centre + Vector2(-20.0 - offset, -7.0), accent, 2.0)
 		WrestlerResource.MotionState.ROPE_REBOUND:
-			draw_arc(centre, 27.0, -0.8, 0.8, 12, Color(0.95, 0.78, 0.22), 2.5, true)
+			draw_arc(centre, 27.0, -0.8, 0.8, 12, AppThemePalette.ACTIVE, 2.5, true)
 		WrestlerResource.MotionState.RISING:
-			draw_line(centre + Vector2(-25, 11), centre + Vector2(-25, -11), Color(0.75, 0.84, 0.95), 2.0)
-			draw_colored_polygon(PackedVector2Array([centre + Vector2(-25, -15), centre + Vector2(-30, -7), centre + Vector2(-20, -7)]), Color(0.75, 0.84, 0.95))
+			draw_line(centre + Vector2(-25, 11), centre + Vector2(-25, -11), AppThemePalette.PRIMARY_TEXT, 2.0)
+			draw_colored_polygon(PackedVector2Array([centre + Vector2(-25, -15), centre + Vector2(-30, -7), centre + Vector2(-20, -7)]), AppThemePalette.PRIMARY_TEXT)
 		WrestlerResource.MotionState.STAGGERING:
-			draw_polyline(PackedVector2Array([centre + Vector2(-26, -10), centre + Vector2(-31, -4), centre + Vector2(-24, 2), centre + Vector2(-30, 9)]), Color(1.0, 0.62, 0.3), 2.0, true)
+			draw_polyline(PackedVector2Array([centre + Vector2(-26, -10), centre + Vector2(-31, -4), centre + Vector2(-24, 2), centre + Vector2(-30, 9)]), AppThemePalette.WARNING, 2.0, true)
 
 
 func _state_abbreviation() -> String:
@@ -238,11 +238,15 @@ func _marker_box(fill: Color, border: Color, radius: int) -> StyleBoxFlat:
 
 
 func _feedback_color(kind: StringName) -> Color:
-	if kind in [&"finisher", &"signature", &"pin"]:
-		return Color(1.0, 0.88, 0.48, 1.0)
-	if kind in [&"reversal", &"crash", &"impact"]:
-		return Color(1.0, 0.58, 0.5, 1.0)
-	return Color(0.72, 0.86, 1.0, 1.0)
+	if kind in [&"finisher", &"signature"]:
+		return AppThemePalette.PRESTIGE
+	if kind in [&"crash"]:
+		return AppThemePalette.ERROR
+	if kind in [&"impact", &"pin"]:
+		return AppThemePalette.WARNING
+	if kind in [&"reversal"]:
+		return AppThemePalette.ACTIVE
+	return AppThemePalette.PRIMARY_TEXT
 
 
 func _on_resized() -> void:

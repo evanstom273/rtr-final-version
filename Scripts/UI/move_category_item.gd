@@ -3,15 +3,15 @@ class_name MoveCategoryItem
 
 signal category_activated(category_id: int)
 
-const OFF_WHITE := Color(0.92, 0.93, 0.9, 1.0)
-const MUTED_TEXT := Color(0.62, 0.65, 0.67, 1.0)
-const GRAPHITE := Color(0.09, 0.13, 0.2, 1.0)
-const GRAPHITE_HOVER := Color(0.1, 0.08, 0.025, 1.0)
-const ACCENT := Color(0.78, 0.64, 0.2, 1.0)
-const ACCENT_BRIGHT := Color(0.91, 0.74, 0.24, 1.0)
-const GOLD := Color(0.9, 0.71, 0.22, 1.0)
-const VALID_BORDER := Color(0.28, 0.38, 0.55, 0.95)
-const DISABLED_BORDER := Color(0.2, 0.25, 0.34, 0.75)
+const OFF_WHITE := AppThemePalette.PRIMARY_TEXT
+const MUTED_TEXT := AppThemePalette.SECONDARY_TEXT
+const GRAPHITE := AppThemePalette.SECONDARY_PANEL
+const GRAPHITE_HOVER := AppThemePalette.HOVER_PANEL
+const ACCENT := AppThemePalette.ACTIVE
+const ACCENT_BRIGHT := AppThemePalette.ACTIVE
+const GOLD := AppThemePalette.PRESTIGE
+const VALID_BORDER := AppThemePalette.BORDER
+static var DISABLED_BORDER := AppThemePalette.with_alpha(AppThemePalette.BORDER, 0.75)
 
 var category_id: int = 0
 var _enabled_for_selection: bool = false
@@ -48,7 +48,7 @@ func set_category_data(data: Dictionary) -> void:
 
 	disabled = not _enabled_for_selection
 	focus_mode = Control.FOCUS_ALL if _enabled_for_selection else Control.FOCUS_NONE
-	modulate = Color.WHITE if _enabled_for_selection else Color(0.68, 0.69, 0.7, 0.55)
+	modulate = Color.WHITE if _enabled_for_selection else AppThemePalette.with_alpha(AppThemePalette.DISABLED_TEXT, 0.55)
 	_icon.icon_id = StringName(data.get("icon_id", &"generic"))
 	_icon.locked = locked_only
 	_icon.icon_color = GOLD if special else OFF_WHITE
@@ -78,12 +78,12 @@ func _update_pivot() -> void:
 
 func _apply_styles(special: bool, locked_only: bool) -> void:
 	var normal_border := GOLD.darkened(0.18) if special else VALID_BORDER
-	var normal_background := Color(0.1, 0.085, 0.045, 0.98) if locked_only else GRAPHITE
+	var normal_background := AppThemePalette.PRIMARY_PANEL if locked_only else GRAPHITE
 	add_theme_stylebox_override("normal", _make_style(normal_background, normal_border, 1, special))
 	add_theme_stylebox_override("hover", _make_style(GRAPHITE_HOVER, ACCENT_BRIGHT, 2, true))
-	add_theme_stylebox_override("pressed", _make_style(Color(0.16, 0.12, 0.035, 1.0), ACCENT_BRIGHT, 2, true))
-	add_theme_stylebox_override("focus", _make_style(Color(0.07, 0.095, 0.15, 1.0), ACCENT, 2, true))
-	add_theme_stylebox_override("disabled", _make_style(Color(0.035, 0.05, 0.08, 0.92), DISABLED_BORDER, 1, false))
+	add_theme_stylebox_override("pressed", _make_style(AppThemePalette.PRESSED_PANEL, ACCENT_BRIGHT, 2, true))
+	add_theme_stylebox_override("focus", _make_style(AppThemePalette.SECONDARY_PANEL, ACCENT, 2, true))
+	add_theme_stylebox_override("disabled", _make_style(AppThemePalette.with_alpha(AppThemePalette.DISABLED_PANEL, 0.92), DISABLED_BORDER, 1, false))
 
 
 func _make_style(background: Color, border: Color, border_width: int, glow: bool) -> StyleBoxFlat:
@@ -93,7 +93,7 @@ func _make_style(background: Color, border: Color, border_width: int, glow: bool
 	style.set_border_width_all(border_width)
 	style.set_corner_radius_all(14)
 	if glow:
-		style.shadow_color = Color(border.r, border.g, border.b, 0.16)
+		style.shadow_color = AppThemePalette.with_alpha(border, 0.16)
 		style.shadow_size = 4
 	return style
 

@@ -3,12 +3,12 @@
 [ext_resource type="Script" path="res://Scripts/UI/move_category_radial_menu.gd" id="1_menu"]
 
 [sub_resource type="StyleBoxFlat" id="StyleWheelPanel"]
-bg_color = Color(0.045, 0.06, 0.09, 0.99)
+bg_color = Color(0.0784314, 0.0784314, 0.0784314, 0.99)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.78, 0.64, 0.2, 0.88)
+border_color = Color(0.203922, 0.203922, 0.203922, 0.88)
 corner_radius_top_left = 26
 corner_radius_top_right = 26
 corner_radius_bottom_right = 26
@@ -17,38 +17,38 @@ shadow_color = Color(0, 0, 0, 0.55)
 shadow_size = 12
 
 [sub_resource type="StyleBoxFlat" id="StyleCenterBadge"]
-bg_color = Color(0.1, 0.08, 0.025, 1)
+bg_color = Color(0.105882, 0.105882, 0.105882, 1)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.88, 0.7, 0.2, 0.95)
+border_color = Color(0.203922, 0.203922, 0.203922, 0.95)
 corner_radius_top_left = 28
 corner_radius_top_right = 28
 corner_radius_bottom_right = 28
 corner_radius_bottom_left = 28
-shadow_color = Color(0.88, 0.7, 0.2, 0.14)
+shadow_color = Color(0, 0, 0, 0.35)
 shadow_size = 5
 
 [sub_resource type="StyleBoxFlat" id="StyleCloseNormal"]
-bg_color = Color(0.09, 0.13, 0.2, 0.96)
+bg_color = Color(0.105882, 0.105882, 0.105882, 0.96)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.28, 0.38, 0.55, 0.9)
+border_color = Color(0.203922, 0.203922, 0.203922, 0.9)
 corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
 [sub_resource type="StyleBoxFlat" id="StyleCloseHover"]
-bg_color = Color(0.1, 0.08, 0.025, 1)
+bg_color = Color(0.137255, 0.137255, 0.137255, 1)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.91, 0.74, 0.24, 1)
+border_color = Color(0.486275, 0.360784, 1, 1)
 corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
@@ -94,7 +94,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(980, 780)
 layout_mode = 2
 mouse_filter = 0
-theme_override_styles/panel = SubResource("StyleWheelPanel")
+theme_type_variation = &"ModalPanel"
 
 [node name="WheelArea" type="Control" parent="CategorySafeArea/WheelCenter/WheelPanel"]
 unique_name_in_owner = true
@@ -132,7 +132,7 @@ offset_right = 605.0
 offset_bottom = 450.0
 clip_contents = true
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleCenterBadge")
+theme_type_variation = &"RaisedPanel"
 
 [node name="BadgeMargin" type="MarginContainer" parent="CategorySafeArea/WheelCenter/WheelPanel/WheelArea/CenterBadge"]
 layout_mode = 1
@@ -155,7 +155,7 @@ theme_override_constants/separation = 6
 [node name="BadgeTitle" type="Label" parent="CategorySafeArea/WheelCenter/WheelPanel/WheelArea/CenterBadge/BadgeMargin/BadgeText"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_colors/font_color = Color(0.91, 0.72, 0.24, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_font_sizes/font_size = 16
 text = "MOVE TYPE"
 horizontal_alignment = 1
@@ -169,7 +169,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 mouse_filter = 2
-theme_override_colors/font_color = Color(0.91, 0.92, 0.89, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 theme_override_font_sizes/font_size = 14
 text = "Standing vs Standing"
 horizontal_alignment = 1
@@ -186,7 +186,7 @@ offset_left = 918.0
 offset_top = 14.0
 offset_right = 966.0
 offset_bottom = 62.0
-theme_override_colors/font_color = Color(0.91, 0.92, 0.89, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = SubResource("StyleCloseNormal")
 theme_override_styles/hover = SubResource("StyleCloseHover")

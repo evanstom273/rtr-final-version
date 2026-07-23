@@ -1,0 +1,200 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Scripts/UI/match_report_archive_screen.gd" id="1_script"]
+[ext_resource type="Material" path="res://Themes/smoked_background_material.tres" id="2_bg"]
+
+[node name="MatchReportArchiveScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Background" type="ColorRect" parent="."]
+material = ExtResource("2_bg")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0352941, 0.0352941, 0.0352941, 1)
+
+[node name="ArchiveSafeArea" type="MarginContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ArchiveOuterMargin" type="MarginContainer" parent="ArchiveSafeArea"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/margin_left = 42
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 42
+theme_override_constants/margin_bottom = 28
+
+[node name="Panel" type="PanelContainer" parent="ArchiveSafeArea/ArchiveOuterMargin"]
+layout_mode = 2
+theme_type_variation = &"ApplicationPanel"
+
+[node name="Margin" type="MarginContainer" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 20
+
+[node name="Page" type="VBoxContainer" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "MATCH REPORTS"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
+text = "Every result. Every rivalry. The complete recorded history."
+horizontal_alignment = 1
+
+[node name="ArchiveSearch" type="LineEdit" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+placeholder_text = "Search wrestlers, results, stipulations, finishes or dates..."
+
+[node name="FilterRowOne" type="HBoxContainer" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="WrestlerFilter" type="OptionButton" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page/FilterRowOne"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+[node name="MatchTypeFilter" type="OptionButton" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page/FilterRowOne"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+[node name="StipulationFilter" type="OptionButton" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page/FilterRowOne"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+[node name="WinnerFilter" type="OptionButton" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page/FilterRowOne"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+[node name="LoserFilter" type="OptionButton" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page/FilterRowOne"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="FilterRowTwo" type="HBoxContainer" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="MinimumRating" type="OptionButton" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page/FilterRowTwo"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+[node name="MaximumRating" type="OptionButton" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page/FilterRowTwo"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+[node name="ArchiveSort" type="OptionButton" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page/FilterRowTwo"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ArchiveContentRow" type="BoxContainer" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 14
+
+[node name="ArchiveList" type="ItemList" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page/ArchiveContentRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(700, 360)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+allow_reselect = true
+fixed_icon_size = Vector2i(0, 0)
+
+[node name="HistoryPanel" type="PanelContainer" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page/ArchiveContentRow"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(390, 0)
+layout_mode = 2
+theme_type_variation = &"RaisedPanel"
+
+[node name="HistoryMargin" type="MarginContainer" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page/ArchiveContentRow/HistoryPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 18
+
+[node name="HistoryContent" type="VBoxContainer" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page/ArchiveContentRow/HistoryPanel/HistoryMargin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="HistoryTitle" type="Label" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page/ArchiveContentRow/HistoryPanel/HistoryMargin/HistoryContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+text = "WRESTLER HISTORY"
+autowrap_mode = 2
+[node name="HistoryText" type="Label" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page/ArchiveContentRow/HistoryPanel/HistoryMargin/HistoryContent"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+text = "No recorded matches."
+autowrap_mode = 2
+[node name="HighestRatedButton" type="Button" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page/ArchiveContentRow/HistoryPanel/HistoryMargin/HistoryContent"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "VIEW HIGHEST RATED"
+[node name="LongestButton" type="Button" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page/ArchiveContentRow/HistoryPanel/HistoryMargin/HistoryContent"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "VIEW LONGEST"
+[node name="ShortestButton" type="Button" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page/ArchiveContentRow/HistoryPanel/HistoryMargin/HistoryContent"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "VIEW SHORTEST"
+
+[node name="ArchiveStatus" type="Label" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
+horizontal_alignment = 1
+
+[node name="Actions" type="HBoxContainer" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ViewReportButton" type="Button" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page/Actions"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+disabled = true
+text = "VIEW FULL REPORT"
+
+[node name="BackButton" type="Button" parent="ArchiveSafeArea/ArchiveOuterMargin/Panel/Margin/Page/Actions"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "BACK TO MAIN MENU"

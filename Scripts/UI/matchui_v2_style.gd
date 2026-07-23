@@ -3,21 +3,21 @@ extends Control
 const SegmentedOverlayScene := preload("res://Scripts/UI/segmented_overlay.gd")
 
 @export_range(4, 50) var bar_segments: int = 20
-@export var header_text: Color = Color(0.9, 0.92, 0.95, 1.0)
-@export var accent_left: Color = Color(0.21, 0.62, 0.98, 1.0)
-@export var accent_right: Color = Color(0.95, 0.25, 0.25, 1.0)
-@export var accent_neutral: Color = Color(0.62, 0.65, 0.7, 1.0)
+@export var header_text: Color = AppThemePalette.PRIMARY_TEXT
+@export var accent_left: Color = AppThemePalette.SECONDARY_TEXT
+@export var accent_right: Color = AppThemePalette.SECONDARY_TEXT
+@export var accent_neutral: Color = AppThemePalette.SECONDARY_TEXT
 @export var tick_color: Color = Color(1.0, 1.0, 1.0, 0.14)
 @export var outline_color: Color = Color(0.0, 0.0, 0.0, 0.78)
 
-@export var log_color_hit: Color = Color(0.92, 0.79, 0.30, 1.0)
-@export var log_color_reversal: Color = Color(0.30, 0.86, 0.95, 1.0)
-@export var log_color_nearfall: Color = Color(0.98, 0.55, 0.20, 1.0)
-@export var log_color_finisher: Color = Color(0.95, 0.22, 0.22, 1.0)
-@export var log_color_neutral: Color = Color(0.55, 0.55, 0.55, 1.0)
-@export var condition_good: Color = Color(0.32, 0.82, 0.36, 1.0)
-@export var condition_mid: Color = Color(0.95, 0.78, 0.22, 1.0)
-@export var condition_low: Color = Color(0.95, 0.35, 0.26, 1.0)
+@export var log_color_hit: Color = AppThemePalette.PRIMARY_TEXT
+@export var log_color_reversal: Color = AppThemePalette.ACTIVE
+@export var log_color_nearfall: Color = AppThemePalette.WARNING
+@export var log_color_finisher: Color = AppThemePalette.PRESTIGE
+@export var log_color_neutral: Color = AppThemePalette.SECONDARY_TEXT
+@export var condition_good: Color = AppThemePalette.SUCCESS
+@export var condition_mid: Color = AppThemePalette.WARNING
+@export var condition_low: Color = AppThemePalette.ERROR
 
 var _log_card: StyleBox
 var _progress_bg: StyleBox
@@ -100,7 +100,7 @@ func _apply_separator_styling() -> void:
 	var sep := _separator
 	if sep is StyleBoxLine:
 		var line := (sep as StyleBoxLine).duplicate(true) as StyleBoxLine
-		line.color = Color(1.0, 1.0, 1.0, 0.08)
+		line.color = AppThemePalette.with_alpha(AppThemePalette.BORDER, 0.8)
 		sep = line
 	var seps := find_children("*", "VSeparator", true, false)
 	for n in seps:

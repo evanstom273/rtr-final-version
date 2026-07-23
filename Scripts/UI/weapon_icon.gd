@@ -2,12 +2,12 @@ extends Control
 class_name WeaponIcon
 
 var icon_id: StringName = &"weapon"
-var tint := Color(0.92, 0.76, 0.25, 1.0)
+var tint := AppThemePalette.PRIMARY_TEXT
 
 
 func set_icon(value: StringName, enabled: bool = true) -> void:
 	icon_id = value
-	tint = Color(0.92, 0.76, 0.25, 1.0) if enabled else Color(0.38, 0.42, 0.48, 0.75)
+	tint = AppThemePalette.PRIMARY_TEXT if enabled else AppThemePalette.with_alpha(AppThemePalette.DISABLED_TEXT, 0.75)
 	queue_redraw()
 
 

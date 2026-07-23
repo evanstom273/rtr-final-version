@@ -4,35 +4,35 @@
 [ext_resource type="Script" path="res://Scripts/Match/UI/match_ring_canvas.gd" id="2_canvas"]
 
 [sub_resource type="StyleBoxFlat" id="StyleRingPanel"]
-bg_color = Color(0.035, 0.047, 0.07, 1)
+bg_color = Color(0.0784314, 0.0784314, 0.0784314, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.27, 0.35, 0.46, 1)
+border_color = Color(0.203922, 0.203922, 0.203922, 1)
 corner_radius_top_left = 9
 corner_radius_top_right = 9
 corner_radius_bottom_right = 9
 corner_radius_bottom_left = 9
 
 [sub_resource type="StyleBoxFlat" id="StyleBadge"]
-bg_color = Color(0.025, 0.035, 0.055, 0.9)
+bg_color = Color(0.105882, 0.105882, 0.105882, 0.9)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.46, 0.55, 0.68, 0.8)
+border_color = Color(0.203922, 0.203922, 0.203922, 0.8)
 corner_radius_top_left = 5
 corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
 [node name="MatchRingView" type="PanelContainer"]
-custom_minimum_size = Vector2(340, 280)
+custom_minimum_size = Vector2(340, 220)
 size_flags_horizontal = 3
 size_flags_vertical = 3
 clip_contents = true
-theme_override_styles/panel = SubResource("StyleRingPanel")
+theme_type_variation = &"RaisedPanel"
 script = ExtResource("1_view")
 
 [node name="RingMargin" type="MarginContainer" parent="."]
@@ -76,8 +76,8 @@ offset_top = 6.0
 offset_right = -8.0
 offset_bottom = 28.0
 grow_horizontal = 2
-theme_override_colors/font_color = Color(0.7, 0.76, 0.86, 1)
-theme_override_colors/font_outline_color = Color(0.015, 0.02, 0.03, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
+theme_override_colors/font_outline_color = Color(0.0352941, 0.0352941, 0.0352941, 1)
 theme_override_constants/outline_size = 3
 theme_override_font_sizes/font_size = 11
 text = "RING VIEW"
@@ -93,8 +93,8 @@ offset_top = 28.0
 offset_right = -20.0
 offset_bottom = 53.0
 grow_horizontal = 2
-theme_override_colors/font_color = Color(0.98, 0.81, 0.3, 1)
-theme_override_colors/font_outline_color = Color(0.015, 0.02, 0.03, 1)
+theme_override_colors/font_color = Color(0.831373, 0.686275, 0.215686, 1)
+theme_override_colors/font_outline_color = Color(0.0352941, 0.0352941, 0.0352941, 1)
 theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 15
 text = ""
@@ -109,12 +109,11 @@ offset_top = 7.0
 offset_right = 104.0
 offset_bottom = 33.0
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBadge")
 
 [node name="CountText" type="Label" parent="RingMargin/RingAspect/RingCanvas/CountBadge"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.98, 0.81, 0.3, 1)
+theme_override_colors/font_color = Color(0.486275, 0.360784, 1, 1)
 theme_override_font_sizes/font_size = 12
 text = "COUNT 0 / 10"
 horizontal_alignment = 1
@@ -132,11 +131,10 @@ offset_bottom = -5.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBadge")
 
 [node name="Legend" type="Label" parent="RingMargin/RingAspect/RingCanvas/LegendBadge"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.78, 0.83, 0.91, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 theme_override_font_sizes/font_size = 10
 text = "BLUE = PLAYER    RED = AI    GOLD = CONTROL    ARROW = FACING / MOTION"
 horizontal_alignment = 1
@@ -147,7 +145,7 @@ offset_left = 3.0
 offset_top = 76.0
 offset_right = 74.0
 offset_bottom = 94.0
-theme_override_colors/font_color = Color(0.55, 0.61, 0.7, 1)
+theme_override_colors/font_color = Color(0.427451, 0.427451, 0.427451, 1)
 theme_override_font_sizes/font_size = 9
 text = "RAMP"
 horizontal_alignment = 1
@@ -166,7 +164,7 @@ offset_bottom = 9.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_override_colors/font_color = Color(0.75, 0.8, 0.87, 0.32)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 0.32)
 theme_override_font_sizes/font_size = 12
 text = "RING"
 horizontal_alignment = 1
@@ -183,7 +181,7 @@ offset_bottom = -28.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
-theme_override_colors/font_color = Color(0.55, 0.62, 0.72, 0.75)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 0.75)
 theme_override_font_sizes/font_size = 8
 text = "APRON"
 horizontal_alignment = 1

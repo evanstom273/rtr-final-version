@@ -121,7 +121,7 @@ func open_interaction(request: Dictionary) -> void:
 	else:
 		_zone_center = _rng.randf_range(minimum_center, maximum_center)
 	_title.text = str(request.get("title", "CONTROL"))
-	_prompt.text = str(request.get("prompt", "Stop the marker inside the gold zone."))
+	_prompt.text = str(request.get("prompt", "Stop the marker inside the green zone."))
 	_tap_button.text = str(request.get("button_text", "TAKE CONTROL"))
 	if _one_way:
 		_marker_value = 0.0 if _direction > 0.0 else 1.0
@@ -240,11 +240,11 @@ func _finish(result: int, timed_out: bool) -> void:
 		last_miss_distance = 1.0
 	var generation := _generation
 	if result == MatchInteractionModel.InputResult.SUCCESS:
-		self_modulate = Color(1.18, 1.1, 0.68, 1.0)
+		self_modulate = AppThemePalette.SUCCESS
 	elif result == MatchInteractionModel.InputResult.NEAR_MISS:
-		self_modulate = Color(1.05, 0.82, 0.48, 1.0)
+		self_modulate = AppThemePalette.WARNING
 	else:
-		self_modulate = Color(1.0, 0.55, 0.58, 1.0)
+		self_modulate = AppThemePalette.ERROR
 	await get_tree().create_timer(FEEDBACK_SECONDS).timeout
 	if generation != _generation or _completion_emitted:
 		return

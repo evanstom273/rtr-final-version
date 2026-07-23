@@ -3,12 +3,12 @@
 [ext_resource type="Script" path="res://Scripts/UI/setup_actions_menu.gd" id="1_setup"]
 
 [sub_resource type="StyleBoxFlat" id="StyleSetupPanel"]
-bg_color = Color(0.045, 0.06, 0.09, 0.99)
+bg_color = Color(0.0784314, 0.0784314, 0.0784314, 0.99)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.78, 0.64, 0.2, 0.9)
+border_color = Color(0.203922, 0.203922, 0.203922, 0.9)
 corner_radius_top_left = 16
 corner_radius_top_right = 16
 corner_radius_bottom_right = 16
@@ -50,7 +50,7 @@ layout_mode = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(980, 700)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleSetupPanel")
+theme_type_variation = &"ModalPanel"
 
 [node name="Margin" type="MarginContainer" parent="ActionSafeArea/Center/SetupPanel"]
 layout_mode = 2
@@ -65,7 +65,7 @@ theme_override_constants/separation = 8
 
 [node name="Title" type="Label" parent="ActionSafeArea/Center/SetupPanel/Margin/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.96, 0.8, 0.28, 1)
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_font_sizes/font_size = 24
 text = "SETUP / SHOWBOAT"
 horizontal_alignment = 1
@@ -73,7 +73,7 @@ horizontal_alignment = 1
 [node name="StateLabel" type="Label" parent="ActionSafeArea/Center/SetupPanel/Margin/Content"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.68, 0.73, 0.82, 1)
+theme_override_colors/font_color = Color(0.690196, 0.690196, 0.690196, 1)
 text = "Standing vs Standing"
 horizontal_alignment = 1
 autowrap_mode = 2

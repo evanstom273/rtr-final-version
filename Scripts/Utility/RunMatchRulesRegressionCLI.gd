@@ -37,7 +37,7 @@ func _run() -> void:
 	_check(chair != null, "Steel chair resource should load.")
 	_check(not no_dq.weapon_attack_causes_disqualification(chair), "Chair should be legal in no-DQ rules.")
 	_check(normal.weapon_attack_causes_disqualification(chair), "Chair should cause DQ under normal rules.")
-	_check(normal.is_outside_area(WrestlerResource.Area.APRON), "Apron should count as outside.")
+	_check(not normal.is_outside_area(WrestlerResource.Area.APRON), "Apron should not trigger the referee count.")
 	_check(not normal.is_outside_area(WrestlerResource.Area.ROPES), "Ropes should count as inside.")
 
 	_check(chair.minimum_durability == 1, "Steel chair minimum durability should be one committed swing.")
